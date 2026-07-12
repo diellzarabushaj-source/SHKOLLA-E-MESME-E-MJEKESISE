@@ -14,9 +14,7 @@ export async function signUpWithUsername(
   const password = String(formData.get("password") || "");
 
   if (!USERNAME_PATTERN.test(username)) {
-    return {
-      error: "Username duhet t’i ketë 3–20 karaktere: shkronja, numra, _ ose -.",
-    };
+    return { error: "Username: 3–20 shkronja, numra, _ ose -." };
   }
 
   if (password.length < 8) {
@@ -27,19 +25,29 @@ export async function signUpWithUsername(
     return { error: "Password-i është shumë i gjatë." };
   }
 
-  const { error } = await auth.signUp.email({
-    email: usernameToEmail(username),
-    name: username,
-    password,
-  });
+  try {
+    const { error } = await auth.signUp.email({
+      email: usernameToEmail(username),
+      name: username,
+      password,
+    });
 
-  if (error) {
-    const message = (error.message || "").toLowerCase();
-    if (message.includes("already") || message.includes("exist") || message.includes("unique")) {
-      return { error: "Ky username është i zënë. Provo një tjetër." };
+    if (error) {
+      console.error("Neon Auth sign-up failed", {
+        message: error.message,
+        status: "status" in error ? error.status : undefined,
+      });
+
+      const message = (error.message || "").toLowerCase();
+      if (message.includes("already") || message.includes("exist") || message.includes("unique")) {
+        return { error: "Ky username është i zënë. Provo një tjetër." };
+      }
+
+      return { error: "Regjistrimi dështoi. Kontrollo username-in dhe provo përsëri." };
     }
-
-    return { error: "Llogaria nuk u krijua. Provo përsëri." };
+  } catch (error) {
+    console.error("Neon Auth sign-up request failed", error);
+    return { error: "Nuk u lidhëm me regjistrimin. Provo përsëri pas pak." };
   }
 
   redirect("/");
