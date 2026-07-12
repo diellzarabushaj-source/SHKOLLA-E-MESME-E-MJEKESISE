@@ -1,0 +1,28 @@
+name: Build check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEON_AUTH_BASE_URL: https://ep-long-wind-at258oxo.neonauth.c-9.us-east-1.aws.neon.tech/neondb/auth
+      NEON_AUTH_COOKIE_SECRET: ci-only-cookie-secret-with-more-than-32-characters
+      NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
+      NEXT_PUBLIC_SANITY_PROJECT_ID: e1tm3f7l
+      NEXT_PUBLIC_SANITY_DATASET: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run build
