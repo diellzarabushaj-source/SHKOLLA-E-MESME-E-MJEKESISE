@@ -1,0 +1,11 @@
+.brand-mark svg {
+  width: 27px;
+  height: 27px;
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .brand > span:last-child b {
+    font-size: 13px;
+  }
+}
