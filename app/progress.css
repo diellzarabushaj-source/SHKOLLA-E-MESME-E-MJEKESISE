@@ -19,6 +19,10 @@
   font-weight: 800;
 }
 
+body:not(:has(.study-page)) .progress-sync-guest {
+  display: none;
+}
+
 .progress-sync-badge > span {
   width: 9px;
   height: 9px;
