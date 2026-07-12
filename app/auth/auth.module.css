@@ -51,6 +51,11 @@
   box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 28%, transparent);
 }
 
+.brand svg {
+  width: 34px;
+  height: 34px;
+}
+
 .eyebrow {
   color: var(--accent);
   font-size: 12px;
