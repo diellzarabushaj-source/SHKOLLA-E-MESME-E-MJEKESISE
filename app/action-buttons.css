@@ -1,4 +1,4 @@
-/* Uiverse-inspired action buttons, adapted to the portal's blue/cyan palette. */
+/* Uiverse-style primary actions, adapted to the portal's blue/cyan palette. */
 .open-button,
 button[class*="gradeOpen"],
 button[class*="primaryAction"],
@@ -6,19 +6,19 @@ button[class*="lessonOpen"],
 button[class*="startStudy"],
 button[class*="submit"] {
   min-height: 48px;
-  padding: 1.15em 2.45em;
-  border: 0;
+  padding: 1.3em 3em;
+  border: none;
   border-radius: 45px;
   outline: none;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 24%, transparent);
+  box-shadow: 0 8px 15px color-mix(in srgb, var(--primary) 22%, transparent);
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease 0s;
 }
 
 .open-button:hover,
@@ -29,7 +29,7 @@ button[class*="startStudy"]:hover:not(:disabled),
 button[class*="submit"]:hover:not(:disabled) {
   background: var(--accent);
   color: #071522;
-  box-shadow: 0 15px 24px color-mix(in srgb, var(--accent) 38%, transparent);
+  box-shadow: 0 15px 20px color-mix(in srgb, var(--accent) 42%, transparent);
   transform: translateY(-7px);
 }
 
@@ -57,7 +57,8 @@ button[class*="submit"]:disabled {
   button[class*="lessonOpen"],
   button[class*="startStudy"],
   button[class*="submit"] {
-    padding: 1.1em 1.65em;
-    letter-spacing: 1.25px;
+    padding: 1.15em 1.7em;
+    font-size: 11px;
+    letter-spacing: 1.5px;
   }
 }
