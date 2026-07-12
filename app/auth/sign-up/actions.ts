@@ -33,10 +33,7 @@ export async function signUpWithUsername(
     });
 
     if (error) {
-      console.error("Neon Auth sign-up failed", {
-        message: error.message,
-        status: "status" in error ? error.status : undefined,
-      });
+      console.error("Neon Auth sign-up failed", error.message);
 
       const message = (error.message || "").toLowerCase();
       if (message.includes("already") || message.includes("exist") || message.includes("unique")) {
