@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth/server";
 import AuthControls from "./AuthControls";
+import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
 import "./uiverse.css";
 
 export const metadata: Metadata = {
-  title: "Flashcards Mjekësi Pejë",
-  description: "Platforma e klasës për mësim me flashcards, e organizuar sipas lëndëve dhe kapitujve.",
+  title: "Portali Mësimor — Mjekësi Pejë",
+  description: "Mësime dhe flashcards për klasat 10, 11 dhe 12 të Shkollës së Mesme të Mjekësisë.",
 };
 
 export const dynamic = "force-dynamic";
@@ -39,9 +40,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body>
         <header className="site-header">
-          <a className="brand" href="/" aria-label="Flashcards Mjekësi Pejë - Ballina">
-            <span className="brand-mark">M+</span>
-            <span><b>Flashcards</b><small>Mjekësi Pejë</small></span>
+          <a className="brand" href="/" aria-label="Portali Mësimor Mjekësi Pejë - Ballina">
+            <span className="brand-mark"><StethoscopeLogo /></span>
+            <span><b>Portali Mësimor</b><small>Mjekësi Pejë</small></span>
           </a>
 
           <div className="header-actions">
@@ -52,7 +53,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                 </svg>
               </a>
-              <a className="tab" href="/#lendet" aria-label="Lëndët" data-label="Lëndët">
+              <a className="tab" href="/#klasat" aria-label="Klasat" data-label="Klasat">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                   <path d="M18 7h1a2 2 0 0 1 2 2v10.5h-3M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -70,7 +71,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </div>
         </header>
         {children}
-        <footer><span>Ndërtuar për klasën tonë • Shkolla e Mesme e Mjekësisë, Pejë</span><span>Sanity + Vercel + Neon</span></footer>
+        <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Sanity + Vercel + Neon</span></footer>
       </body>
     </html>
   );
