@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
+import "./uiverse.css";
 
 export const metadata: Metadata = {
   title: "Flashcards Mjekësi Pejë",
@@ -27,10 +28,27 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <span className="brand-mark">M+</span>
             <span><b>Flashcards</b><small>Mjekësi Pejë</small></span>
           </a>
+
           <div className="header-actions">
-            <nav>
-              <a href="/#lendet">Lëndët</a>
-              <a href="https://flashcards-mjekesi-peje.sanity.studio/" target="_blank" rel="noreferrer">Studio</a>
+            <nav className="navigation-card" aria-label="Navigimi kryesor">
+              <a className="tab" href="/" aria-label="Ballina" data-label="Ballina">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m3 10.8 9-7.3 9 7.3v8.7a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                  <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                </svg>
+              </a>
+              <a className="tab" href="/#lendet" aria-label="Lëndët" data-label="Lëndët">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                  <path d="M18 7h1a2 2 0 0 1 2 2v10.5h-3M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </a>
+              <a className="tab" href="https://flashcards-mjekesi-peje.sanity.studio/" target="_blank" rel="noreferrer" aria-label="Sanity Studio" data-label="Studio">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 19.5h4l11-11a2.12 2.12 0 0 0-3-3l-11 11-1 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                  <path d="m14.5 7 3 3M4 21h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </a>
             </nav>
             <ThemeToggle />
           </div>
