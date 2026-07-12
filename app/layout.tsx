@@ -5,6 +5,7 @@ import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
 import "./uiverse.css";
+import "./branding.css";
 
 export const metadata: Metadata = {
   title: "Portali Mësimor — Mjekësi Pejë",
