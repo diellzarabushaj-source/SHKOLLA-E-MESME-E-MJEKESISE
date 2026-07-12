@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth/server";
 import AuthControls from "./AuthControls";
+import ProgressTracker from "./ProgressTracker";
 import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
 import "./uiverse.css";
 import "./branding.css";
 import "./action-buttons.css";
+import "./progress.css";
 
 export const metadata: Metadata = {
   title: "Portali Mësimor — Mjekësi Pejë",
@@ -61,6 +63,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   <path d="M18 7h1a2 2 0 0 1 2 2v10.5h-3M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
               </a>
+              <a className="tab" href="/progress" aria-label="Progresi im" data-label="Progresi">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 19V9M10 19V5M16 19v-7M22 19V3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M3 19.5h19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </a>
               <a className="tab" href="https://flashcards-mjekesi-peje.sanity.studio/" target="_blank" rel="noreferrer" aria-label="Sanity Studio" data-label="Studio">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M4 19.5h4l11-11a2.12 2.12 0 0 0-3-3l-11 11-1 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -72,6 +80,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <ThemeToggle />
           </div>
         </header>
+        <ProgressTracker />
         {children}
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Sanity + Vercel + Neon</span></footer>
       </body>
