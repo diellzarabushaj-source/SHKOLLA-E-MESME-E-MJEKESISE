@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@neondatabase/auth": "latest",
     "next": "latest",
     "next-sanity": "latest",
     "react": "latest",
