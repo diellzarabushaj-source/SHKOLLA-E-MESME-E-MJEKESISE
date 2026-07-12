@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import StethoscopeLogo from "../../StethoscopeLogo";
 import styles from "../auth.module.css";
 import { signUpWithUsername } from "./actions";
 
@@ -12,16 +13,14 @@ export default function SignUpPage() {
     <main className={styles.page}>
       <div className={styles.shell}>
         <Link className={styles.backLink} href="/">
-          <span aria-hidden="true">←</span> Kthehu te flashcards
+          <span aria-hidden="true">←</span> Kthehu në portal
         </Link>
 
         <section className={styles.card} aria-labelledby="sign-up-title">
-          <div className={styles.brand} aria-hidden="true">M+</div>
-          <span className={styles.eyebrow}>Regjistrim i shpejtë</span>
+          <div className={styles.brand} aria-hidden="true"><StethoscopeLogo /></div>
+          <span className={styles.eyebrow}>Regjistrim i thjeshtë</span>
           <h1 className={styles.title} id="sign-up-title">Krijo llogari</h1>
-          <p className={styles.subtitle}>
-            Vetëm username dhe password. Nuk kërkohet email, emër apo numër telefoni.
-          </p>
+          <p className={styles.subtitle}>Duhet vetëm një username dhe një password.</p>
 
           <form action={formAction} className={styles.form}>
             <div className={styles.field}>
@@ -40,7 +39,7 @@ export default function SignUpPage() {
                 placeholder="p.sh. alketa03"
                 required
               />
-              <span className={styles.hint}>3–20 karaktere: shkronja, numra, _ ose -</span>
+              <span className={styles.hint}>3–20 shkronja, numra, _ ose -</span>
             </div>
 
             <div className={styles.field}>
@@ -58,22 +57,16 @@ export default function SignUpPage() {
               />
             </div>
 
-            {state?.error && (
-              <p className={styles.error} role="alert" aria-live="polite">{state.error}</p>
-            )}
+            {state?.error && <p className={styles.error} role="alert" aria-live="polite">{state.error}</p>}
 
             <button className={styles.submit} type="submit" disabled={isPending}>
-              {isPending ? "Duke krijuar llogarinë..." : "Krijo llogari"}
+              {isPending ? "Duke u regjistruar..." : "Regjistrohu"}
             </button>
           </form>
 
-          <p className={styles.switchText}>
-            E ke llogarinë? <Link href="/auth/sign-in">Kyçu</Link>
-          </p>
-
+          <p className={styles.switchText}>E ke llogarinë? <Link href="/auth/sign-in">Kyçu</Link></p>
           <div className={styles.divider}>ose</div>
           <Link className={styles.guest} href="/">Vazhdo pa llogari</Link>
-          <p className={styles.privacy}>Password-i nuk ruhet në kod dhe nuk shfaqet në website.</p>
         </section>
       </div>
     </main>
