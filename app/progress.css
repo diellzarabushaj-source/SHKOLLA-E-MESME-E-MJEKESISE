@@ -1,0 +1,62 @@
+.progress-sync-badge {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  min-height: 42px;
+  max-width: min(360px, calc(100vw - 28px));
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  color: var(--text);
+  box-shadow: 0 16px 42px color-mix(in srgb, #000 20%, transparent);
+  backdrop-filter: blur(18px);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.progress-sync-badge > span {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--muted-2);
+}
+
+.progress-sync-syncing > span {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 13%, transparent);
+  animation: progressPulse 0.9s ease-in-out infinite alternate;
+}
+
+.progress-sync-saved > span {
+  background: var(--success);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--success) 65%, transparent);
+}
+
+.progress-sync-error {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+  color: var(--danger);
+}
+
+.progress-sync-error > span { background: var(--danger); }
+.progress-sync-guest > span { background: var(--muted-2); }
+
+@keyframes progressPulse {
+  from { transform: scale(0.78); opacity: 0.65; }
+  to { transform: scale(1.08); opacity: 1; }
+}
+
+@media (max-width: 700px) {
+  .progress-sync-badge {
+    right: 12px;
+    bottom: 12px;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
+}
