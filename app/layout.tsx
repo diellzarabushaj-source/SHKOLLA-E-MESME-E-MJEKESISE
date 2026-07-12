@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { auth } from "@/lib/auth/server";
+import AuthControls from "./AuthControls";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
 import "./uiverse.css";
@@ -7,6 +9,8 @@ export const metadata: Metadata = {
   title: "Flashcards Mjekësi Pejë",
   description: "Platforma e klasës për mësim me flashcards, e organizuar sipas lëndëve dhe kapitujve.",
 };
+
+export const dynamic = "force-dynamic";
 
 const themeScript = `
   try {
@@ -18,7 +22,18 @@ const themeScript = `
   }
 `;
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+async function getCurrentUsername(): Promise<string | null> {
+  try {
+    const { data: session } = await auth.getSession();
+    return session?.user?.name || null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const username = await getCurrentUsername();
+
   return (
     <html lang="sq" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
@@ -50,11 +65,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 </svg>
               </a>
             </nav>
+            <AuthControls username={username} />
             <ThemeToggle />
           </div>
         </header>
         {children}
-        <footer><span>Ndërtuar për klasën tonë • Shkolla e Mesme e Mjekësisë, Pejë</span><span>Sanity + Vercel</span></footer>
+        <footer><span>Ndërtuar për klasën tonë • Shkolla e Mesme e Mjekësisë, Pejë</span><span>Sanity + Vercel + Neon</span></footer>
       </body>
     </html>
   );
