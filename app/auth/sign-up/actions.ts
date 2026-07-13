@@ -14,53 +14,44 @@ export async function signUpWithUsername(
   const password = String(formData.get("password") || "");
 
   if (!USERNAME_PATTERN.test(username)) {
-    return {
-      error: "Shkruaj së paku 2 shkronja ose numra për username.",
-      username,
-    };
+    return { error: "Shkruaj një username me së paku 2 karaktere.", username };
   }
 
+  // Neon Auth kërkon 8 karaktere, por nuk kërkojmë shkronja të mëdha,
+  // numra ose simbole të veçanta.
   if (password.length < 8) {
-    return {
-      error: "Password-i duhet t’i ketë së paku 8 karaktere.",
-      username,
-    };
+    return { error: "Password-i duhet t’i ketë vetëm së paku 8 karaktere.", username };
   }
 
-  if (password.length > 128) {
-    return { error: "Password-i është shumë i gjatë.", username };
-  }
+  const email = usernameToEmail(username);
 
   try {
     const { error } = await auth.signUp.email({
-      email: usernameToEmail(username),
+      email,
       name: username,
       password,
     });
 
     if (error) {
-      console.error("Neon Auth sign-up failed", error.code, error.message);
       const message = `${error.code || ""} ${error.message || ""}`.toLowerCase();
 
       if (message.includes("already") || message.includes("exist") || message.includes("unique") || message.includes("user_already_exists")) {
-        return { error: "Ky username është i zënë. Zgjidh një tjetër.", username };
+        return { error: "Ky username ekziston. Kyçu ose zgjidh një tjetër.", username };
       }
 
       if (message.includes("password")) {
-        return { error: "Përdor një password me së paku 8 karaktere.", username };
+        return { error: "Përdor së paku 8 karaktere për password.", username };
       }
 
-      return {
-        error: "Regjistrimi nuk u krye. Provo një username tjetër dhe shtyp përsëri.",
-        username,
-      };
+      return { error: "Regjistrimi nuk u krye. Provo përsëri.", username };
     }
+
+    // E kyçim menjëherë nxënësin, që të mos ketë hap tjetër pas regjistrimit.
+    const { error: signInError } = await auth.signIn.email({ email, password });
+    if (signInError) redirect("/auth/sign-in?created=1");
   } catch (error) {
-    console.error("Neon Auth sign-up request failed", error);
-    return {
-      error: "Lidhja me regjistrimin dështoi. Provo përsëri pas pak.",
-      username,
-    };
+    console.error("Registration request failed", error);
+    return { error: "Regjistrimi nuk u krye. Provo përsëri pas pak.", username };
   }
 
   redirect("/");
