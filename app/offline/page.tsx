@@ -14,7 +14,6 @@ export default function OfflinePage() {
         <p>Mësimet dhe flashcards që i ke hapur më parë mund të vazhdojnë të funksionojnë nga cache-i i aplikacionit.</p>
         <div className="system-actions">
           <Link className="primary-button" href="/">Hape portalin</Link>
-          <button className="secondary-button" type="button" onClick={undefined}>Rifresko kur të kthehet interneti</button>
         </div>
       </section>
     </main>
