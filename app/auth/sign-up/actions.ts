@@ -17,8 +17,6 @@ export async function signUpWithUsername(
     return { error: "Shkruaj një username me së paku 2 karaktere.", username };
   }
 
-  // Neon Auth kërkon 8 karaktere, por nuk kërkojmë shkronja të mëdha,
-  // numra ose simbole të veçanta.
   if (password.length < 8) {
     return { error: "Password-i duhet t’i ketë vetëm së paku 8 karaktere.", username };
   }
@@ -45,14 +43,12 @@ export async function signUpWithUsername(
 
       return { error: "Regjistrimi nuk u krye. Provo përsëri.", username };
     }
-
-    // E kyçim menjëherë nxënësin, që të mos ketë hap tjetër pas regjistrimit.
-    const { error: signInError } = await auth.signIn.email({ email, password });
-    if (signInError) redirect("/auth/sign-in?created=1");
   } catch (error) {
     console.error("Registration request failed", error);
     return { error: "Regjistrimi nuk u krye. Provo përsëri pas pak.", username };
   }
 
+  // Neon Auth e krijon sesionin gjatë sign-up. Një sign-in i dytë në të njëjtën
+  // server action mund të shkruajë cookies konkurruese dhe të krijojë sesion pa token.
   redirect("/");
 }
