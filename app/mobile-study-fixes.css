@@ -95,15 +95,43 @@
     padding-right: 126px;
     display: flex;
     align-items: center;
-    gap: 7px;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-width: none;
+    gap: 8px;
+    overflow: hidden;
     white-space: nowrap;
   }
 
-  body.flashcard-study-active .study-page [class*="hierarchy"]::-webkit-scrollbar {
+  body.flashcard-study-active .study-page [class*="hierarchy"] > * {
     display: none;
+  }
+
+  body.flashcard-study-active .study-page [class*="hierarchy"] > button:last-of-type {
+    min-height: 38px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--panel);
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  body.flashcard-study-active .study-page [class*="hierarchy"] > button:last-of-type::before {
+    content: "←";
+    color: var(--accent);
+    font-size: 17px;
+  }
+
+  body.flashcard-study-active .study-page [class*="hierarchy"] > span:last-child {
+    min-width: 0;
+    max-width: 36vw;
+    display: block;
+    overflow: hidden;
+    color: var(--muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   body.flashcard-study-active .active-session-timer {
