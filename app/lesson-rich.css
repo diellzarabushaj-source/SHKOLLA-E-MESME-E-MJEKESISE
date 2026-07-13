@@ -1,0 +1,111 @@
+/* Simple, readable lesson typography layered on top of the existing portal styles. */
+[class*="lessonBody"] > h2:first-child {
+  margin-top: 0;
+}
+
+[class*="lessonBody"] h2 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  letter-spacing: -0.035em;
+}
+
+[class*="lessonBody"] h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+[class*="lessonBody"] h3::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+[class*="lessonBody"] p {
+  max-width: 76ch;
+}
+
+[class*="lessonBody"] strong {
+  padding: 0.08em 0.28em;
+  border-radius: 0.38em;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--text);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+[class*="lessonBody"] blockquote {
+  position: relative;
+  padding: 18px 20px 18px 52px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-left: 4px solid var(--accent);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-soft));
+  color: var(--text);
+  font-weight: 700;
+}
+
+[class*="lessonBody"] blockquote::before {
+  content: "!";
+  position: absolute;
+  left: 17px;
+  top: 17px;
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+[class*="lessonBody"] ul,
+[class*="lessonBody"] ol {
+  margin: 18px 0 24px;
+  display: grid;
+  gap: 9px;
+}
+
+[class*="lessonBody"] li {
+  padding-left: 4px;
+}
+
+[class*="lessonBody"] li::marker {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+[class*="lessonBody"] a {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  [class*="lessonBody"] {
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  [class*="lessonBody"] h2 {
+    font-size: 27px;
+  }
+
+  [class*="lessonBody"] h3 {
+    font-size: 21px;
+  }
+
+  [class*="lessonBody"] blockquote {
+    padding: 16px 16px 16px 46px;
+  }
+}
