@@ -8,6 +8,8 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
+const SERVICE_WORKER_URL = "/sw.js?v=3";
+
 export default function PwaRegistrar() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [updateReady, setUpdateReady] = useState<ServiceWorker | null>(null);
@@ -20,7 +22,8 @@ export default function PwaRegistrar() {
 
     const register = async () => {
       try {
-        registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" });
+        await registration.update();
 
         if (registration.waiting) setUpdateReady(registration.waiting);
 
