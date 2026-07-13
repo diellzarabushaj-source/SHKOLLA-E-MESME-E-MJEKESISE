@@ -1,0 +1,258 @@
+.mobile-navigation {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .site-header {
+    top: 0;
+    min-height: calc(64px + env(safe-area-inset-top));
+    padding-top: calc(9px + env(safe-area-inset-top));
+    padding-right: 14px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+  }
+
+  .site-header .desktop-navigation {
+    display: none !important;
+  }
+
+  .mobile-navigation {
+    position: fixed;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    z-index: 300;
+    width: min(360px, calc(100vw - 24px));
+    min-height: 68px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 4px;
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--panel) 94%, transparent);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transform: translateX(-50%);
+  }
+
+  .mobile-navigation .tab {
+    width: 50px;
+    height: 50px;
+  }
+
+  .mobile-navigation .tab::after {
+    display: none;
+  }
+
+  .active-session-timer {
+    left: 12px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+
+  .progress-sync-badge {
+    right: 12px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+
+  body.flashcard-study-active {
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body.flashcard-study-active .site-header,
+  body.flashcard-study-active .mobile-navigation,
+  body.flashcard-study-active footer {
+    display: none !important;
+  }
+
+  body.flashcard-study-active #main-content {
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  body.flashcard-study-active .study-page {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    margin: 0;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      10px
+      calc(12px + env(safe-area-inset-bottom));
+  }
+
+  body.flashcard-study-active .study-page [class*="hierarchy"] {
+    min-height: 42px;
+    padding-right: 126px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  body.flashcard-study-active .study-page [class*="hierarchy"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.flashcard-study-active .active-session-timer {
+    top: calc(8px + env(safe-area-inset-top));
+    right: 10px;
+    bottom: auto;
+    left: auto;
+    z-index: 340;
+    min-width: 112px;
+    padding: 7px 9px;
+    border-radius: 12px;
+  }
+
+  body.flashcard-study-active .active-session-timer small {
+    display: none;
+  }
+
+  body.flashcard-study-active .active-session-timer strong {
+    font-size: 12px;
+  }
+
+  body.flashcard-study-active .progress-sync-badge {
+    top: calc(52px + env(safe-area-inset-top));
+    right: 10px;
+    bottom: auto;
+    left: auto;
+    z-index: 335;
+    max-width: min(240px, calc(100vw - 20px));
+  }
+
+  body.flashcard-study-active .study-shell {
+    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 58px);
+    margin-top: 8px;
+    padding-bottom: 10px;
+  }
+
+  body.flashcard-study-active .study-toolbar {
+    position: sticky;
+    top: calc(4px + env(safe-area-inset-top));
+    z-index: 24;
+    min-height: 58px;
+    margin: 0 0 10px;
+    padding: 8px 0;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  body.flashcard-study-active .study-context {
+    min-width: 0;
+  }
+
+  body.flashcard-study-active .study-context .eyebrow {
+    max-width: 52vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.flashcard-study-active .study-tools {
+    flex: 0 0 auto;
+  }
+
+  body.flashcard-study-active .progress-track {
+    position: sticky;
+    top: calc(62px + env(safe-area-inset-top));
+    z-index: 23;
+    margin-bottom: 10px;
+  }
+
+  body.flashcard-study-active .flashcard {
+    height: clamp(360px, 58dvh, 560px);
+    min-height: 0;
+    max-height: 620px;
+    margin-top: 0;
+    touch-action: manipulation;
+  }
+
+  body.flashcard-study-active .flashcard-face {
+    padding: 22px 18px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.flashcard-study-active .flashcard-face > strong {
+    overflow-wrap: anywhere;
+  }
+
+  body.flashcard-study-active .answer,
+  body.flashcard-study-active .answer-question,
+  body.flashcard-study-active .explanation {
+    overflow-wrap: anywhere;
+  }
+
+  body.flashcard-study-active .reveal-button {
+    position: sticky;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    z-index: 30;
+    margin-top: 12px;
+  }
+
+  body.flashcard-study-active .rating-actions {
+    position: sticky;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    z-index: 30;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0 0;
+    padding: 8px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  body.flashcard-study-active .rating-actions button {
+    min-width: 0;
+    min-height: 62px;
+    padding: 9px 10px;
+  }
+
+  body.flashcard-study-active .study-stats {
+    padding-bottom: 4px;
+  }
+
+  body.flashcard-study-active .finish-card {
+    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 64px);
+    margin-top: 12px;
+    align-content: center;
+  }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+  body.flashcard-study-active .flashcard {
+    height: clamp(300px, 64dvh, 440px);
+  }
+
+  body.flashcard-study-active .rating-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navigation,
+  body.flashcard-study-active .study-toolbar,
+  body.flashcard-study-active .rating-actions {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
