@@ -100,7 +100,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </div>
         </header>
         <ProgressTracker />
-        <LearningActivityTracker />
+        {username && <LearningActivityTracker />}
         <div id="main-content" tabIndex={-1}>{children}</div>
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Platformë mësimore për nxënësit</span></footer>
       </body>
