@@ -1,4 +1,4 @@
-const VERSION = "medical-portal-v4";
+const VERSION = "medical-portal-v5";
 const SHELL_CACHE = `${VERSION}-shell`;
 const CONTENT_CACHE = `${VERSION}-content`;
 const MEDIA_CACHE = `${VERSION}-media`;
