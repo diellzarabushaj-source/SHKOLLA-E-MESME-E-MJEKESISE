@@ -1,0 +1,115 @@
+.flashcard-launch-button {
+  position: relative;
+  overflow: hidden;
+  min-height: 46px;
+  border: 0 !important;
+  border-radius: 7px !important;
+  background: #1875ff !important;
+  color: #fff !important;
+  box-shadow: 0 14px 56px -11px rgba(24, 117, 255, 0.95) !important;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  text-align: center;
+  transition: transform 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+.flashcard-launch-button > span {
+  color: #fff !important;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.35s ease, transform 0.4s ease !important;
+}
+
+.flashcard-launch-button:hover:not(:disabled) {
+  padding-right: 3.55em !important;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 64px -12px rgba(24, 117, 255, 1) !important;
+}
+
+.flashcard-launch-button:hover:not(:disabled) > span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.flashcard-launch-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.active-session-timer {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 140;
+  min-width: 142px;
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--text) 10%, transparent);
+  backdrop-filter: blur(16px);
+  pointer-events: none;
+}
+
+.active-session-timer > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.active-session-timer small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.active-session-timer strong {
+  color: var(--text);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.active-session-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--success);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--success) 80%, transparent);
+}
+
+.active-session-timer.is-paused .active-session-dot {
+  background: var(--muted-2);
+  box-shadow: none;
+}
+
+@media (max-width: 700px) {
+  .active-session-timer {
+    left: 10px;
+    bottom: 10px;
+    min-width: 126px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .active-session-timer small {
+    font-size: 8px;
+  }
+
+  .active-session-timer strong {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashcard-launch-button,
+  .flashcard-launch-button > span {
+    transition: none !important;
+  }
+}
