@@ -64,8 +64,17 @@ export async function getDashboard(userId: string) {
   return { progress, sessions, reviews, lessons, activity };
 }
 
-export async function startSession(userId: string, context: StudyContext, totalCards: number) {
+export async function startSession(userId: string, context: StudyContext, totalCards: number, requestedId?: string) {
   const sql = database();
+  const validRequestedId = requestedId && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestedId)
+    ? requestedId
+    : null;
+
+  if (validRequestedId) {
+    const rows = await sql`INSERT INTO public.study_sessions (id, user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${validRequestedId}, ${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) ON CONFLICT (id) DO UPDATE SET total_cards=EXCLUDED.total_cards WHERE public.study_sessions.user_id=${userId} RETURNING id`;
+    return String(rows[0]?.id || validRequestedId);
+  }
+
   const rows = await sql`INSERT INTO public.study_sessions (user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) RETURNING id`;
   return String(rows[0]?.id);
 }
