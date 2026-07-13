@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Portali Mësimor Mjekësi Pejë">
+  <defs>
+    <linearGradient id="g" x1="70" y1="40" x2="440" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3654ff"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#07111f"/>
+  <rect x="42" y="42" width="428" height="428" rx="92" fill="url(#g)"/>
+  <path d="M164 116v118c0 52 40 94 92 94s92-42 92-94V116" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round"/>
+  <path d="M204 116h-40M348 116h-40" stroke="#fff" stroke-width="34" stroke-linecap="round"/>
+  <path d="M256 328v42c0 42 34 76 76 76s76-34 76-76v-18" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="408" cy="326" r="28" fill="#67d6e7" stroke="#fff" stroke-width="14"/>
+</svg>
