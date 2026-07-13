@@ -58,6 +58,11 @@ export default function InteractionEnhancements() {
       });
     };
 
+    const syncStudyMode = () => {
+      const studyPage = document.querySelector(".study-page");
+      document.body.classList.toggle("flashcard-study-active", Boolean(studyPage));
+    };
+
     const enhanceReviewIntervals = async () => {
       const flashcard = document.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
       const actions = document.querySelector<HTMLElement>(".rating-actions");
@@ -96,6 +101,7 @@ export default function InteractionEnhancements() {
       scheduled = true;
       window.requestAnimationFrame(() => {
         scheduled = false;
+        syncStudyMode();
         enhanceButtons();
         void enhanceReviewIntervals();
       });
@@ -108,6 +114,7 @@ export default function InteractionEnhancements() {
     return () => {
       observer.disconnect();
       previewRequestRef.current += 1;
+      document.body.classList.remove("flashcard-study-active");
     };
   }, []);
 
