@@ -69,12 +69,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   <path d="M3 19.5h19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
               </a>
-              <a className="tab" href="https://flashcards-mjekesi-peje.sanity.studio/" target="_blank" rel="noreferrer" aria-label="Sanity Studio" data-label="Studio">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4 19.5h4l11-11a2.12 2.12 0 0 0-3-3l-11 11-1 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                  <path d="m14.5 7 3 3M4 21h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                </svg>
-              </a>
             </nav>
             <AuthControls username={username} />
             <ThemeToggle />
