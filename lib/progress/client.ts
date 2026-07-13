@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth/client";
 export type ProgressRating = "again" | "hard" | "good" | "easy";
 export type StudyContext = { gradeId: string; subjectId: string; chapterId: string; lessonId: string };
 export type RatingCounts = Record<ProgressRating, number>;
+export type ReviewSchedulePreview = Record<ProgressRating, { label: string; dueAt: string; intervalDays: number; status: string }>;
 export type CardProgressRow = { flashcard_id: string; grade_id: string; subject_id: string; chapter_id: string; lesson_id: string; status: "new" | "learning" | "review" | "mastered"; last_rating: ProgressRating | null; repetitions: number; lapses: number; ease_factor: number | string; interval_days: number; due_at: string; last_reviewed_at: string | null; updated_at: string };
 export type StudySessionRow = { id: string; grade_id: string; subject_id: string; chapter_id: string; lesson_id: string; total_cards: number; again_count: number; hard_count: number; good_count: number; easy_count: number; started_at: string; completed_at: string | null };
 export type ReviewEventRow = { id: number; lesson_id: string; flashcard_id: string; rating: ProgressRating; response_time_ms?: number | null; reviewed_at: string };
@@ -51,6 +52,10 @@ async function api<T>(body?: Record<string, unknown>): Promise<T> {
 export async function startStudySession(context: StudyContext, totalCards: number): Promise<string> {
   const result = await api<{ id: string }>({ action: "start-session", context, totalCards });
   return result.id;
+}
+
+export async function fetchReviewSchedule(flashcardId: string): Promise<ReviewSchedulePreview> {
+  return api<ReviewSchedulePreview>({ action: "preview-review", flashcardId });
 }
 
 export async function recordCardReview(input: { sessionId: string; context: StudyContext; flashcardId: string; rating: ProgressRating; responseTimeMs?: number }): Promise<void> {
