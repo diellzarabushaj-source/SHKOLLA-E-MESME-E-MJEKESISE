@@ -1,7 +1,9 @@
 .flashcard-launch-button {
   position: relative;
   overflow: hidden;
+  min-width: 10em;
   min-height: 46px;
+  padding: 1em !important;
   border: 0 !important;
   border-radius: 7px !important;
   background: #1875ff !important;
@@ -11,15 +13,26 @@
   font-family: inherit;
   font-size: 13px !important;
   font-weight: 800 !important;
+  line-height: 1.2;
   text-align: center;
   transition: transform 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease !important;
 }
 
-.flashcard-launch-button > span {
-  color: #fff !important;
+.flashcard-launch-button::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: 18px;
   opacity: 0;
-  transform: translateX(-12px);
-  transition: opacity 0.35s ease, transform 0.4s ease !important;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  transform: translate(12px, -50%);
+  transition: opacity 0.35s ease, transform 0.4s ease;
+}
+
+.flashcard-launch-button > span {
+  display: none !important;
 }
 
 .flashcard-launch-button:hover:not(:disabled) {
@@ -28,13 +41,18 @@
   box-shadow: 0 18px 64px -12px rgba(24, 117, 255, 1) !important;
 }
 
-.flashcard-launch-button:hover:not(:disabled) > span {
+.flashcard-launch-button:hover:not(:disabled)::after {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate(0, -50%);
 }
 
 .flashcard-launch-button:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
+}
+
+.flashcard-launch-button:disabled {
+  cursor: not-allowed;
+  box-shadow: none !important;
 }
 
 .active-session-timer {
@@ -90,6 +108,11 @@
 }
 
 @media (max-width: 700px) {
+  .flashcard-launch-button {
+    width: 100%;
+    min-width: 0;
+  }
+
   .active-session-timer {
     left: 10px;
     bottom: 10px;
@@ -109,7 +132,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .flashcard-launch-button,
-  .flashcard-launch-button > span {
+  .flashcard-launch-button::after {
     transition: none !important;
   }
 }
