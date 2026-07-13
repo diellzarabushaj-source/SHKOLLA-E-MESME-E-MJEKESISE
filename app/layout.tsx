@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { auth } from "@/lib/auth/server";
 import AuthControls from "./AuthControls";
+import EnhancedTestResults from "./EnhancedTestResults";
 import LearningActivityTracker from "./LearningActivityTracker";
 import ProgressTracker from "./ProgressTracker";
 import PwaRegistrar from "./PwaRegistrar";
@@ -14,6 +15,7 @@ import "./action-buttons.css";
 import "./progress.css";
 import "./lesson-rich.css";
 import "./system-pages.css";
+import "./test-results.css";
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app",
@@ -106,6 +108,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </div>
         </header>
         <ProgressTracker />
+        <EnhancedTestResults />
         {username && <LearningActivityTracker />}
         <PwaRegistrar />
         <div id="main-content" tabIndex={-1}>{children}</div>
