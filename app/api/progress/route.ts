@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     if (action === "start-session") {
       const context = body.context as StudyContext;
       if (!context?.gradeId || !context.subjectId || !context.chapterId || !context.lessonId) return badRequest("INVALID_CONTEXT");
-      const id = await startSession(userId, context, Number(body.totalCards || 0));
+      const id = await startSession(userId, context, Number(body.totalCards || 0), body.sessionId ? String(body.sessionId) : undefined);
       return NextResponse.json({ id });
     }
 

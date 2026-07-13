@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/server";
 import AuthControls from "./AuthControls";
 import LearningActivityTracker from "./LearningActivityTracker";
 import ProgressTracker from "./ProgressTracker";
+import PwaRegistrar from "./PwaRegistrar";
 import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
@@ -32,6 +33,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mjekësi Pejë",
+  },
   openGraph: {
     type: "website",
     locale: "sq_AL",
@@ -101,6 +107,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </header>
         <ProgressTracker />
         {username && <LearningActivityTracker />}
+        <PwaRegistrar />
         <div id="main-content" tabIndex={-1}>{children}</div>
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Platformë mësimore për nxënësit</span></footer>
       </body>
