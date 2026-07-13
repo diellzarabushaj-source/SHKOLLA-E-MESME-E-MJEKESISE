@@ -4,6 +4,7 @@ import {
   getDashboard,
   heartbeat,
   openLesson,
+  previewReviewSchedule,
   recordReview,
   requireUserId,
   startSession,
@@ -52,6 +53,13 @@ export async function POST(request: Request) {
       if (!body.sessionId || !counts) return badRequest("INVALID_SESSION");
       await completeSession(userId, String(body.sessionId), counts);
       return NextResponse.json({ ok: true });
+    }
+
+    if (action === "preview-review") {
+      if (!body.flashcardId) return badRequest("INVALID_FLASHCARD");
+      return NextResponse.json(await previewReviewSchedule(userId, String(body.flashcardId)), {
+        headers: { "Cache-Control": "no-store" },
+      });
     }
 
     if (action === "record-review") {
