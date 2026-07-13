@@ -9,6 +9,7 @@ import "./uiverse.css";
 import "./branding.css";
 import "./action-buttons.css";
 import "./progress.css";
+import "./lesson-rich.css";
 
 export const metadata: Metadata = {
   title: "Portali Mësimor — Mjekësi Pejë",
