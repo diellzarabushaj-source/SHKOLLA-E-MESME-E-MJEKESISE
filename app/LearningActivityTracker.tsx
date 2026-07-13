@@ -33,7 +33,7 @@ function currentContext(): { type: "app" | "lesson" | "flashcards"; context?: St
 
 export default function LearningActivityTracker() {
   const lastActive = useRef(Date.now());
-  const sessionId = useRef<string>();
+  const sessionId = useRef<string | undefined>(undefined);
   const sessionKey = useRef("");
   const openedLesson = useRef("");
   const busy = useRef(false);
