@@ -5,6 +5,7 @@ import AuthControls from "./AuthControls";
 import EnhancedTestResults from "./EnhancedTestResults";
 import InteractionEnhancements from "./InteractionEnhancements";
 import LearningActivityTracker from "./LearningActivityTracker";
+import MobileNavigation from "./MobileNavigation";
 import ProgressTracker from "./ProgressTracker";
 import PwaRegistrar from "./PwaRegistrar";
 import StethoscopeLogo from "./StethoscopeLogo";
@@ -122,7 +123,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <ThemeToggle />
           </div>
         </header>
-        <NavigationLinks className="mobile-navigation" label="Navigimi kryesor në telefon" />
+        <MobileNavigation />
         <ProgressTracker />
         <EnhancedTestResults />
         <InteractionEnhancements />
