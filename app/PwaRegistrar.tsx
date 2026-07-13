@@ -8,7 +8,7 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const SERVICE_WORKER_URL = "/sw.js?v=3";
+const SERVICE_WORKER_URL = "/sw.js?v=4";
 
 export default function PwaRegistrar() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);

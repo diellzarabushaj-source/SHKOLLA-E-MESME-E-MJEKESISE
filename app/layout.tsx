@@ -18,6 +18,7 @@ import "./lesson-rich.css";
 import "./system-pages.css";
 import "./test-results.css";
 import "./interaction-enhancements.css";
+import "./mobile-study-fixes.css";
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app",
@@ -77,6 +78,22 @@ const themeScript = `
   }
 `;
 
+function NavigationLinks({ className, label }: { className: string; label: string }) {
+  return (
+    <nav className={`navigation-card ${className}`} aria-label={label}>
+      <Link className="tab" href="/" aria-label="Ballina" data-label="Ballina">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 10.8 9-7.3 9 7.3v8.7a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /></svg>
+      </Link>
+      <Link className="tab" href="/#klasat" aria-label="Klasat" data-label="Klasat">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M18 7h1a2 2 0 0 1 2 2v10.5h-3M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      </Link>
+      <Link className="tab" href="/progress" aria-label="Progresi im" data-label="Progresi">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M3 19.5h19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      </Link>
+    </nav>
+  );
+}
+
 async function getCurrentUsername(): Promise<string | null> {
   try {
     const { data: session } = await auth.getSession();
@@ -100,15 +117,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <span><b>Portali Mësimor</b><small>Mjekësi Pejë</small></span>
           </Link>
           <div className="header-actions">
-            <nav className="navigation-card" aria-label="Navigimi kryesor">
-              <Link className="tab" href="/" aria-label="Ballina" data-label="Ballina"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 10.8 9-7.3 9 7.3v8.7a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /></svg></Link>
-              <Link className="tab" href="/#klasat" aria-label="Klasat" data-label="Klasat"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M18 7h1a2 2 0 0 1 2 2v10.5h-3M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></Link>
-              <Link className="tab" href="/progress" aria-label="Progresi im" data-label="Progresi"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M3 19.5h19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></Link>
-            </nav>
+            <NavigationLinks className="desktop-navigation" label="Navigimi kryesor" />
             <AuthControls username={username} />
             <ThemeToggle />
           </div>
         </header>
+        <NavigationLinks className="mobile-navigation" label="Navigimi kryesor në telefon" />
         <ProgressTracker />
         <EnhancedTestResults />
         <InteractionEnhancements />
