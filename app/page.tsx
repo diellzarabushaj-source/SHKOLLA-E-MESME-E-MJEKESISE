@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient, PortableText, type PortableTextComponents } from "next-sanity";
 import styles from "./portal.module.css";
+import workspace from "./learning-workspace.module.css";
 
 type SanityImage = {
   alt?: string;
@@ -68,6 +69,7 @@ type Grade = {
 
 type Rating = "again" | "hard" | "good" | "easy";
 type RatingStats = Record<Rating, number>;
+type ContentMode = "lessons" | "flashcards";
 
 const emptyRatings: RatingStats = { again: 0, hard: 0, good: 0, easy: 0 };
 const SELECTED_GRADE_KEY = "medical-portal-selected-grade";
@@ -180,18 +182,21 @@ function getGradeStats(grade: Grade) {
   );
 }
 
-function getChapterFlashcardCount(chapter: Chapter) {
-  return chapter.lessons.reduce((sum, lesson) => sum + lesson.flashcardCount, 0);
-}
-
-function OpenButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button className="open-button" onClick={onClick} type="button">
-      <span>{label}</span>
+function ModeIcon({ mode }: { mode: ContentMode }) {
+  if (mode === "lessons") {
+    return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M8.5 9h6M8.5 12.5h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
-    </button>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="4" y="5" width="13" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 9h5M8 12.5h5M17 8h1.5A1.5 1.5 0 0 1 20 9.5V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -201,26 +206,33 @@ export default function HomePage() {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [contentMode, setContentMode] = useState<ContentMode>("lessons");
   const [studying, setStudying] = useState(false);
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [cardIndex, setCardIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [finished, setFinished] = useState(false);
   const [ratings, setRatings] = useState<RatingStats>(emptyRatings);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   async function fetchPortal(showLoader = true) {
     if (showLoader) setLoading(true);
     setError("");
+
     try {
       const result = await client.fetch<Grade[]>(portalQuery, {}, { perspective: "published" });
       setGrades(result);
-      setSelectedGrade((current) => {
-        const savedId = current?._id || window.localStorage.getItem(SELECTED_GRADE_KEY);
-        return savedId ? result.find((grade) => grade._id === savedId) || null : null;
-      });
+
+      const savedId = window.localStorage.getItem(SELECTED_GRADE_KEY);
+      const savedGrade = savedId ? result.find((grade) => grade._id === savedId) || null : null;
+      const currentGradeId = selectedGrade?._id || savedGrade?._id;
+      const nextGrade = currentGradeId ? result.find((grade) => grade._id === currentGradeId) || null : null;
+
+      setSelectedGrade(nextGrade);
+      setSelectedSubject((currentSubject) =>
+        nextGrade?.subjects.find((subject) => subject._id === currentSubject?._id) || nextGrade?.subjects[0] || null,
+      );
     } catch (fetchError) {
       console.error(fetchError);
       setError("Portali nuk mund të ngarkohej. Provo përsëri.");
@@ -233,43 +245,42 @@ export default function HomePage() {
     void fetchPortal();
   }, []);
 
-  const visibleSubjects = useMemo(() => {
-    if (!selectedGrade) return [];
-    const term = search.trim().toLocaleLowerCase("sq");
-    if (!term) return selectedGrade.subjects;
-    return selectedGrade.subjects.filter((subject) =>
-      `${subject.title} ${subject.shortDescription || ""}`.toLocaleLowerCase("sq").includes(term),
-    );
-  }, [search, selectedGrade]);
-
   const totalStats = useMemo(() => grades.reduce(
     (stats, grade) => {
       const gradeStats = getGradeStats(grade);
       stats.subjects += gradeStats.subjectCount;
-      stats.chapters += gradeStats.chapterCount;
       stats.lessons += gradeStats.lessonCount;
       stats.flashcards += gradeStats.flashcardCount;
       return stats;
     },
-    { subjects: 0, chapters: 0, lessons: 0, flashcards: 0 },
+    { subjects: 0, lessons: 0, flashcards: 0 },
   ), [grades]);
 
   const card = cards[cardIndex];
   const progress = cards.length ? (finished ? 100 : ((cardIndex + 1) / cards.length) * 100) : 0;
-  const answeredCount = Object.values(ratings).reduce((sum, count) => sum + count, 0);
+  const answeredCount = ratings.again + ratings.hard + ratings.good + ratings.easy;
 
   function scrollTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function resetStudyState() {
+    setStudying(false);
+    setCards([]);
+    setCardIndex(0);
+    setRevealed(false);
+    setFinished(false);
+    setRatings(emptyRatings);
+  }
+
   function chooseGrade(grade: Grade) {
     window.localStorage.setItem(SELECTED_GRADE_KEY, grade._id);
     setSelectedGrade(grade);
-    setSelectedSubject(null);
+    setSelectedSubject(grade.subjects[0] || null);
     setSelectedChapter(null);
     setSelectedLesson(null);
-    setStudying(false);
-    setSearch("");
+    setContentMode("lessons");
+    resetStudyState();
     scrollTop();
   }
 
@@ -279,67 +290,43 @@ export default function HomePage() {
     setSelectedSubject(null);
     setSelectedChapter(null);
     setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    setSearch("");
+    resetStudyState();
     scrollTop();
   }
 
-  function goToGrade() {
-    setSelectedSubject(null);
+  function returnToWorkspace() {
     setSelectedChapter(null);
     setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    setSearch("");
+    resetStudyState();
     scrollTop();
   }
 
-  function chooseSubject(subject: Subject) {
+  function selectSubject(subject: Subject) {
     setSelectedSubject(subject);
     setSelectedChapter(null);
     setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    scrollTop();
+    resetStudyState();
   }
 
-  function goToSubject() {
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    scrollTop();
-  }
-
-  function chooseChapter(chapter: Chapter) {
+  function openLesson(chapter: Chapter, lesson: Lesson) {
     setSelectedChapter(chapter);
-    setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    scrollTop();
-  }
-
-  function goToChapter() {
-    setSelectedLesson(null);
-    setStudying(false);
-    setCards([]);
-    scrollTop();
-  }
-
-  function chooseLesson(lesson: Lesson) {
     setSelectedLesson(lesson);
-    setStudying(false);
-    setCards([]);
+    resetStudyState();
     scrollTop();
   }
 
-  async function startFlashcards() {
-    if (!selectedLesson) return;
+  async function startFlashcards(lessonOverride?: Lesson, chapterOverride?: Chapter) {
+    const lesson = lessonOverride || selectedLesson;
+    const chapter = chapterOverride || selectedChapter;
+    if (!lesson || !chapter) return;
+
+    setSelectedChapter(chapter);
+    setSelectedLesson(lesson);
     setLoading(true);
     setError("");
+
     try {
-      const result = await client.fetch<Flashcard[]>(cardsQuery, { lessonId: selectedLesson._id }, { perspective: "published" });
+      const result = await client.fetch<Flashcard[]>(cardsQuery, { lessonId: lesson._id }, { perspective: "published" });
       setCards(result);
       setCardIndex(0);
       setRevealed(false);
@@ -352,6 +339,7 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
+
     scrollTop();
   }
 
@@ -422,15 +410,15 @@ export default function HomePage() {
 
   if (studying && selectedGrade && selectedSubject && selectedChapter && selectedLesson) {
     const showFrontImage = card?.image?.asset?.url && (card.imageSide === "front" || card.imageSide === "both");
-    const showBackImage = card?.image?.asset?.url && (card.imageSide !== "front");
+    const showBackImage = card?.image?.asset?.url && card.imageSide !== "front";
 
     return (
       <main className="inner-page study-page">
         <div className={styles.hierarchy}>
           <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <button onClick={goToChapter}>{selectedChapter.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedGrade.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedSubject.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedChapter.title}</button><span>/</span>
           <button onClick={goToLesson}>{selectedLesson.title}</button><span>/</span>
           <span>Flashcards</span>
         </div>
@@ -447,7 +435,7 @@ export default function HomePage() {
             <span className="finish-icon">✓</span>
             <span className="eyebrow">Sesioni përfundoi</span>
             <h2>I kalove të gjitha {cards.length} kartelat</h2>
-            <p>Rezultati i sesionit qëndron deri sa ta rifillosh këtë mësim.</p>
+            <p>Progresi ruhet në profilin tënd kur je i kyçur.</p>
             <div className="finish-stats">
               <div><strong>{ratings.again}</strong><span>Përsëri</span></div>
               <div><strong>{ratings.hard}</strong><span>Vështirë</span></div>
@@ -472,6 +460,7 @@ export default function HomePage() {
                 <button className="ghost-button" onClick={() => restartDeck(true)}>Përziej</button>
               </div>
             </div>
+
             <div className="progress-track" aria-label={`${Math.round(progress)}% e përfunduar`}>
               <span style={{ width: `${progress}%` }} />
             </div>
@@ -499,6 +488,7 @@ export default function HomePage() {
                   <strong>{card.front}</strong>
                   <small>Preke kartelën ose shtyp Space</small>
                 </span>
+
                 <span className="flashcard-face flashcard-back">
                   <span className="card-kicker"><b>PËRGJIGJJA</b><i className="answer-ready">Gati për vlerësim</i></span>
                   <span className="answer-question">{card.front}</span>
@@ -542,13 +532,14 @@ export default function HomePage() {
 
   if (selectedGrade && selectedSubject && selectedChapter && selectedLesson) {
     const imageUrl = selectedLesson.coverImage?.asset?.url;
+
     return (
       <main className="inner-page">
         <div className={styles.hierarchy}>
           <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <button onClick={goToChapter}>{selectedChapter.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedGrade.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedSubject.title}</button><span>/</span>
+          <button onClick={returnToWorkspace}>{selectedChapter.title}</button><span>/</span>
           <span>{selectedLesson.title}</span>
         </div>
 
@@ -565,7 +556,7 @@ export default function HomePage() {
           {selectedLesson.body?.length ? (
             <PortableText value={selectedLesson.body as never} components={portableTextComponents} />
           ) : (
-            <div className={styles.lessonEmpty}>Teksti i plotë i këtij mësimi mund të shtohet shumë thjeshtë në Sanity Studio.</div>
+            <div className={styles.lessonEmpty}>Teksti i plotë i këtij mësimi mund të shtohet në Sanity Studio.</div>
           )}
         </article>
 
@@ -582,103 +573,193 @@ export default function HomePage() {
     );
   }
 
-  if (selectedGrade && selectedSubject && selectedChapter) {
+  if (selectedGrade && selectedSubject) {
+    const gradeStats = getGradeStats(selectedGrade);
+    const subjectStats = getSubjectStats(selectedSubject);
+
     return (
       <main className="inner-page">
         <div className={styles.hierarchy}>
           <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <span>{selectedChapter.title}</span>
-        </div>
-
-        <section className="chapter-hero">
-          <span className="large-icon">§</span>
-          <div>
-            <span className="eyebrow">Kapitulli · {selectedGrade.title}</span>
-            <h1>{selectedChapter.title}</h1>
-            <p>{selectedChapter.summary || "Mësimet dhe flashcards e këtij kapitulli."}</p>
-          </div>
-        </section>
-
-        <section className="chapters-section">
-          <div className="section-heading">
-            <div><span className="eyebrow">Hapi i katërt</span><h2>Mësimet e kapitullit</h2></div>
-          </div>
-          {selectedChapter.lessons.length ? (
-            <div className={styles.lessonList}>
-              {selectedChapter.lessons.map((lesson, index) => (
-                <article className={styles.lessonRow} key={lesson._id}>
-                  <span className={styles.lessonIndex}>{String(index + 1).padStart(2, "0")}</span>
-                  <div className={styles.lessonCopy}>
-                    <h3>{lesson.title}</h3>
-                    <p>{lesson.summary || "Mësim me tekst dhe flashcards."}</p>
-                    <span className={styles.lessonCount}>{lesson.flashcardCount} flashcards</span>
-                  </div>
-                  <button className={styles.lessonOpen} onClick={() => chooseLesson(lesson)}>Hape mësimin</button>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.emptyGrade}><strong>Ende nuk ka mësime.</strong><span>Krijo mësimin e parë në Sanity Studio.</span></div>
-          )}
-        </section>
-      </main>
-    );
-  }
-
-  if (selectedGrade && selectedSubject) {
-    const subjectStats = getSubjectStats(selectedSubject);
-    return (
-      <main className="inner-page subject-page">
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
+          <span>{selectedGrade.title}</span><span>/</span>
           <span>{selectedSubject.title}</span>
         </div>
 
-        <section className="subject-hero">
-          <span className="large-icon">{selectedSubject.emoji || "✚"}</span>
-          <div>
-            <span className="eyebrow">{selectedGrade.title} · Lënda</span>
+        <section className={workspace.workspaceHero}>
+          <div className={workspace.workspaceHeroCopy}>
+            <span className={styles.eyebrow}>Hapësira e mësimit · {selectedGrade.title}</span>
             <h1>{selectedSubject.title}</h1>
-            <p>{selectedSubject.shortDescription}</p>
+            <p>{selectedSubject.shortDescription || "Mësimet dhe flashcards e kësaj lënde."}</p>
           </div>
-          <div className="subject-summary">
+          <div className={workspace.workspaceHeroStats}>
             <div><strong>{subjectStats.chapterCount}</strong><span>Kapituj</span></div>
+            <div><strong>{subjectStats.lessonCount}</strong><span>Mësime</span></div>
             <div><strong>{subjectStats.flashcardCount}</strong><span>Flashcards</span></div>
           </div>
         </section>
 
-        <section className="chapters-section">
-          <div className="section-heading">
-            <div><span className="eyebrow">Hapi i tretë</span><h2>Kapitujt</h2></div>
-          </div>
-          {selectedSubject.chapters.length ? (
-            <div className="chapter-list">
-              {selectedSubject.chapters.map((chapter, index) => (
-                <article className="chapter-row" key={chapter._id}>
-                  <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>
-                  <div className="chapter-copy">
-                    <h3>{chapter.title}</h3>
-                    <p>{chapter.summary || "Mësimet e kapitullit."}</p>
-                    <span className="chapter-count-mobile">{chapter.lessons.length} mësime · {getChapterFlashcardCount(chapter)} kartela</span>
-                  </div>
-                  <span className="chapter-count">{chapter.lessons.length} mësime · {getChapterFlashcardCount(chapter)} kartela</span>
-                  <OpenButton label="Hape kapitullin" onClick={() => chooseChapter(chapter)} />
-                </article>
-              ))}
+        <section className={workspace.filterBar} aria-label="Filtrat e portalit">
+          <div className={workspace.filterTopline}>
+            <div>
+              <span className={workspace.filterEyebrow}>{selectedGrade.title}</span>
+              <strong>Zgjidh lëndën</strong>
             </div>
-          ) : (
-            <div className={styles.emptyGrade}><strong>Ende nuk ka kapituj.</strong><span>Kjo lëndë i përket vetëm {selectedGrade.title}.</span></div>
-          )}
+            <button className={workspace.changeGradeButton} onClick={changeGrade}>Ndrysho klasën</button>
+          </div>
+
+          <div className={workspace.filterControls}>
+            <div className={workspace.subjectRail} role="tablist" aria-label="Lëndët e klasës">
+              {selectedGrade.subjects.map((subject) => {
+                const stats = getSubjectStats(subject);
+                const active = subject._id === selectedSubject._id;
+                return (
+                  <button
+                    className={`${workspace.subjectTab} ${active ? workspace.subjectTabActive : ""}`}
+                    key={subject._id}
+                    onClick={() => selectSubject(subject)}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                  >
+                    <span className={workspace.subjectEmoji} aria-hidden="true">{subject.emoji || "✚"}</span>
+                    <span className={workspace.subjectTabCopy}>
+                      <b>{subject.title}</b>
+                      <small>{stats.chapterCount} kapituj</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className={workspace.modeSwitch} role="tablist" aria-label="Lloji i përmbajtjes">
+              {(["lessons", "flashcards"] as ContentMode[]).map((mode) => {
+                const active = contentMode === mode;
+                return (
+                  <button
+                    className={`${workspace.modeButton} ${active ? workspace.modeButtonActive : ""}`}
+                    key={mode}
+                    onClick={() => setContentMode(mode)}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                  >
+                    <ModeIcon mode={mode} />
+                    <span>{mode === "lessons" ? "Mësimet" : "Flashcards"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </section>
+
+        <section className={workspace.contentHeader}>
+          <div>
+            <span className={styles.eyebrow}>{contentMode === "lessons" ? "Lexo dhe kupto" : "Ushtrohu aktivisht"}</span>
+            <h2>{contentMode === "lessons" ? "Mësimet sipas kapitujve" : "Flashcards sipas kapitujve"}</h2>
+            <p>
+              {contentMode === "lessons"
+                ? "Hape një mësim për ta lexuar tekstin, figurat dhe shpjegimet."
+                : "Zgjidhe një grup kartelash dhe fillo përsëritjen menjëherë."}
+            </p>
+          </div>
+          <div className={workspace.classOverview} aria-label="Përmbledhja e klasës">
+            <span>{gradeStats.subjectCount} lëndë</span>
+            <span>{gradeStats.lessonCount} mësime</span>
+          </div>
+        </section>
+
+        {selectedSubject.chapters.length ? (
+          <div className={workspace.chapterStack}>
+            {selectedSubject.chapters.map((chapter, chapterIndex) => {
+              const lessonsWithCards = chapter.lessons.filter((lesson) => lesson.flashcardCount > 0);
+              const visibleLessons = contentMode === "lessons" ? chapter.lessons : lessonsWithCards;
+
+              return (
+                <section className={workspace.chapterPanel} key={chapter._id}>
+                  <header className={workspace.chapterHeader}>
+                    <span className={workspace.chapterIndex}>{String(chapterIndex + 1).padStart(2, "0")}</span>
+                    <div className={workspace.chapterHeaderCopy}>
+                      <span>Kapitulli</span>
+                      <h3>{chapter.title}</h3>
+                      <p>{chapter.summary || "Mësimet e këtij kapitulli."}</p>
+                    </div>
+                    <div className={workspace.chapterMeta}>
+                      <span><b>{chapter.lessons.length}</b> mësime</span>
+                      <span><b>{chapter.lessons.reduce((sum, lesson) => sum + lesson.flashcardCount, 0)}</b> kartela</span>
+                    </div>
+                  </header>
+
+                  {visibleLessons.length ? (
+                    <div className={workspace.contentGrid}>
+                      {visibleLessons.map((lesson, lessonIndex) => {
+                        const coverUrl = lesson.coverImage?.asset?.url;
+
+                        if (contentMode === "lessons") {
+                          return (
+                            <article className={workspace.lessonCard} key={lesson._id}>
+                              <div className={workspace.cardVisual}>
+                                {coverUrl ? (
+                                  <img src={coverUrl} alt={lesson.coverImage?.alt || lesson.title} />
+                                ) : (
+                                  <span className={workspace.cardVisualFallback}>
+                                    <ModeIcon mode="lessons" />
+                                  </span>
+                                )}
+                                <span className={workspace.cardNumber}>{String(lessonIndex + 1).padStart(2, "0")}</span>
+                              </div>
+                              <div className={workspace.cardBody}>
+                                <span className={workspace.cardType}>Teksti i mësimit</span>
+                                <h4>{lesson.title}</h4>
+                                <p>{lesson.summary || "Lexoje mësimin e plotë me shpjegime dhe figura."}</p>
+                                <div className={workspace.cardFooter}>
+                                  <span>{lesson.flashcardCount} flashcards</span>
+                                  <button onClick={() => openLesson(chapter, lesson)}>Lexo mësimin <b>→</b></button>
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        }
+
+                        return (
+                          <article className={workspace.deckCard} key={lesson._id}>
+                            <div className={workspace.deckIcon}><ModeIcon mode="flashcards" /></div>
+                            <span className={workspace.cardType}>Set flashcards</span>
+                            <h4>{lesson.title}</h4>
+                            <p>{lesson.summary || "Përsëritje aktive e pikave kryesore të mësimit."}</p>
+                            <div className={workspace.deckCount}>
+                              <strong>{lesson.flashcardCount}</strong>
+                              <span>kartela</span>
+                            </div>
+                            <button className={workspace.deckButton} onClick={() => void startFlashcards(lesson, chapter)}>
+                              Fillo mësimin <b>→</b>
+                            </button>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className={workspace.chapterEmpty}>
+                      <strong>{contentMode === "lessons" ? "Ende nuk ka mësime." : "Ky kapitull ende nuk ka flashcards."}</strong>
+                      <span>Përmbajtja do të shfaqet këtu sapo të publikohet në Sanity.</span>
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.emptyGrade}>
+            <strong>Ende nuk ka kapituj në këtë lëndë.</strong>
+            <span>{selectedGrade.title} mbetet plotësisht e ndarë nga klasat tjera.</span>
+          </div>
+        )}
       </main>
     );
   }
 
   if (selectedGrade) {
     const gradeStats = getGradeStats(selectedGrade);
+
     return (
       <main className="inner-page">
         <div className={styles.hierarchy}>
@@ -692,7 +773,6 @@ export default function HomePage() {
             <p>{selectedGrade.shortDescription || "Portali mësimor i kësaj klase."}</p>
             <div className={styles.portalActions}>
               <button className={styles.secondaryAction} onClick={changeGrade}>Ndrysho klasën</button>
-              <button className={styles.primaryAction} onClick={() => document.getElementById("lendet")?.scrollIntoView({ behavior: "smooth" })}>Shiko lëndët</button>
             </div>
           </div>
           <div className={styles.portalStats}>
@@ -703,40 +783,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="subjects-section" id="lendet">
-          <div className="section-heading">
-            <div><span className="eyebrow">Vetëm {selectedGrade.title}</span><h2>Zgjidh lëndën</h2></div>
-            <div className="library-tools">
-              <label className="search-box"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Kërko lëndën..." /></label>
-              <button className="refresh-button" onClick={() => void fetchPortal(true)} title="Rifresko të dhënat">↻</button>
-            </div>
-          </div>
-          {error && <div className="error-box">{error}</div>}
-          {visibleSubjects.length ? (
-            <div className="subject-grid">
-              {visibleSubjects.map((subject, index) => {
-                const stats = getSubjectStats(subject);
-                return (
-                  <article className="subject-card" key={subject._id}>
-                    <div className="subject-top"><span>{String(index + 1).padStart(2, "0")}</span><i>{subject.emoji || "✚"}</i></div>
-                    <h3>{subject.title}</h3>
-                    <p>{subject.shortDescription || `Lëndë e ${selectedGrade.title}.`}</p>
-                    <div className="subject-meta">
-                      <span><b>{stats.chapterCount}</b> kapituj</span>
-                      <span><b>{stats.flashcardCount}</b> kartela</span>
-                    </div>
-                    <OpenButton label="Hape lëndën" onClick={() => chooseSubject(subject)} />
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={styles.emptyGrade}>
-              <strong>{search ? "Nuk u gjet asnjë lëndë." : "Ende nuk ka lëndë në këtë klasë."}</strong>
-              <span>Klasa mbetet e ndarë plotësisht nga klasat tjera.</span>
-            </div>
-          )}
-        </section>
+        <div className={styles.emptyGrade}>
+          <strong>Ende nuk ka lëndë në këtë klasë.</strong>
+          <span>Klasa mbetet e ndarë plotësisht nga klasat tjera.</span>
+        </div>
       </main>
     );
   }
@@ -795,8 +845,8 @@ export default function HomePage() {
         <div><span className="eyebrow">Hierarkia e portalit</span><h2>Çdo material në vendin e vet</h2></div>
         <div className="workflow-grid">
           <article><span>01</span><h3>Zgjidh klasën</h3><p>Klasa 10, 11 ose 12 mbetet e ndarë nga klasat tjera.</p></article>
-          <article><span>02</span><h3>Lexo mësimin</h3><p>Tekst, tituj, lista dhe fotografi menaxhohen në Sanity.</p></article>
-          <article><span>03</span><h3>Ushtrohu</h3><p>Çdo mësim ka grupin e vet të flashcards.</p></article>
+          <article><span>02</span><h3>Zgjidh lëndën dhe mënyrën</h3><p>Filter bar-i kalon menjëherë mes mësimeve dhe flashcards.</p></article>
+          <article><span>03</span><h3>Mëso sipas kapitullit</h3><p>Çdo mësim dhe çdo set kartelash qëndron në kapitullin e vet.</p></article>
         </div>
       </section>
     </main>
