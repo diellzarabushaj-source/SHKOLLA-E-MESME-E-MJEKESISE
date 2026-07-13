@@ -1,4 +1,4 @@
-const VERSION = "medical-portal-v1";
+const VERSION = "medical-portal-v3";
 const SHELL_CACHE = `${VERSION}-shell`;
 const CONTENT_CACHE = `${VERSION}-content`;
 const MEDIA_CACHE = `${VERSION}-media`;
@@ -130,7 +130,6 @@ async function networkOrQueueProgress(request) {
       headers: Array.from(request.headers.entries()),
       createdAt: Date.now(),
     });
-
     try {
       await self.registration.sync.register("sync-progress");
     } catch {
