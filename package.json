@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@neondatabase/auth": "latest",
+    "@neondatabase/serverless": "latest",
     "next": "latest",
     "next-sanity": "latest",
     "react": "latest",
