@@ -115,19 +115,29 @@ async function networkOrQueueProgress(request) {
     if (response.ok || response.status === 400 || response.status === 401) return response;
     throw new Error(`Progress request failed: ${response.status}`);
   } catch {
-    const body = await request.clone().text();
+    const payload = await request.clone().json();
+    let responsePayload = { ok: true, queued: true };
+
+    if (payload.action === "start-session") {
+      const sessionId = crypto.randomUUID();
+      payload.sessionId = sessionId;
+      responsePayload = { id: sessionId, queued: true };
+    }
+
     await enqueueProgress({
       url: request.url,
-      body,
+      body: JSON.stringify(payload),
       headers: Array.from(request.headers.entries()),
       createdAt: Date.now(),
     });
+
     try {
       await self.registration.sync.register("sync-progress");
     } catch {
       // Background Sync is not available in every browser; online/message events also flush the queue.
     }
-    return new Response(JSON.stringify({ ok: true, queued: true }), {
+
+    return new Response(JSON.stringify(responsePayload), {
       status: 202,
       headers: { "Content-Type": "application/json" },
     });
