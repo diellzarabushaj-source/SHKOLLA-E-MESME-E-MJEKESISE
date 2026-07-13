@@ -71,6 +71,16 @@ function getNestedUser(data: unknown): { id?: string; name?: string } | null {
   return null;
 }
 
+function sleep(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function redirectToFreshSignIn(): never {
+  const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  window.location.assign(`/auth/sign-in?reason=session-expired&returnTo=${encodeURIComponent(returnTo)}`);
+  throw new Error("AUTH_REDIRECT");
+}
+
 export async function getSignedInUser(): Promise<{ id: string; name?: string } | null> {
   try {
     const result = await authClient.getSession();
@@ -82,13 +92,23 @@ export async function getSignedInUser(): Promise<{ id: string; name?: string } |
 }
 
 async function getAccessToken(): Promise<string> {
-  const result = await authClient.token();
-  const token = result.data?.token;
-  if (result.error || !token) throw new Error("AUTH_REQUIRED");
-  return token;
+  // Neon Auth can briefly expose the new session before the client token endpoint
+  // is ready. Retrying after refreshing the session avoids false AUTH_REQUIRED errors.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const result = await authClient.token();
+    const token = result.data?.token;
+    if (!result.error && token) return token;
+
+    if (attempt < 2) {
+      await authClient.getSession().catch(() => undefined);
+      await sleep(250 * (attempt + 1));
+    }
+  }
+
+  redirectToFreshSignIn();
 }
 
-async function dataApiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function dataApiRequest<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {
   const token = await getAccessToken();
   const response = await fetch(`${DATA_API_URL}/${path}`, {
     ...init,
@@ -100,6 +120,16 @@ async function dataApiRequest<T>(path: string, init: RequestInit = {}): Promise<
       ...(init.headers || {}),
     },
   });
+
+  if ((response.status === 401 || response.status === 403) && retry) {
+    await authClient.getSession().catch(() => undefined);
+    await sleep(250);
+    return dataApiRequest<T>(path, init, false);
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    redirectToFreshSignIn();
+  }
 
   if (!response.ok) {
     let message = `Data API error ${response.status}`;
@@ -151,7 +181,7 @@ function calculateNextProgress(current: CardProgressRow | null, rating: Progress
 
   let easeFactor = previousEase;
   let intervalDays = previousInterval;
-  let dueAt = new Date(now);
+  const dueAt = new Date(now);
   let status: CardProgressRow["status"] = "learning";
 
   if (rating === "again") {
