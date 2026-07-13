@@ -1,5 +1,5 @@
-import LearningPortal from "./LearningPortal";
+import ClassicLearningPortal from "./ClassicLearningPortal";
 
 export default function HomePage() {
-  return <LearningPortal />;
+  return <ClassicLearningPortal />;
 }
