@@ -3,6 +3,16 @@ import { auth } from "@/lib/auth/server";
 
 export type ProgressRating = "again" | "hard" | "good" | "easy";
 export type StudyContext = { gradeId: string; subjectId: string; chapterId: string; lessonId: string };
+export type ReviewSchedulePreview = Record<ProgressRating, {
+  label: string;
+  dueAt: string;
+  intervalDays: number;
+  status: string;
+}>;
+
+const MIN_EASE = 1.3;
+const MAX_EASE = 3.2;
+const MASTERED_INTERVAL_DAYS = 21;
 
 function database() {
   const url = process.env.DATABASE_URL;
@@ -18,38 +28,112 @@ export async function requireUserId(): Promise<string> {
   return id;
 }
 
-function nextProgress(current: Record<string, unknown> | null, rating: ProgressRating) {
-  const now = new Date();
-  const repetitions = Number(current?.repetitions || 0) + 1;
-  const lapses = Number(current?.lapses || 0) + (rating === "again" ? 1 : 0);
-  const previousEase = Number(current?.ease_factor || 2.5);
-  const previousInterval = Number(current?.interval_days || 0);
+function numberValue(value: unknown, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function nextProgress(current: Record<string, unknown> | null, rating: ProgressRating, at = new Date()) {
+  const now = new Date(at);
+  const previousStatus = String(current?.status || "new");
+  const previousRating = current?.last_rating as ProgressRating | undefined;
+  const previousRepetitions = Math.max(0, Math.round(numberValue(current?.repetitions, 0)));
+  const previousLapses = Math.max(0, Math.round(numberValue(current?.lapses, 0)));
+  const previousEase = Math.min(MAX_EASE, Math.max(MIN_EASE, numberValue(current?.ease_factor, 2.5)));
+  const previousInterval = Math.max(0, Math.round(numberValue(current?.interval_days, 0)));
+  const isLearning = !current || previousStatus === "new" || previousStatus === "learning" || previousInterval === 0;
+
+  let repetitions = previousRepetitions;
+  let lapses = previousLapses;
   let easeFactor = previousEase;
   let intervalDays = previousInterval;
-  let status = "learning";
+  let status = previousStatus;
   const dueAt = new Date(now);
 
   if (rating === "again") {
-    easeFactor = Math.max(1.3, previousEase - 0.2);
+    repetitions = 0;
+    lapses += 1;
     intervalDays = 0;
+    status = "learning";
+    if (!isLearning) easeFactor = Math.max(MIN_EASE, previousEase - 0.2);
     dueAt.setMinutes(dueAt.getMinutes() + 1);
   } else if (rating === "hard") {
-    easeFactor = Math.max(1.3, previousEase - 0.05);
-    intervalDays = previousInterval > 0 ? Math.max(1, Math.round(previousInterval * 1.2)) : 0;
-    intervalDays ? dueAt.setDate(dueAt.getDate() + intervalDays) : dueAt.setMinutes(dueAt.getMinutes() + 6);
-    status = repetitions >= 2 ? "review" : "learning";
+    if (isLearning) {
+      intervalDays = 0;
+      status = "learning";
+      dueAt.setMinutes(dueAt.getMinutes() + 6);
+    } else {
+      easeFactor = Math.max(MIN_EASE, previousEase - 0.15);
+      intervalDays = Math.max(1, Math.round(previousInterval * 1.2));
+      status = intervalDays >= MASTERED_INTERVAL_DAYS ? "mastered" : "review";
+      dueAt.setDate(dueAt.getDate() + intervalDays);
+    }
   } else if (rating === "good") {
-    intervalDays = previousInterval > 0 ? Math.max(1, Math.round(previousInterval * previousEase)) : 0;
-    intervalDays ? dueAt.setDate(dueAt.getDate() + intervalDays) : dueAt.setMinutes(dueAt.getMinutes() + 10);
-    status = repetitions >= 5 ? "mastered" : "review";
+    repetitions = previousRepetitions + 1;
+    if (isLearning) {
+      if (previousRepetitions >= 1 && previousRating === "good") {
+        intervalDays = 1;
+        status = "review";
+        dueAt.setDate(dueAt.getDate() + 1);
+      } else {
+        intervalDays = 0;
+        status = "learning";
+        dueAt.setMinutes(dueAt.getMinutes() + 10);
+      }
+    } else {
+      intervalDays = Math.max(previousInterval + 1, Math.round(previousInterval * previousEase));
+      status = intervalDays >= MASTERED_INTERVAL_DAYS ? "mastered" : "review";
+      dueAt.setDate(dueAt.getDate() + intervalDays);
+    }
   } else {
-    easeFactor = Math.min(3.2, previousEase + 0.15);
-    intervalDays = Math.max(4, Math.round(Math.max(previousInterval, 1) * 2.5));
+    repetitions = previousRepetitions + 1;
+    easeFactor = isLearning ? previousEase : Math.min(MAX_EASE, previousEase + 0.15);
+    intervalDays = isLearning
+      ? 4
+      : Math.max(previousInterval + 1, Math.round(previousInterval * previousEase * 1.3));
+    status = intervalDays >= MASTERED_INTERVAL_DAYS ? "mastered" : "review";
     dueAt.setDate(dueAt.getDate() + intervalDays);
-    status = repetitions >= 3 ? "mastered" : "review";
   }
 
-  return { status, repetitions, lapses, easeFactor: Number(easeFactor.toFixed(2)), intervalDays, dueAt, now };
+  return {
+    status,
+    repetitions,
+    lapses,
+    easeFactor: Number(easeFactor.toFixed(2)),
+    intervalDays,
+    dueAt,
+    now,
+  };
+}
+
+function intervalLabel(now: Date, dueAt: Date): string {
+  const totalSeconds = Math.max(60, Math.round((dueAt.getTime() - now.getTime()) / 1000));
+  if (totalSeconds < 3600) return `${Math.max(1, Math.round(totalSeconds / 60))} min`;
+  if (totalSeconds < 86400) {
+    const hours = Math.max(1, Math.round(totalSeconds / 3600));
+    return hours === 1 ? "1 orë" : `${hours} orë`;
+  }
+  const days = Math.max(1, Math.round(totalSeconds / 86400));
+  return days === 1 ? "1 ditë" : `${days} ditë`;
+}
+
+export async function previewReviewSchedule(userId: string, flashcardId: string): Promise<ReviewSchedulePreview> {
+  const sql = database();
+  const rows = await sql`SELECT status, last_rating, repetitions, lapses, ease_factor, interval_days, due_at FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${flashcardId} LIMIT 1`;
+  const current = (rows[0] as Record<string, unknown> | undefined) || null;
+  const now = new Date();
+  const ratings: ProgressRating[] = ["again", "hard", "good", "easy"];
+
+  return ratings.reduce<ReviewSchedulePreview>((preview, rating) => {
+    const next = nextProgress(current, rating, now);
+    preview[rating] = {
+      label: intervalLabel(now, next.dueAt),
+      dueAt: next.dueAt.toISOString(),
+      intervalDays: next.intervalDays,
+      status: next.status,
+    };
+    return preview;
+  }, {} as ReviewSchedulePreview);
 }
 
 export async function getDashboard(userId: string) {
@@ -86,7 +170,7 @@ export async function completeSession(userId: string, sessionId: string, counts:
 
 export async function recordReview(userId: string, input: { sessionId: string; context: StudyContext; flashcardId: string; rating: ProgressRating; responseTimeMs?: number }) {
   const sql = database();
-  const rows = await sql`SELECT repetitions, lapses, ease_factor, interval_days FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${input.flashcardId} LIMIT 1`;
+  const rows = await sql`SELECT status, last_rating, repetitions, lapses, ease_factor, interval_days, due_at FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${input.flashcardId} LIMIT 1`;
   const next = nextProgress((rows[0] as Record<string, unknown> | undefined) || null, input.rating);
   await sql`INSERT INTO public.review_events (user_id, session_id, grade_id, subject_id, chapter_id, lesson_id, flashcard_id, rating, response_time_ms) VALUES (${userId}, ${input.sessionId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${input.flashcardId}, ${input.rating}, ${Number.isFinite(input.responseTimeMs) ? Math.max(0, Math.round(input.responseTimeMs || 0)) : null})`;
   await sql`INSERT INTO public.card_progress (user_id, grade_id, subject_id, chapter_id, lesson_id, flashcard_id, last_rating, status, repetitions, lapses, ease_factor, interval_days, due_at, last_reviewed_at, updated_at) VALUES (${userId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${input.flashcardId}, ${input.rating}, ${next.status}, ${next.repetitions}, ${next.lapses}, ${next.easeFactor}, ${next.intervalDays}, ${next.dueAt.toISOString()}, ${next.now.toISOString()}, ${next.now.toISOString()}) ON CONFLICT (user_id, flashcard_id) DO UPDATE SET grade_id=EXCLUDED.grade_id, subject_id=EXCLUDED.subject_id, chapter_id=EXCLUDED.chapter_id, lesson_id=EXCLUDED.lesson_id, last_rating=EXCLUDED.last_rating, status=EXCLUDED.status, repetitions=EXCLUDED.repetitions, lapses=EXCLUDED.lapses, ease_factor=EXCLUDED.ease_factor, interval_days=EXCLUDED.interval_days, due_at=EXCLUDED.due_at, last_reviewed_at=EXCLUDED.last_reviewed_at, updated_at=EXCLUDED.updated_at`;
