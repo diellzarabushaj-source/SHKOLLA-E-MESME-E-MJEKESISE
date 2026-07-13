@@ -33,9 +33,7 @@
 }
 
 .link:hover,
-.logout:hover {
-  transform: translateY(-1px);
-}
+.logout:hover { transform: translateY(-1px); }
 
 .account {
   display: flex;
@@ -62,9 +60,7 @@
   box-shadow: 0 0 12px color-mix(in srgb, var(--success) 70%, transparent);
 }
 
-.logoutForm {
-  margin: 0;
-}
+.logoutForm { margin: 0; }
 
 .logout {
   min-width: 44px;
@@ -76,31 +72,40 @@
 }
 
 @media (max-width: 760px) {
-  .register {
-    display: none;
-  }
+  .controls { gap: 5px; }
+  .register { display: none; }
 
   .link,
   .logout,
   .user {
-    min-height: 38px;
-    border-radius: 11px;
-  }
-
-  .user {
-    max-width: 112px;
-    padding: 0 10px;
-  }
-}
-
-@media (max-width: 430px) {
-  .user {
-    max-width: 82px;
+    min-height: 36px;
+    border-radius: 10px;
     font-size: 12px;
   }
 
-  .logout {
-    min-width: 40px;
+  .link { padding: 0 10px; }
+
+  .user {
+    max-width: 90px;
     padding: 0 9px;
+  }
+
+  .logout {
+    min-width: 36px;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  .user {
+    max-width: 58px;
+    padding: 0 7px;
+  }
+
+  .dot { display: none; }
+
+  .logout {
+    min-width: 34px;
+    padding: 0 7px;
   }
 }
