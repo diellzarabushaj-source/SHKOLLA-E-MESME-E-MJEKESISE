@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth/server";
 import AuthControls from "./AuthControls";
 import EnhancedTestResults from "./EnhancedTestResults";
+import InteractionEnhancements from "./InteractionEnhancements";
 import LearningActivityTracker from "./LearningActivityTracker";
 import ProgressTracker from "./ProgressTracker";
 import PwaRegistrar from "./PwaRegistrar";
@@ -16,6 +17,7 @@ import "./progress.css";
 import "./lesson-rich.css";
 import "./system-pages.css";
 import "./test-results.css";
+import "./interaction-enhancements.css";
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app",
@@ -109,6 +111,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </header>
         <ProgressTracker />
         <EnhancedTestResults />
+        <InteractionEnhancements />
         {username && <LearningActivityTracker />}
         <PwaRegistrar />
         <div id="main-content" tabIndex={-1}>{children}</div>
