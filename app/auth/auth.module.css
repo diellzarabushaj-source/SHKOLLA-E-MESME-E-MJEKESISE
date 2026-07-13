@@ -24,9 +24,7 @@
   font-weight: 700;
 }
 
-.backLink:hover {
-  color: var(--text);
-}
+.backLink:hover { color: var(--text); }
 
 .card {
   padding: clamp(24px, 6vw, 42px);
@@ -51,10 +49,7 @@
   box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 28%, transparent);
 }
 
-.brand svg {
-  width: 34px;
-  height: 34px;
-}
+.brand svg { width: 34px; height: 34px; }
 
 .eyebrow {
   color: var(--accent);
@@ -78,15 +73,8 @@
   line-height: 1.6;
 }
 
-.form {
-  display: grid;
-  gap: 18px;
-}
-
-.field {
-  display: grid;
-  gap: 8px;
-}
+.form { display: grid; gap: 18px; }
+.field { display: grid; gap: 8px; }
 
 .label {
   color: var(--text);
@@ -106,9 +94,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.input::placeholder {
-  color: var(--muted-2);
-}
+.input::placeholder { color: var(--muted-2); }
 
 .input:focus {
   border-color: color-mix(in srgb, var(--primary) 72%, white);
@@ -121,6 +107,42 @@
   font-size: 11px;
   line-height: 1.45;
 }
+
+.usernamePreview {
+  width: max-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--line));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--primary) 7%, var(--bg-soft));
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usernamePreview b { color: var(--text); }
+
+.passwordField { position: relative; }
+.passwordField .input { padding-right: 82px; }
+
+.passwordToggle {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.passwordToggle:hover { color: var(--text); }
 
 .error {
   margin: 0;
@@ -152,6 +174,8 @@
   background: var(--primary-strong);
 }
 
+.submit:disabled { opacity: 0.65; cursor: wait; }
+
 .switchText {
   margin: 22px 0 0;
   color: var(--muted);
@@ -159,10 +183,7 @@
   font-size: 13px;
 }
 
-.switchText a {
-  color: var(--accent);
-  font-weight: 900;
-}
+.switchText a { color: var(--accent); font-weight: 900; }
 
 .divider {
   margin: 24px 0;
@@ -221,7 +242,5 @@
     border-radius: 22px;
   }
 
-  .title {
-    font-size: 36px;
-  }
+  .title { font-size: 36px; }
 }

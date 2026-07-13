@@ -28,7 +28,37 @@ function cleanText(value: string | null | undefined): string {
   return (value || "").replace(/\s+/g, " ").trim();
 }
 
-function getStudySnapshot(): StudySnapshot | null {
+function positiveNumber(value: string | undefined, fallback: number): number {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.round(number) : fallback;
+}
+
+function getDataSnapshot(): StudySnapshot | null {
+  const flashcard = document.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
+  if (!flashcard) return null;
+
+  const gradeId = flashcard.dataset.progressGradeId;
+  const subjectId = flashcard.dataset.progressSubjectId;
+  const chapterId = flashcard.dataset.progressChapterId;
+  const lessonId = flashcard.dataset.progressLessonId;
+  const flashcardId = flashcard.dataset.progressFlashcardId;
+
+  if (!gradeId || !subjectId || !chapterId || !lessonId || !flashcardId) return null;
+
+  const currentCard = positiveNumber(flashcard.dataset.progressCurrentCard, 1);
+  const totalCards = positiveNumber(flashcard.dataset.progressTotalCards, currentCard);
+  const context: StudyContext = { gradeId, subjectId, chapterId, lessonId };
+
+  return {
+    context,
+    contextKey: [gradeId, subjectId, chapterId, lessonId].join("::"),
+    flashcardId,
+    currentCard,
+    totalCards,
+  };
+}
+
+function getLegacySnapshot(): StudySnapshot | null {
   const hierarchy = document.querySelector('[class*="hierarchy"]');
   const labels = hierarchy
     ? Array.from(hierarchy.querySelectorAll("button")).map((button) => cleanText(button.textContent))
@@ -62,6 +92,10 @@ function getStudySnapshot(): StudySnapshot | null {
     currentCard,
     totalCards,
   };
+}
+
+function getStudySnapshot(): StudySnapshot | null {
+  return getDataSnapshot() || getLegacySnapshot();
 }
 
 function saveGuestReview(snapshot: StudySnapshot, rating: ProgressRating): void {
@@ -124,6 +158,13 @@ export default function ProgressTracker() {
       return signedInRef.current;
     }
 
+    async function finishCurrentSession(): Promise<void> {
+      if (!sessionRef.current) return;
+      await completeStudySession(sessionRef.current.id, countsRef.current);
+      sessionRef.current = null;
+      countsRef.current = emptyCounts();
+    }
+
     async function persistRating(snapshot: StudySnapshot, rating: ProgressRating) {
       const isSignedIn = await ensureAuthState();
       if (!isSignedIn) {
@@ -134,7 +175,11 @@ export default function ProgressTracker() {
 
       setSyncState("syncing");
       try {
-        if (!sessionRef.current || sessionRef.current.contextKey !== snapshot.contextKey) {
+        if (sessionRef.current && sessionRef.current.contextKey !== snapshot.contextKey) {
+          await finishCurrentSession();
+        }
+
+        if (!sessionRef.current) {
           const id = await startStudySession(snapshot.context, snapshot.totalCards);
           sessionRef.current = { contextKey: snapshot.contextKey, id };
           countsRef.current = emptyCounts();
@@ -153,7 +198,7 @@ export default function ProgressTracker() {
 
         countsRef.current = nextCounts;
         if (snapshot.currentCard >= snapshot.totalCards) {
-          await completeStudySession(sessionRef.current.id, nextCounts);
+          await finishCurrentSession();
         }
         showSavedTemporarily();
       } catch (error) {
