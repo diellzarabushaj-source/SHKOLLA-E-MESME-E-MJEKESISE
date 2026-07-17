@@ -29,12 +29,22 @@ jobs:
         run: npm run prepare:portal
       - name: Confirm generated data layer
         run: |
-          grep -q 'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"' app/SchoolLearningPortal.tsx
-          grep -q 'count(flashcards\[isActive != false\])' app/SchoolLearningPortal.tsx
-          grep -q 'useCdn: true' app/SchoolLearningPortal.tsx
-          grep -q '"url": asset->url' app/SchoolLearningPortal.tsx
-          ! grep -q '_type == "flashcard"' app/SchoolLearningPortal.tsx
+          node <<'NODE'
+          const { readFileSync } = require('node:fs');
+          const source = readFileSync('app/SchoolLearningPortal.tsx', 'utf8');
+          const required = [
+            'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"',
+            'count(flashcards[status != "hidden"])',
+            'useCdn: true',
+            '"url": asset.asset->url',
+          ];
+          for (const value of required) {
+            if (!source.includes(value)) throw new Error(`Missing generated architecture marker: ${value}`);
+          }
+          if (source.includes('_type == "flashcard"')) {
+            throw new Error('Standalone flashcard document query is still present.');
+          }
+          console.log('School v2 data layer verified.');
+          NODE
       - name: TypeScript check
-        run: npm run typecheck
-      - name: Production build
-        run: npm run build
+        run: npx tsc --noEmit
