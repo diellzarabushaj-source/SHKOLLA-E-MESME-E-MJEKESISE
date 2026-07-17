@@ -1,0 +1,34 @@
+name: School v2 build check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - app/**
+      - scripts/build-schoolv2-portal.mjs
+      - package.json
+      - tsconfig.json
+      - next.config.*
+      - .github/workflows/school-v2-check.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install --ignore-scripts
+      - run: npm run audit:app
+      - name: Confirm generated data layer
+        run: |
+          grep -q 'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"' app/SchoolLearningPortal.tsx
+          grep -q 'count(flashcards\[status != "hidden"\])' app/SchoolLearningPortal.tsx
+          grep -q 'useCdn: true' app/SchoolLearningPortal.tsx
+          ! grep -q '_type == "flashcard"' app/SchoolLearningPortal.tsx
