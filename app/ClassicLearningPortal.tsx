@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient, PortableText, type PortableTextComponents } from "next-sanity";
 import styles from "./portal.module.css";
 import experience from "./learning-experience.module.css";
@@ -99,6 +99,8 @@ const client = createClient({
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-07-13",
   useCdn: false,
 });
+
+const freshClient = client.withConfig({ useCdn: false });
 
 const portalQuery = `
   *[_type == "grade" && isActive != false] | order(order asc, gradeNumber asc) {
@@ -201,6 +203,39 @@ const portableTextComponents: PortableTextComponents = {
   },
 };
 
+const liveLessonQuery = `
+  *[_type == "lesson" && _id == $lessonId && isActive != false][0] {
+    _id,
+    _rev,
+    title,
+    "slug": slug.current,
+    summary,
+    coverImage { alt, "asset": asset->{url} },
+    recording {
+      title,
+      "url": asset->url,
+      "originalFilename": asset->originalFilename
+    },
+    body[] {
+      ...,
+      _type == "image" => {
+        alt,
+        caption,
+        asset,
+        "assetUrl": asset->url
+      }
+    },
+    "flashcardCount": count(flashcards[isActive != false])
+  }
+`;
+
+const contentMutationQuery = `
+  *[
+    _type in ["grade", "subject", "chapter", "lesson"] &&
+    !(_id in path("drafts.**"))
+  ]
+`;
+
 function getSubjectStats(subject: Subject) {
   const lessonCount = subject.chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0);
   const flashcardCount = subject.chapters.reduce(
@@ -290,28 +325,108 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
   const [ratings, setRatings] = useState<RatingStats>(emptyRatings);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const selectedGradeRef = useRef<Grade | null>(null);
+  const selectedSubjectRef = useRef<Subject | null>(null);
+  const selectedChapterRef = useRef<Chapter | null>(null);
+  const selectedLessonRef = useRef<Lesson | null>(null);
 
-  async function fetchPortal(showLoader = true) {
+  useEffect(() => {
+    selectedGradeRef.current = selectedGrade;
+    selectedSubjectRef.current = selectedSubject;
+    selectedChapterRef.current = selectedChapter;
+    selectedLessonRef.current = selectedLesson;
+  }, [selectedGrade, selectedSubject, selectedChapter, selectedLesson]);
+
+  const fetchPortal = useCallback(async (showLoader = true, fresh = false) => {
     if (showLoader) setLoading(true);
     setError("");
 
     try {
-      const result = await client.fetch<Grade[]>(portalQuery, {}, { perspective: "published" });
+      const source = fresh ? freshClient : client;
+      const result = await source.fetch<Grade[]>(portalQuery, {}, { perspective: "published" });
       setGrades(result);
       const savedId = window.localStorage.getItem(SELECTED_GRADE_KEY);
-      const nextGrade = savedId ? result.find((grade) => grade._id === savedId) || null : null;
+      const gradeId = selectedGradeRef.current?._id || savedId;
+      const nextGrade = gradeId ? result.find((grade) => grade._id === gradeId) || null : null;
+      const nextSubject = nextGrade?.subjects.find((subject) => subject._id === selectedSubjectRef.current?._id) || null;
+      const nextChapter = nextSubject?.chapters.find((chapter) => chapter._id === selectedChapterRef.current?._id) || null;
+      const currentLesson = selectedLessonRef.current;
+      const lessonStillExists = Boolean(currentLesson && nextChapter?.lessons.some((lesson) => lesson._id === currentLesson._id));
+
+      selectedGradeRef.current = nextGrade;
+      selectedSubjectRef.current = nextSubject;
+      selectedChapterRef.current = nextChapter;
+      if (!lessonStillExists) selectedLessonRef.current = null;
+
       setSelectedGrade(nextGrade);
+      setSelectedSubject(nextSubject);
+      setSelectedChapter(nextChapter);
+      if (!lessonStillExists) setSelectedLesson(null);
     } catch (fetchError) {
       console.error(fetchError);
       setError("Portali nuk mund të ngarkohej. Provo përsëri.");
     } finally {
       if (showLoader) setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     void fetchPortal();
-  }, []);
+  }, [fetchPortal]);
+
+  useEffect(() => {
+    let stopped = false;
+    let refreshTimer: number | null = null;
+
+    const refreshPublishedContent = async () => {
+      await fetchPortal(false, true);
+      const activeLesson = selectedLessonRef.current;
+      if (!activeLesson || stopped) return;
+
+      try {
+        const details = await freshClient.fetch<Lesson | null>(
+          liveLessonQuery,
+          { lessonId: activeLesson._id },
+          { perspective: "published" },
+        );
+        if (!stopped && details && selectedLessonRef.current?._id === details._id) {
+          selectedLessonRef.current = details;
+          setSelectedLesson(details);
+        }
+      } catch (refreshError) {
+        console.error("Live lesson refresh failed", refreshError);
+      }
+    };
+
+    const scheduleRefresh = () => {
+      if (stopped) return;
+      if (refreshTimer) window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => void refreshPublishedContent(), 350);
+    };
+
+    const subscription = freshClient
+      .listen(contentMutationQuery, {}, { includeResult: false, visibility: "query" })
+      .subscribe({
+        next: scheduleRefresh,
+        error: (listenError) => console.error("Sanity live sync disconnected", listenError),
+      });
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") scheduleRefresh();
+    };
+    const fallbackRefresh = window.setInterval(onVisible, 5 * 60_000);
+    window.addEventListener("focus", scheduleRefresh);
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      stopped = true;
+      subscription.unsubscribe();
+      if (refreshTimer) window.clearTimeout(refreshTimer);
+      window.clearInterval(fallbackRefresh);
+      window.removeEventListener("focus", scheduleRefresh);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [fetchPortal]);
 
   const totalStats = useMemo(() => grades.reduce(
     (stats, grade) => {
@@ -420,7 +535,11 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
 
   function applySavedLesson(savedLesson: AdminEditableLesson) {
     setSelectedLesson((current) => current && current._id === savedLesson._id
-      ? { ...current, _rev: savedLesson._rev, body: savedLesson.body as PortableContent }
+      ? (() => {
+        const updated = { ...current, _rev: savedLesson._rev, body: savedLesson.body as PortableContent };
+        selectedLessonRef.current = updated;
+        return updated;
+      })()
       : current);
   }
 
@@ -638,9 +757,23 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
   if (selectedGrade && selectedSubject && selectedChapter && selectedLesson) {
     const imageUrl = selectedLesson.coverImage?.asset?.url;
     const recordingUrl = selectedLesson.recording?.url;
+    const currentLessonIndex = selectedChapter.lessons.findIndex((lesson) => lesson._id === selectedLesson._id);
+    const previousLesson = currentLessonIndex > 0
+      ? selectedChapter.lessons[currentLessonIndex - 1]
+      : null;
+    const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < selectedChapter.lessons.length - 1
+      ? selectedChapter.lessons[currentLessonIndex + 1]
+      : null;
 
     return (
-      <main className="inner-page">
+      <main
+        className="inner-page"
+        data-progress-page="lesson"
+        data-progress-grade-id={selectedGrade._id}
+        data-progress-subject-id={selectedSubject._id}
+        data-progress-chapter-id={selectedChapter._id}
+        data-progress-lesson-id={selectedLesson._id}
+      >
         <div className={styles.hierarchy}>
           <button onClick={changeGrade}>Klasat</button><span>/</span>
           <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
@@ -691,6 +824,34 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
             <div className={styles.lessonEmpty}>Teksti i plotë i këtij mësimi ende nuk është publikuar.</div>
           )}
         </article>
+
+        <nav className={styles.lessonNavigation} aria-label="Navigimi ndërmjet mësimeve">
+          <button
+            className={styles.lessonNavButton}
+            type="button"
+            onClick={() => previousLesson && void chooseLesson(previousLesson)}
+            disabled={!previousLesson}
+          >
+            <span className={styles.lessonNavArrow} aria-hidden="true">←</span>
+            <span className={styles.lessonNavCopy}>
+              <small>Mësimi paraprak</small>
+              <strong>{previousLesson?.title || "Ky është mësimi i parë"}</strong>
+            </span>
+          </button>
+
+          <button
+            className={`${styles.lessonNavButton} ${styles.lessonNavNext}`}
+            type="button"
+            onClick={() => nextLesson && void chooseLesson(nextLesson)}
+            disabled={!nextLesson}
+          >
+            <span className={styles.lessonNavCopy}>
+              <small>Mësimi tjetër</small>
+              <strong>{nextLesson?.title || "Ky është mësimi i fundit"}</strong>
+            </span>
+            <span className={styles.lessonNavArrow} aria-hidden="true">→</span>
+          </button>
+        </nav>
 
         <section className={styles.lessonStudyBar}>
           <div>

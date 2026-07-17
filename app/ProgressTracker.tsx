@@ -230,8 +230,13 @@ export default function ProgressTracker() {
       const button = element.closest("button");
       const label = cleanText(button?.textContent).toLocaleLowerCase("sq");
       if (label.includes("rifillo") || label === "përziej" || label === "përzieje") {
-        sessionRef.current = null;
-        countsRef.current = emptyCounts();
+        queueRef.current = queueRef.current
+          .then(() => finishCurrentSession())
+          .catch((finishError) => {
+            console.error("Study session close failed", finishError);
+            sessionRef.current = null;
+            countsRef.current = emptyCounts();
+          });
       }
     }
 

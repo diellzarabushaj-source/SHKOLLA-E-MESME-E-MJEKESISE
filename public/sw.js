@@ -1,4 +1,4 @@
-const VERSION = "medical-portal-v6";
+const VERSION = "medical-portal-v7";
 const SHELL_CACHE = `${VERSION}-shell`;
 const CONTENT_CACHE = `${VERSION}-content`;
 const MEDIA_CACHE = `${VERSION}-media`;
@@ -6,14 +6,28 @@ const DB_NAME = "medical-portal-offline";
 const DB_VERSION = 1;
 const QUEUE_STORE = "progress-queue";
 
-const PRECACHE = ["/", "/offline", "/manifest.webmanifest", "/icon.svg"];
+const PRECACHE = ["/manifest.webmanifest", "/icon.svg"];
+const OFFLINE_URL = "/offline";
 const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(SHELL_CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting()),
+    caches.open(SHELL_CACHE).then(async (cache) => {
+      await cache.addAll(PRECACHE);
+      // Cache a guaranteed guest copy. Never persist HTML rendered with an
+      // authenticated cookie, username, or admin state.
+      try {
+        const offlineResponse = await fetch(new Request(OFFLINE_URL, {
+          credentials: "omit",
+          cache: "reload",
+        }));
+        if (offlineResponse.ok) await cache.put(OFFLINE_URL, offlineResponse);
+      } catch {
+        // Offline fallback is best-effort. A temporary network failure must
+        // not block installation of an otherwise valid service worker.
+      }
+      await self.skipWaiting();
+    }),
   );
 });
 
@@ -72,21 +86,27 @@ self.addEventListener("fetch", (event) => {
     }
   }
 
-  const isSanity = url.hostname.endsWith("api.sanity.io") || url.hostname.endsWith("apicdn.sanity.io") || url.hostname.endsWith("cdn.sanity.io");
-  if (isSanity) {
+  const isFreshSanityApi = url.hostname.endsWith("api.sanity.io");
+  if (isFreshSanityApi) {
+    // Live synchronization must never receive an old service-worker response.
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  const isSanityCdn = url.hostname.endsWith("apicdn.sanity.io") || url.hostname.endsWith("cdn.sanity.io");
+  if (isSanityCdn) {
     const cacheName = request.destination === "image" ? MEDIA_CACHE : CONTENT_CACHE;
     event.respondWith(staleWhileRevalidate(request, cacheName));
   }
 });
 
 async function networkFirstNavigation(request) {
-  const cache = await caches.open(CONTENT_CACHE);
   try {
-    const response = await fetch(request);
-    if (response.ok) await cache.put(request, response.clone());
-    return response;
+    // Pages include session-derived UI. Keep navigations network-only so one
+    // account can never leave personalized HTML for the next account.
+    return await fetch(request);
   } catch {
-    return (await cache.match(request)) || (await caches.match("/")) || (await caches.match("/offline"));
+    return (await caches.match(OFFLINE_URL)) || new Response("Offline", { status: 503 });
   }
 }
 
@@ -112,7 +132,7 @@ async function staleWhileRevalidate(request, cacheName) {
 async function networkOrQueueProgress(request) {
   try {
     const response = await fetch(request.clone());
-    if (response.ok || response.status === 400 || response.status === 401) return response;
+    if (response.ok || (response.status >= 400 && response.status < 500)) return response;
     throw new Error(`Progress request failed: ${response.status}`);
   } catch {
     const payload = await request.clone().json();
@@ -198,7 +218,7 @@ async function flushProgressQueue() {
         headers: new Headers(entry.headers),
         body: entry.body,
       });
-      if (response.ok || response.status === 400) {
+      if (response.ok || response.status === 400 || response.status === 403 || response.status === 409) {
         await deleteQueuedProgress(entry.id);
         continue;
       }

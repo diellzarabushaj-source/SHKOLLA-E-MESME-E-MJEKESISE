@@ -17,8 +17,8 @@ export async function signUpWithUsername(
     return { error: "Shkruaj një username me së paku 2 karaktere.", username };
   }
 
-  if (password.length < 8) {
-    return { error: "Password-i duhet t’i ketë vetëm së paku 8 karaktere.", username };
+  if (password.length < 8 || password.length > 128) {
+    return { error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.", username };
   }
 
   const email = usernameToEmail(username);

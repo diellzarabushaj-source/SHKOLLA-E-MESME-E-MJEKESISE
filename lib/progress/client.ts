@@ -12,6 +12,9 @@ export type ReviewEventRow = { id: number; lesson_id: string; flashcard_id: stri
 export type LessonProgressRow = { lesson_id: string; grade_id: string; subject_id: string; chapter_id: string; first_opened_at: string; last_opened_at: string; active_seconds: number; open_count: number; max_scroll_percent: number; completed_at: string | null; updated_at: string };
 export type ActivitySessionRow = { id: string; activity_type: "app" | "lesson" | "flashcards"; lesson_id: string | null; started_at: string; last_seen_at: string; ended_at: string | null; active_seconds: number };
 
+type SignedInUser = { id: string; name?: string };
+let userCache: { value: SignedInUser | null; expiresAt: number } | null = null;
+
 function nestedUser(data: unknown): { id?: string; name?: string } | null {
   if (!data || typeof data !== "object") return null;
   const value = data as Record<string, unknown>;
@@ -23,23 +26,31 @@ function nestedUser(data: unknown): { id?: string; name?: string } | null {
   return null;
 }
 
-export async function getSignedInUser(): Promise<{ id: string; name?: string } | null> {
+export async function getSignedInUser(): Promise<SignedInUser | null> {
+  if (userCache && userCache.expiresAt > Date.now()) return userCache.value;
+
   try {
     const result = await authClient.getSession();
     const user = nestedUser(result.data);
-    return user?.id ? { id: user.id, name: user.name } : null;
+    const value = user?.id ? { id: user.id, name: user.name } : null;
+    userCache = { value, expiresAt: Date.now() + (value ? 5 * 60_000 : 30_000) };
+    return value;
   } catch {
+    userCache = { value: null, expiresAt: Date.now() + 10_000 };
     return null;
   }
 }
 
 async function api<T>(body?: Record<string, unknown>): Promise<T> {
+  const payload = body
+    ? { ...body, clientUserId: (await getSignedInUser())?.id || null }
+    : undefined;
   const response = await fetch("/api/progress", {
-    method: body ? "POST" : "GET",
+    method: payload ? "POST" : "GET",
     cache: "no-store",
     credentials: "same-origin",
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
+    headers: payload ? { "Content-Type": "application/json" } : undefined,
+    body: payload ? JSON.stringify(payload) : undefined,
   });
   if (response.status === 401) throw new Error("AUTH_REQUIRED");
   if (!response.ok) {
