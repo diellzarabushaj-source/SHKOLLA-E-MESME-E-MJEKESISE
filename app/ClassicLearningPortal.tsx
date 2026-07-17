@@ -5,10 +5,12 @@ import { createClient, PortableText, type PortableTextComponents } from "next-sa
 import styles from "./portal.module.css";
 import experience from "./learning-experience.module.css";
 import classic from "./classic-learning.module.css";
+import LessonAdminEditor, { type AdminEditableLesson } from "./LessonAdminEditor";
 
 type SanityImage = {
   alt?: string;
   caption?: string;
+  assetUrl?: string;
   asset?: { url?: string };
 };
 
@@ -40,6 +42,7 @@ type Flashcard = {
 
 type Lesson = {
   _id: string;
+  _rev?: string;
   title: string;
   slug: string;
   summary?: string;
@@ -186,7 +189,7 @@ const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       const image = value as SanityImage;
-      const url = image.asset?.url;
+      const url = image.assetUrl || image.asset?.url;
       if (!url) return null;
       return (
         <figure className={styles.portableImage}>
@@ -270,7 +273,7 @@ function ModeChooser({ mode, onChange }: { mode: ContentMode; onChange: (mode: C
   );
 }
 
-export default function ClassicLearningPortal() {
+export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: boolean }) {
   const [grades, setGrades] = useState<Grade[]>([]);
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -413,6 +416,12 @@ export default function ClassicLearningPortal() {
     setSelectedLesson(null);
     resetStudy();
     scrollTop();
+  }
+
+  function applySavedLesson(savedLesson: AdminEditableLesson) {
+    setSelectedLesson((current) => current && current._id === savedLesson._id
+      ? { ...current, _rev: savedLesson._rev, body: savedLesson.body as PortableContent }
+      : current);
   }
 
   function chooseLesson(lesson: Lesson) {
@@ -661,6 +670,18 @@ export default function ClassicLearningPortal() {
               Shfletuesi yt nuk e mbështet audion.
             </audio>
           </section>
+        )}
+
+        {isAdmin && (
+          <LessonAdminEditor
+            lesson={{
+              _id: selectedLesson._id,
+              _rev: selectedLesson._rev,
+              title: selectedLesson.title,
+              body: selectedLesson.body,
+            }}
+            onSaved={applySavedLesson}
+          />
         )}
 
         <article className={styles.lessonBody}>
