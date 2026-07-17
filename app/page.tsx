@@ -1,6 +1,6 @@
 import "./search-bar.css";
-import ClassicLearningPortal from "./ClassicLearningPortal";
+import SchoolLearningPortal from "./SchoolLearningPortal";
 
 export default function HomePage() {
-  return <ClassicLearningPortal />;
+  return <SchoolLearningPortal />;
 }

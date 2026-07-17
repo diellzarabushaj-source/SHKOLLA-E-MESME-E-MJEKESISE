@@ -1,0 +1,50 @@
+name: School v2 data-layer check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - app/**
+      - scripts/build-schoolv2-portal-v2.mjs
+      - package.json
+      - package-lock.json
+      - tsconfig.json
+      - .github/workflows/school-v2-check.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Generate optimized portal
+        run: npm run prepare:portal
+      - name: Confirm generated data layer
+        run: |
+          node <<'NODE'
+          const { readFileSync } = require('node:fs');
+          const source = readFileSync('app/SchoolLearningPortal.tsx', 'utf8');
+          const required = [
+            'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"',
+            'count(flashcards[isActive != false])',
+            'useCdn: true',
+            '"url": asset->url',
+          ];
+          for (const value of required) {
+            if (!source.includes(value)) throw new Error(`Missing generated architecture marker: ${value}`);
+          }
+          if (source.includes('_type == "flashcard"')) {
+            throw new Error('Standalone flashcard document query is still present.');
+          }
+          console.log('School v2 data layer verified.');
+          NODE
+      - name: TypeScript check
+        run: npm run typecheck
