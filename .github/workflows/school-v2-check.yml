@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - app/**
-      - scripts/build-schoolv2-portal.mjs
+      - scripts/build-schoolv2-portal-v2.mjs
       - package.json
       - tsconfig.json
       - next.config.*
@@ -36,4 +36,9 @@ jobs:
       - name: TypeScript check
         run: npx tsc --noEmit
       - name: Production build
-        run: npx next build
+        run: |
+          set +e
+          npx next build > /tmp/school-v2-build.log 2>&1
+          status=$?
+          tail -n 120 /tmp/school-v2-build.log
+          exit $status
