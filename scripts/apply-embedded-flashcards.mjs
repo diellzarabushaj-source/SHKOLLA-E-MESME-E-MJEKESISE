@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
+// Guarded one-time migration: every replacement must match exactly once.
 const filePath = "app/ClassicLearningPortal.tsx";
 let source = readFileSync(filePath, "utf8");
 
