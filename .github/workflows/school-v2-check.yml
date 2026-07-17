@@ -36,9 +36,4 @@ jobs:
       - name: TypeScript check
         run: npx tsc --noEmit
       - name: Production build
-        run: |
-          set +e
-          npx next build > /tmp/school-v2-build.log 2>&1
-          status=$?
-          tail -n 120 /tmp/school-v2-build.log
-          exit $status
+        run: npm run build
