@@ -1,15 +1,14 @@
 import "server-only";
 
 import { auth } from "@/lib/auth/server";
-import { usernameToEmail } from "@/lib/auth/username";
 
 export const ADMIN_EMAIL = "diellorrabushaj4@gmail.com";
-const ADMIN_USERNAME = "diellorrabushaj4";
-const ADMIN_INTERNAL_EMAIL = usernameToEmail(ADMIN_USERNAME);
+const ADMIN_PROVIDER = "google";
 
 type SessionUser = {
   id?: string;
   email?: string;
+  emailVerified?: boolean;
   name?: string;
 };
 
@@ -24,15 +23,24 @@ function sessionUser(data: unknown): SessionUser | null {
 }
 
 export function isAdminIdentity(user: SessionUser | null | undefined): boolean {
-  if (!user) return false;
-  const email = normalized(user.email);
-  const username = normalized(user.name);
+  return Boolean(
+    user?.id
+    && user.emailVerified === true
+    && normalized(user.email) === ADMIN_EMAIL,
+  );
+}
 
-  // The public login currently maps usernames to an internal Neon Auth email.
-  // The Gmail address remains the canonical admin identity; the exact internal
-  // alias is accepted only together with the exact admin username.
-  return email === ADMIN_EMAIL
-    || (email === ADMIN_INTERNAL_EMAIL && username === ADMIN_USERNAME);
+async function hasGoogleOnlyAccount(userId: string): Promise<boolean> {
+  const { data: accounts, error } = await auth.listAccounts();
+  if (error || !Array.isArray(accounts)) return false;
+
+  const providers = accounts
+    .filter((account) => account.userId === userId)
+    .map((account) => normalized(account.providerId));
+
+  // Fail closed if a password or another provider is ever linked to the
+  // administrator. This keeps admin access tied to the Google identity.
+  return providers.length === 1 && providers[0] === ADMIN_PROVIDER;
 }
 
 export async function currentSessionUser(): Promise<SessionUser | null> {
@@ -42,7 +50,12 @@ export async function currentSessionUser(): Promise<SessionUser | null> {
 
 export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
-    return isAdminIdentity(await currentSessionUser());
+    const user = await currentSessionUser();
+    return Boolean(
+      isAdminIdentity(user)
+      && user?.id
+      && await hasGoogleOnlyAccount(user.id),
+    );
   } catch {
     return false;
   }
@@ -51,6 +64,8 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 export async function requireAdminUser(): Promise<SessionUser> {
   const user = await currentSessionUser();
   if (!user?.id) throw new Error("AUTH_REQUIRED");
-  if (!isAdminIdentity(user)) throw new Error("ADMIN_REQUIRED");
+  if (!isAdminIdentity(user) || !await hasGoogleOnlyAccount(user.id)) {
+    throw new Error("ADMIN_REQUIRED");
+  }
   return user;
 }
