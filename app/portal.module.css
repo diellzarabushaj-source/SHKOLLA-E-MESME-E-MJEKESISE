@@ -350,6 +350,81 @@
   text-align: center;
 }
 
+.lessonNavigation {
+  max-width: 920px;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lessonNavButton {
+  min-width: 0;
+  min-height: 82px;
+  padding: 15px 17px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.lessonNavButton:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--line));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--text) 8%, transparent);
+  transform: translateY(-2px);
+}
+
+.lessonNavButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.lessonNavButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.lessonNavNext {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.lessonNavArrow {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lessonNavCopy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.lessonNavCopy small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lessonNavCopy strong {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .lessonStudyBar {
   max-width: 920px;
   margin: 18px auto 0;
@@ -419,6 +494,8 @@
   .lessonIndex { width: 44px; height: 44px; border-radius: 13px; }
   .lessonOpen { grid-column: 1 / -1; width: 100%; }
   .lessonBody { padding: 24px 18px; border-radius: 21px; font-size: 16px; }
+  .lessonNavigation { grid-template-columns: 1fr; }
+  .lessonNavButton { min-height: 74px; }
   .lessonStudyBar { align-items: stretch; flex-direction: column; }
   .startStudy { width: 100%; }
   .flashImage img { max-height: 180px; }

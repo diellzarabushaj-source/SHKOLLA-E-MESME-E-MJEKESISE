@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchReviewSchedule, type ProgressRating } from "@/lib/progress/client";
 
-const ACTIVE_WINDOW_MS = 60_000;
+// Keep the timer forgiving: reading without touching the screen is still study time.
+// It pauses only after five minutes without interaction or when the page is hidden.
+const ACTIVE_WINDOW_MS = 5 * 60_000;
 const STORAGE_KEY = "medical-portal-active-session-seconds";
 const REVIEW_RATINGS: ProgressRating[] = ["again", "hard", "good", "easy"];
 
@@ -108,7 +110,9 @@ export default function InteractionEnhancements() {
     };
 
     const observer = new MutationObserver(refresh);
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    // Child changes are enough to detect navigation and flashcard transitions.
+    // Watching characterData made the one-second timer update rescan every button.
+    observer.observe(document.body, { childList: true, subtree: true });
     refresh();
 
     return () => {

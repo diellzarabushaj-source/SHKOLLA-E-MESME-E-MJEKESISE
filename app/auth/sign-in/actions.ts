@@ -13,7 +13,7 @@ export async function signInWithUsername(
   const username = normalizeUsername(String(formData.get("username") || ""));
   const password = String(formData.get("password") || "");
 
-  if (!USERNAME_PATTERN.test(username) || password.length < 8) {
+  if (!USERNAME_PATTERN.test(username) || password.length < 8 || password.length > 128) {
     return { error: "Username ose password gabim." };
   }
 

@@ -103,11 +103,17 @@ export async function PATCH(
   context: { params: Promise<{ lessonId: string }> },
 ) {
   try {
+    const requestOrigin = request.headers.get("origin");
+    if (!requestOrigin || requestOrigin !== new URL(request.url).origin) {
+      return jsonError("INVALID_ORIGIN", 403);
+    }
+
     await requireAdminUser();
     const { lessonId } = await context.params;
     if (!LESSON_ID_PATTERN.test(lessonId)) return jsonError("INVALID_LESSON_ID", 400);
 
-    const payload = await request.json() as { body?: unknown; revision?: unknown };
+    const payload = await request.json().catch(() => null) as { body?: unknown; revision?: unknown } | null;
+    if (!payload) return jsonError("INVALID_JSON", 400);
     const revision = typeof payload.revision === "string" ? payload.revision : "";
     if (!revision || revision.length > 200) return jsonError("INVALID_REVISION", 400);
 

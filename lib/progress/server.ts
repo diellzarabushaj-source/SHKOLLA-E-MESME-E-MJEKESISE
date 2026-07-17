@@ -13,11 +13,14 @@ export type ReviewSchedulePreview = Record<ProgressRating, {
 const MIN_EASE = 1.3;
 const MAX_EASE = 3.2;
 const MASTERED_INTERVAL_DAYS = 21;
+let sqlClient: ReturnType<typeof neon> | null = null;
 
 function database() {
+  if (sqlClient) return sqlClient;
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not configured.");
-  return neon(url);
+  sqlClient = neon(url);
+  return sqlClient;
 }
 
 export async function requireUserId(): Promise<string> {
@@ -156,7 +159,8 @@ export async function startSession(userId: string, context: StudyContext, totalC
 
   if (validRequestedId) {
     const rows = await sql`INSERT INTO public.study_sessions (id, user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${validRequestedId}, ${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) ON CONFLICT (id) DO UPDATE SET total_cards=EXCLUDED.total_cards WHERE public.study_sessions.user_id=${userId} RETURNING id`;
-    return String(rows[0]?.id || validRequestedId);
+    if (!rows[0]?.id) throw new Error("SESSION_ID_CONFLICT");
+    return String(rows[0].id);
   }
 
   const rows = await sql`INSERT INTO public.study_sessions (user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) RETURNING id`;
@@ -165,11 +169,14 @@ export async function startSession(userId: string, context: StudyContext, totalC
 
 export async function completeSession(userId: string, sessionId: string, counts: Record<ProgressRating, number>) {
   const sql = database();
-  await sql`UPDATE public.study_sessions SET again_count=${counts.again}, hard_count=${counts.hard}, good_count=${counts.good}, easy_count=${counts.easy}, completed_at=now() WHERE id=${sessionId} AND user_id=${userId}`;
+  const rows = await sql`UPDATE public.study_sessions SET again_count=${Math.max(0, Math.round(counts.again || 0))}, hard_count=${Math.max(0, Math.round(counts.hard || 0))}, good_count=${Math.max(0, Math.round(counts.good || 0))}, easy_count=${Math.max(0, Math.round(counts.easy || 0))}, completed_at=now() WHERE id=${sessionId} AND user_id=${userId} RETURNING id`;
+  if (!rows[0]?.id) throw new Error("INVALID_SESSION");
 }
 
 export async function recordReview(userId: string, input: { sessionId: string; context: StudyContext; flashcardId: string; rating: ProgressRating; responseTimeMs?: number }) {
   const sql = database();
+  const sessions = await sql`SELECT id FROM public.study_sessions WHERE id=${input.sessionId} AND user_id=${userId} LIMIT 1`;
+  if (!sessions[0]?.id) throw new Error("INVALID_SESSION");
   const rows = await sql`SELECT status, last_rating, repetitions, lapses, ease_factor, interval_days, due_at FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${input.flashcardId} LIMIT 1`;
   const next = nextProgress((rows[0] as Record<string, unknown> | undefined) || null, input.rating);
   await sql`INSERT INTO public.review_events (user_id, session_id, grade_id, subject_id, chapter_id, lesson_id, flashcard_id, rating, response_time_ms) VALUES (${userId}, ${input.sessionId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${input.flashcardId}, ${input.rating}, ${Number.isFinite(input.responseTimeMs) ? Math.max(0, Math.round(input.responseTimeMs || 0)) : null})`;
@@ -185,11 +192,16 @@ export async function heartbeat(userId: string, input: { sessionId?: string; act
   const sql = database();
   const increment = Math.min(60, Math.max(0, Math.round(input.activeSeconds)));
   let sessionId = input.sessionId;
-  if (!sessionId) {
+  let updated = false;
+  if (sessionId) {
+    const rows = await sql`UPDATE public.activity_sessions SET active_seconds=active_seconds + ${increment}, last_seen_at=now(), ended_at=${input.ended ? new Date().toISOString() : null}, updated_at=now() WHERE id=${sessionId} AND user_id=${userId} RETURNING id`;
+    updated = Boolean(rows[0]?.id);
+  }
+  if (!updated) {
     const rows = await sql`INSERT INTO public.activity_sessions (user_id, activity_type, grade_id, subject_id, chapter_id, lesson_id) VALUES (${userId}, ${input.activityType}, ${input.context?.gradeId || null}, ${input.context?.subjectId || null}, ${input.context?.chapterId || null}, ${input.context?.lessonId || null}) RETURNING id`;
     sessionId = String(rows[0]?.id);
+    await sql`UPDATE public.activity_sessions SET active_seconds=active_seconds + ${increment}, last_seen_at=now(), ended_at=${input.ended ? new Date().toISOString() : null}, updated_at=now() WHERE id=${sessionId} AND user_id=${userId}`;
   }
-  await sql`UPDATE public.activity_sessions SET active_seconds=active_seconds + ${increment}, last_seen_at=now(), ended_at=${input.ended ? new Date().toISOString() : null}, updated_at=now() WHERE id=${sessionId} AND user_id=${userId}`;
   if (input.activityType === "lesson" && input.context?.lessonId && input.context.gradeId && input.context.subjectId && input.context.chapterId) {
     const scroll = Math.min(100, Math.max(0, Math.round(input.maxScrollPercent || 0)));
     await sql`INSERT INTO public.lesson_progress (user_id, grade_id, subject_id, chapter_id, lesson_id, active_seconds, max_scroll_percent) VALUES (${userId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${increment}, ${scroll}) ON CONFLICT (user_id, lesson_id) DO UPDATE SET active_seconds=public.lesson_progress.active_seconds + ${increment}, max_scroll_percent=GREATEST(public.lesson_progress.max_scroll_percent, ${scroll}), last_opened_at=now(), completed_at=CASE WHEN (public.lesson_progress.active_seconds + ${increment}) >= 60 AND GREATEST(public.lesson_progress.max_scroll_percent, ${scroll}) >= 80 THEN COALESCE(public.lesson_progress.completed_at, now()) ELSE public.lesson_progress.completed_at END, updated_at=now()`;
