@@ -34,9 +34,9 @@ jobs:
           const source = readFileSync('app/SchoolLearningPortal.tsx', 'utf8');
           const required = [
             'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"',
-            'count(flashcards[status != "hidden"])',
+            'count(flashcards[isActive != false])',
             'useCdn: true',
-            '"url": asset.asset->url',
+            '"url": asset->url',
           ];
           for (const value of required) {
             if (!source.includes(value)) throw new Error(`Missing generated architecture marker: ${value}`);
@@ -47,4 +47,4 @@ jobs:
           console.log('School v2 data layer verified.');
           NODE
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npm run typecheck
