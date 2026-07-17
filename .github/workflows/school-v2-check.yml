@@ -8,6 +8,7 @@ on:
       - app/**
       - scripts/build-schoolv2-portal-v2.mjs
       - package.json
+      - package-lock.json
       - tsconfig.json
       - .github/workflows/school-v2-check.yml
 
@@ -29,8 +30,11 @@ jobs:
       - name: Confirm generated data layer
         run: |
           grep -q 'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"' app/SchoolLearningPortal.tsx
-          grep -q 'count(flashcards\[status != "hidden"\])' app/SchoolLearningPortal.tsx
+          grep -q 'count(flashcards\[isActive != false\])' app/SchoolLearningPortal.tsx
           grep -q 'useCdn: true' app/SchoolLearningPortal.tsx
+          grep -q '"url": asset->url' app/SchoolLearningPortal.tsx
           ! grep -q '_type == "flashcard"' app/SchoolLearningPortal.tsx
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build
