@@ -60,35 +60,35 @@ replacePattern(
 );
 
 const optimizedDataLayer = `const portalQuery = \`
-  *[_type == "grade" && isActive != false] | order(order asc, gradeNumber asc) {
+  *[_type == "grade" && status != "hidden"] | order(order asc, gradeNumber asc) {
     _id,
     title,
     gradeNumber,
     "slug": slug.current,
     shortDescription,
     icon,
-    "subjects": *[_type == "subject" && grade._ref == ^._id && isActive != false]
+    "subjects": *[_type == "subject" && grade._ref == ^._id && status != "hidden"]
       | order(order asc, title asc) {
         _id,
         title,
         "slug": slug.current,
         shortDescription,
         emoji,
-        "chapters": *[_type == "chapter" && subject._ref == ^._id && isActive != false]
+        "chapters": *[_type == "chapter" && subject._ref == ^._id && status != "hidden"]
           | order(order asc, title asc) {
             _id,
             title,
             "slug": slug.current,
             summary,
             coverImage { alt, "asset": asset->{url} },
-            "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
+            "lessons": *[_type == "lesson" && chapter._ref == ^._id && status != "hidden"]
               | order(order asc, title asc) {
                 _id,
                 title,
                 "slug": slug.current,
                 summary,
                 coverImage { alt, "asset": asset->{url} },
-                "flashcardCount": count(flashcards[isActive != false])
+                "flashcardCount": count(flashcards[status != "hidden"])
               }
           }
       }
@@ -96,7 +96,7 @@ const optimizedDataLayer = `const portalQuery = \`
 \`;
 
 const lessonDetailsQuery = \`
-  *[_type == "lesson" && _id == $lessonId && isActive != false][0] {
+  *[_type == "lesson" && _id == $lessonId && status != "hidden"][0] {
     _id,
     title,
     "slug": slug.current,
@@ -104,8 +104,8 @@ const lessonDetailsQuery = \`
     coverImage { alt, "asset": asset->{url} },
     recording {
       title,
-      "url": asset->url,
-      "originalFilename": asset->originalFilename
+      "url": asset.asset->url,
+      "originalFilename": asset.asset->originalFilename
     },
     body[] {
       ...,
@@ -115,15 +115,15 @@ const lessonDetailsQuery = \`
         "asset": asset->{url}
       }
     },
-    "flashcardCount": count(flashcards[isActive != false])
+    "flashcardCount": count(flashcards[status != "hidden"])
   }
 \`;
 
 const lessonCardsQuery = \`
-  *[_type == "lesson" && _id == $lessonId && isActive != false] {
+  *[_type == "lesson" && _id == $lessonId && status != "hidden"] {
     _id,
     title,
-    "cards": flashcards[isActive != false] | order(order asc) {
+    "cards": flashcards[status != "hidden"] | order(order asc) {
       _key,
       title,
       front,
@@ -138,11 +138,11 @@ const lessonCardsQuery = \`
 \`;
 
 const chapterCardsQuery = \`
-  *[_type == "lesson" && chapter._ref == $chapterId && isActive != false]
+  *[_type == "lesson" && chapter._ref == $chapterId && status != "hidden"]
   | order(order asc, title asc) {
     _id,
     title,
-    "cards": flashcards[isActive != false] | order(order asc) {
+    "cards": flashcards[status != "hidden"] | order(order asc) {
       _key,
       title,
       front,
