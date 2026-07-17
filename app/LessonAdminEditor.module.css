@@ -1,0 +1,185 @@
+.adminBar,
+.editor {
+  margin: 24px 0;
+  border: 1px solid color-mix(in srgb, var(--warning) 48%, var(--line));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--panel) 94%, var(--warning) 6%);
+  box-shadow: 0 16px 45px color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.adminBar {
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.adminBar > div {
+  display: grid;
+  gap: 5px;
+}
+
+.adminBar strong { font-size: 18px; }
+.adminBar small { color: var(--muted); }
+.adminBar > button,
+.save {
+  min-height: 46px;
+  padding: 0 17px;
+  border: 1px solid var(--warning);
+  border-radius: 13px;
+  background: var(--warning);
+  color: #111827;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.badge {
+  width: fit-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning) 16%, transparent);
+  color: var(--warning);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.success {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.editor { padding: clamp(16px, 3vw, 28px); }
+.editor > header,
+.editorFooter {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.editor h2 { margin: 10px 0 7px; font-size: clamp(24px, 3vw, 34px); }
+.editor header p { margin: 0; color: var(--muted); line-height: 1.5; }
+.headerActions,
+.editorFooter > div,
+.orderActions {
+  display: flex;
+  gap: 8px;
+}
+
+.cancel,
+.addTools button,
+.orderActions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.addTools {
+  margin: 22px 0 16px;
+  padding: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel-2) 74%, transparent);
+}
+
+.addTools > span { margin-right: 4px; color: var(--muted); font-size: 13px; font-weight: 800; }
+.blocks { display: grid; gap: 12px; }
+.block,
+.immutable {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--panel);
+}
+
+.blockToolbar {
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(140px, 200px) minmax(130px, 180px) 1fr;
+  align-items: end;
+  gap: 10px;
+}
+
+.blockToolbar > span,
+.immutable > span { align-self: center; color: var(--muted-2); font-size: 12px; font-weight: 900; }
+.blockToolbar label { display: grid; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
+.blockToolbar select,
+.block textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+}
+
+.blockToolbar select { min-height: 38px; padding: 0 10px; }
+.block textarea { min-height: 74px; padding: 12px; resize: vertical; line-height: 1.55; }
+.block textarea:focus,
+.blockToolbar select:focus { outline: 3px solid color-mix(in srgb, var(--primary) 32%, transparent); outline-offset: 2px; }
+.orderActions { justify-content: flex-end; }
+.orderActions button { min-width: 40px; padding: 0 10px; }
+.orderActions .remove { color: var(--danger); }
+
+.immutable {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  border-style: dashed;
+}
+
+.immutable div:nth-child(2) { display: grid; gap: 3px; }
+.immutable small { color: var(--muted); }
+.error {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 42%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+  color: var(--danger);
+}
+
+.editorFooter {
+  margin-top: 18px;
+  padding-top: 18px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.save:disabled,
+.cancel:disabled,
+.orderActions button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+@media (max-width: 760px) {
+  .adminBar { grid-template-columns: 1fr; }
+  .adminBar > button { width: 100%; }
+  .editor > header,
+  .editorFooter { flex-direction: column; }
+  .headerActions,
+  .editorFooter > div { width: 100%; }
+  .headerActions button,
+  .editorFooter button { flex: 1; }
+  .blockToolbar { grid-template-columns: 1fr 1fr; }
+  .blockToolbar > span { grid-column: 1 / -1; }
+  .orderActions { grid-column: 1 / -1; justify-content: stretch; }
+  .orderActions button { flex: 1; }
+  .immutable { grid-template-columns: auto 1fr; }
+  .immutable .orderActions { grid-column: 1 / -1; }
+}

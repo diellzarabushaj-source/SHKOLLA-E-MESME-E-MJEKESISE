@@ -2,6 +2,7 @@
   "name": "shkolla-e-mesme-e-mjekesise",
   "version": "2.0.0",
   "private": true,
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs",
     "predev": "npm run prepare:portal",
@@ -14,17 +15,17 @@
     "audit:app": "npm run typecheck && npm run build"
   },
   "dependencies": {
-    "@neondatabase/auth": "latest",
-    "@neondatabase/serverless": "latest",
-    "next": "latest",
-    "next-sanity": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "@neondatabase/auth": "0.4.2-beta",
+    "@neondatabase/serverless": "1.1.0",
+    "next": "16.2.10",
+    "next-sanity": "13.1.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "typescript": "latest"
+    "@types/node": "26.1.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
   }
 }
