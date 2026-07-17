@@ -23,11 +23,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --ignore-scripts
-      - run: npm run audit:app
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Generate optimized portal
+        run: npm run prepare:portal
       - name: Confirm generated data layer
         run: |
           grep -q 'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"' app/SchoolLearningPortal.tsx
           grep -q 'count(flashcards\[status != "hidden"\])' app/SchoolLearningPortal.tsx
           grep -q 'useCdn: true' app/SchoolLearningPortal.tsx
           ! grep -q '_type == "flashcard"' app/SchoolLearningPortal.tsx
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: Production build
+        run: npx next build
