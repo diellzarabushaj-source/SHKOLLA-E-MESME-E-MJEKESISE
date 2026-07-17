@@ -36,6 +36,14 @@ function numberValue(value: unknown, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function firstRow(result: unknown): Record<string, unknown> | undefined {
+  if (!Array.isArray(result)) return undefined;
+  const row = result[0];
+  return row && typeof row === "object" && !Array.isArray(row)
+    ? row as Record<string, unknown>
+    : undefined;
+}
+
 function nextProgress(current: Record<string, unknown> | null, rating: ProgressRating, at = new Date()) {
   const now = new Date(at);
   const previousStatus = String(current?.status || "new");
@@ -123,7 +131,7 @@ function intervalLabel(now: Date, dueAt: Date): string {
 export async function previewReviewSchedule(userId: string, flashcardId: string): Promise<ReviewSchedulePreview> {
   const sql = database();
   const rows = await sql`SELECT status, last_rating, repetitions, lapses, ease_factor, interval_days, due_at FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${flashcardId} LIMIT 1`;
-  const current = (rows[0] as Record<string, unknown> | undefined) || null;
+  const current = firstRow(rows) || null;
   const now = new Date();
   const ratings: ProgressRating[] = ["again", "hard", "good", "easy"];
 
@@ -159,26 +167,29 @@ export async function startSession(userId: string, context: StudyContext, totalC
 
   if (validRequestedId) {
     const rows = await sql`INSERT INTO public.study_sessions (id, user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${validRequestedId}, ${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) ON CONFLICT (id) DO UPDATE SET total_cards=EXCLUDED.total_cards WHERE public.study_sessions.user_id=${userId} RETURNING id`;
-    if (!rows[0]?.id) throw new Error("SESSION_ID_CONFLICT");
-    return String(rows[0].id);
+    const row = firstRow(rows);
+    if (!row?.id) throw new Error("SESSION_ID_CONFLICT");
+    return String(row.id);
   }
 
   const rows = await sql`INSERT INTO public.study_sessions (user_id, grade_id, subject_id, chapter_id, lesson_id, total_cards) VALUES (${userId}, ${context.gradeId}, ${context.subjectId}, ${context.chapterId}, ${context.lessonId}, ${Math.max(0, totalCards)}) RETURNING id`;
-  return String(rows[0]?.id);
+  const id = firstRow(rows)?.id;
+  if (!id) throw new Error("SESSION_CREATE_FAILED");
+  return String(id);
 }
 
 export async function completeSession(userId: string, sessionId: string, counts: Record<ProgressRating, number>) {
   const sql = database();
   const rows = await sql`UPDATE public.study_sessions SET again_count=${Math.max(0, Math.round(counts.again || 0))}, hard_count=${Math.max(0, Math.round(counts.hard || 0))}, good_count=${Math.max(0, Math.round(counts.good || 0))}, easy_count=${Math.max(0, Math.round(counts.easy || 0))}, completed_at=now() WHERE id=${sessionId} AND user_id=${userId} RETURNING id`;
-  if (!rows[0]?.id) throw new Error("INVALID_SESSION");
+  if (!firstRow(rows)?.id) throw new Error("INVALID_SESSION");
 }
 
 export async function recordReview(userId: string, input: { sessionId: string; context: StudyContext; flashcardId: string; rating: ProgressRating; responseTimeMs?: number }) {
   const sql = database();
   const sessions = await sql`SELECT id FROM public.study_sessions WHERE id=${input.sessionId} AND user_id=${userId} LIMIT 1`;
-  if (!sessions[0]?.id) throw new Error("INVALID_SESSION");
+  if (!firstRow(sessions)?.id) throw new Error("INVALID_SESSION");
   const rows = await sql`SELECT status, last_rating, repetitions, lapses, ease_factor, interval_days, due_at FROM public.card_progress WHERE user_id=${userId} AND flashcard_id=${input.flashcardId} LIMIT 1`;
-  const next = nextProgress((rows[0] as Record<string, unknown> | undefined) || null, input.rating);
+  const next = nextProgress(firstRow(rows) || null, input.rating);
   await sql`INSERT INTO public.review_events (user_id, session_id, grade_id, subject_id, chapter_id, lesson_id, flashcard_id, rating, response_time_ms) VALUES (${userId}, ${input.sessionId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${input.flashcardId}, ${input.rating}, ${Number.isFinite(input.responseTimeMs) ? Math.max(0, Math.round(input.responseTimeMs || 0)) : null})`;
   await sql`INSERT INTO public.card_progress (user_id, grade_id, subject_id, chapter_id, lesson_id, flashcard_id, last_rating, status, repetitions, lapses, ease_factor, interval_days, due_at, last_reviewed_at, updated_at) VALUES (${userId}, ${input.context.gradeId}, ${input.context.subjectId}, ${input.context.chapterId}, ${input.context.lessonId}, ${input.flashcardId}, ${input.rating}, ${next.status}, ${next.repetitions}, ${next.lapses}, ${next.easeFactor}, ${next.intervalDays}, ${next.dueAt.toISOString()}, ${next.now.toISOString()}, ${next.now.toISOString()}) ON CONFLICT (user_id, flashcard_id) DO UPDATE SET grade_id=EXCLUDED.grade_id, subject_id=EXCLUDED.subject_id, chapter_id=EXCLUDED.chapter_id, lesson_id=EXCLUDED.lesson_id, last_rating=EXCLUDED.last_rating, status=EXCLUDED.status, repetitions=EXCLUDED.repetitions, lapses=EXCLUDED.lapses, ease_factor=EXCLUDED.ease_factor, interval_days=EXCLUDED.interval_days, due_at=EXCLUDED.due_at, last_reviewed_at=EXCLUDED.last_reviewed_at, updated_at=EXCLUDED.updated_at`;
 }
@@ -195,11 +206,13 @@ export async function heartbeat(userId: string, input: { sessionId?: string; act
   let updated = false;
   if (sessionId) {
     const rows = await sql`UPDATE public.activity_sessions SET active_seconds=active_seconds + ${increment}, last_seen_at=now(), ended_at=${input.ended ? new Date().toISOString() : null}, updated_at=now() WHERE id=${sessionId} AND user_id=${userId} RETURNING id`;
-    updated = Boolean(rows[0]?.id);
+    updated = Boolean(firstRow(rows)?.id);
   }
   if (!updated) {
     const rows = await sql`INSERT INTO public.activity_sessions (user_id, activity_type, grade_id, subject_id, chapter_id, lesson_id) VALUES (${userId}, ${input.activityType}, ${input.context?.gradeId || null}, ${input.context?.subjectId || null}, ${input.context?.chapterId || null}, ${input.context?.lessonId || null}) RETURNING id`;
-    sessionId = String(rows[0]?.id);
+    const id = firstRow(rows)?.id;
+    if (!id) throw new Error("ACTIVITY_SESSION_CREATE_FAILED");
+    sessionId = String(id);
     await sql`UPDATE public.activity_sessions SET active_seconds=active_seconds + ${increment}, last_seen_at=now(), ended_at=${input.ended ? new Date().toISOString() : null}, updated_at=now() WHERE id=${sessionId} AND user_id=${userId}`;
   }
   if (input.activityType === "lesson" && input.context?.lessonId && input.context.gradeId && input.context.subjectId && input.context.chapterId) {
