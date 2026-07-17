@@ -14,7 +14,7 @@ Platformë e klasës për mësim me flashcards, e organizuar në:
 
 ## Sanity Studio
 
-https://flashcards-mjekesi-peje.sanity.studio/
+https://www.sanity.io/@oZ3HX2fYf/studio/xwvsfazcnhh889nw18ldkuvk/default/
 
 ## Zhvillimi lokal
 
@@ -23,11 +23,11 @@ npm install
 npm run dev
 ```
 
-Sanity projekti publik përdoret si parazgjedhje:
+Sanity projekti School V2 përdoret si parazgjedhje:
 
 ```env
-NEXT_PUBLIC_SANITY_PROJECT_ID=e1tm3f7l
-NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_PROJECT_ID=u5d5zn7n
+NEXT_PUBLIC_SANITY_DATASET_V2=schoolv2
 ```
 
 ## Editimi i mësimeve nga administratori
