@@ -6,12 +6,16 @@ on:
       - main
     paths:
       - .github/workflows/apply-embedded-flashcards-main.yml
+  issues:
+    types:
+      - opened
 
 permissions:
   contents: write
 
 jobs:
   migrate-build-and-commit:
+    if: github.event_name == 'push' || github.event.issue.title == '[automation] apply embedded flashcards'
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
