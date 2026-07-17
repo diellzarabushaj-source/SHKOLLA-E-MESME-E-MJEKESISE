@@ -7,8 +7,6 @@ import StethoscopeLogo from "../../StethoscopeLogo";
 import styles from "../auth.module.css";
 import { signInWithUsername } from "./actions";
 
-const ADMIN_EMAIL = "diellorrabushaj4@gmail.com";
-
 export default function SignInPage() {
   const [state, formAction, isPending] = useActionState(signInWithUsername, null);
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +22,6 @@ export default function SignInPage() {
         provider: "google",
         callbackURL: "/",
         errorCallbackURL: "/auth/sign-in",
-        loginHint: ADMIN_EMAIL,
       });
 
       if (error) {
@@ -64,7 +61,7 @@ export default function SignInPage() {
             </svg>
             {isGooglePending ? "Duke u lidhur me Google..." : "Admini — Kyçu me Google"}
           </button>
-          <p className={styles.adminHint}>Vetëm llogaria e verifikuar {ADMIN_EMAIL} merr qasje në editor.</p>
+          <p className={styles.adminHint}>Vetëm llogaria e verifikuar e administratorit merr qasje në editor.</p>
           {googleError && <p className={styles.error} role="alert" aria-live="polite">{googleError}</p>}
 
           <div className={styles.divider}>hyrja e nxënësve</div>
