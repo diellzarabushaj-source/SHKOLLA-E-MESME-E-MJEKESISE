@@ -98,6 +98,7 @@ const optimizedDataLayer = `const portalQuery = \`
 const lessonDetailsQuery = \`
   *[_type == "lesson" && _id == $lessonId && isActive != false][0] {
     _id,
+    _rev,
     title,
     "slug": slug.current,
     summary,
@@ -112,7 +113,8 @@ const lessonDetailsQuery = \`
       _type == "image" => {
         alt,
         caption,
-        "asset": asset->{url}
+        asset,
+        "assetUrl": asset->url
       }
     },
     "flashcardCount": count(flashcards[isActive != false])
