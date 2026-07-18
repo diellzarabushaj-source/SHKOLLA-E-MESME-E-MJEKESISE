@@ -1,0 +1,556 @@
+.workspace {
+  position: relative;
+  display: flow-root;
+}
+
+.paintLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.paint {
+  position: absolute;
+  border-radius: 4px;
+  opacity: 0.38;
+  mix-blend-mode: multiply;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, currentColor 34%, transparent);
+}
+
+.notePaint {
+  opacity: 0.48;
+}
+
+.paint[data-color="yellow"],
+.colorButton[data-color="yellow"],
+.composerColors button[data-color="yellow"],
+.annotationColors button[data-color="yellow"] {
+  background: #fde68a;
+}
+
+.paint[data-color="green"],
+.colorButton[data-color="green"],
+.composerColors button[data-color="green"],
+.annotationColors button[data-color="green"] {
+  background: #86efac;
+}
+
+.paint[data-color="blue"],
+.colorButton[data-color="blue"],
+.composerColors button[data-color="blue"],
+.annotationColors button[data-color="blue"] {
+  background: #93c5fd;
+}
+
+.paint[data-color="pink"],
+.colorButton[data-color="pink"],
+.composerColors button[data-color="pink"],
+.annotationColors button[data-color="pink"] {
+  background: #f9a8d4;
+}
+
+.libraryButton {
+  position: absolute;
+  z-index: 7;
+  top: 44px;
+  right: max(18px, calc((100% - 920px) / 2 + 18px));
+  min-height: 42px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line));
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  color: var(--text);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--text) 10%, transparent);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.libraryButton > span:first-child {
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.libraryButton b {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--primary);
+  color: white;
+  font-size: 10px;
+}
+
+.notePin {
+  position: absolute;
+  z-index: 8;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--panel) 85%, transparent);
+  border-radius: 11px 11px 4px 11px;
+  color: #15223a;
+  box-shadow: 0 9px 20px color-mix(in srgb, var(--text) 18%, transparent);
+  cursor: pointer;
+  transform: rotate(-2deg);
+}
+
+.notePin[data-color="yellow"] { background: #fde68a; }
+.notePin[data-color="green"] { background: #86efac; }
+.notePin[data-color="blue"] { background: #93c5fd; }
+.notePin[data-color="pink"] { background: #f9a8d4; }
+.notePin:hover { transform: translateY(-2px) rotate(0deg); }
+
+.selectionToolbar {
+  position: fixed;
+  z-index: 120;
+  width: min(300px, calc(100vw - 24px));
+  min-height: 48px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  color: var(--text);
+  box-shadow: 0 22px 56px color-mix(in srgb, var(--text) 24%, transparent);
+  backdrop-filter: blur(18px);
+  transform: translate(-50%, 0);
+}
+
+.selectionToolbar > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.colorButton,
+.composerColors button,
+.annotationColors button {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border: 2px solid color-mix(in srgb, var(--text) 16%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.colorButton:hover,
+.composerColors button:hover,
+.annotationColors button:hover,
+.selectedColor {
+  border-color: var(--text) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--panel) 70%, transparent);
+  transform: scale(1.08);
+}
+
+.addNoteButton {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  background: rgb(3 10 23 / 0.62);
+  backdrop-filter: blur(8px);
+}
+
+.composer {
+  width: min(560px, 100%);
+  max-height: min(760px, calc(100vh - 36px));
+  padding: clamp(22px, 5vw, 34px);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 28px 90px rgb(0 0 0 / 0.34);
+}
+
+.modalEyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.composer h2 {
+  margin: 8px 0 16px;
+  font-size: clamp(26px, 5vw, 38px);
+}
+
+.composer blockquote,
+.annotationCard blockquote {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.composer textarea,
+.noteEditor textarea {
+  width: 100%;
+  min-height: 150px;
+  margin-top: 18px;
+  padding: 15px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  outline: none;
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.55;
+}
+
+.composer textarea:focus,
+.noteEditor textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.composerColors,
+.annotationColors {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.modalActions,
+.noteEditor > div {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.modalActions button,
+.noteEditor button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.modalActions button:last-child,
+.noteEditor button:last-child {
+  border-color: transparent;
+  background: var(--primary);
+  color: white;
+}
+
+.library {
+  position: fixed;
+  z-index: 140;
+  top: 86px;
+  right: 18px;
+  bottom: 18px;
+  width: min(430px, calc(100vw - 36px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--panel) 97%, transparent);
+  color: var(--text);
+  box-shadow: 0 28px 90px rgb(0 0 0 / 0.32);
+  backdrop-filter: blur(18px);
+}
+
+.library > header {
+  padding: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.library header span {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.library header h2 {
+  margin: 5px 0 3px;
+  font-size: 25px;
+}
+
+.library header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.library header > button {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.libraryList {
+  padding: 15px;
+  display: grid;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.annotationCard {
+  position: relative;
+  padding: 17px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg-soft);
+}
+
+.annotationCard::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: #fde68a;
+}
+
+.annotationCard[data-color="green"]::before { background: #86efac; }
+.annotationCard[data-color="blue"]::before { background: #93c5fd; }
+.annotationCard[data-color="pink"]::before { background: #f9a8d4; }
+
+.annotationType {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.annotationType span {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.annotationType time {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.annotationCard blockquote {
+  margin-top: 12px;
+}
+
+.annotationCard > p {
+  margin: 13px 0 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.annotationCard footer {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.annotationCard footer button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.annotationCard footer .deleteButton {
+  margin-left: auto;
+  color: #fb7185;
+}
+
+.noteEditor textarea {
+  min-height: 110px;
+}
+
+.emptyLibrary {
+  min-height: 210px;
+  padding: 28px;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  text-align: center;
+}
+
+.emptyLibrary span {
+  max-width: 290px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.errorToast,
+.noticeToast {
+  position: fixed;
+  z-index: 170;
+  right: 18px;
+  bottom: 18px;
+  max-width: min(440px, calc(100vw - 36px));
+  min-height: 48px;
+  padding: 12px 12px 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.25);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.errorToast { border-color: color-mix(in srgb, #fb7185 48%, var(--line)); }
+.noticeToast { border-color: color-mix(in srgb, #34d399 42%, var(--line)); }
+
+.errorToast button,
+.noticeToast button {
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 9px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.workspace button:focus-visible,
+.workspace textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 34%, transparent);
+  outline-offset: 2px;
+}
+
+.workspace button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+@media (max-width: 700px) {
+  .libraryButton {
+    top: 38px;
+    right: 12px;
+  }
+
+  .libraryButton > span:nth-child(2) {
+    display: none;
+  }
+
+  .library {
+    top: auto;
+    right: 8px;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+    max-height: min(72vh, 680px);
+    border-radius: 22px;
+  }
+
+  .notePin {
+    width: 32px;
+    height: 32px;
+  }
+
+  .selectionToolbar {
+    gap: 6px;
+  }
+
+  .selectionToolbar > span {
+    display: none;
+  }
+
+  .colorButton {
+    width: 28px;
+    height: 28px;
+  }
+
+  .addNoteButton {
+    min-height: 34px;
+  }
+
+  .errorToast,
+  .noticeToast {
+    right: 10px;
+    bottom: calc(84px + env(safe-area-inset-bottom));
+    left: 10px;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notePin,
+  .colorButton,
+  .composerColors button,
+  .annotationColors button {
+    transition: none;
+  }
+
+  .notePin:hover,
+  .colorButton:hover,
+  .composerColors button:hover,
+  .annotationColors button:hover,
+  .selectedColor {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .paint {
+    outline: 2px solid Highlight;
+    background: transparent !important;
+  }
+}

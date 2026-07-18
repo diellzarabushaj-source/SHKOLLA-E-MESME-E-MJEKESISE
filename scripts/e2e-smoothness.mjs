@@ -70,7 +70,7 @@ function watchPage(page, label) {
 }
 
 async function auditPublicInfrastructure(browser) {
-  const context = await browser.newContext();
+  const context = await browser.newContext({ serviceWorkers: "block" });
   try {
     const manifest = await context.request.get(`${baseURL}/manifest.webmanifest`);
     assert(manifest.ok(), `manifest returned ${manifest.status()}`);
@@ -89,6 +89,26 @@ async function auditPublicInfrastructure(browser) {
     assert(progress.status() === 401, `guest progress endpoint should return 401, got ${progress.status()}`);
     assert((progress.headers()["cache-control"] || "").includes("no-store"), "guest progress response is cacheable");
 
+    const annotations = await context.request.get(`${baseURL}/api/annotations?lessonId=lesson-cells`);
+    assert(annotations.status() === 401, `guest annotations endpoint should return 401, got ${annotations.status()}`);
+    assert((annotations.headers()["cache-control"] || "").includes("no-store"), "guest annotations response is cacheable");
+
+    const annotationsWithoutOrigin = await context.request.post(`${baseURL}/api/annotations`, {
+      data: {
+        lessonId: "lesson-cells",
+        kind: "highlight",
+        blockKey: "block-cells",
+        startOffset: 0,
+        endOffset: 6,
+        quote: "Qeliza",
+        prefix: "",
+        suffix: " është",
+        color: "yellow",
+      },
+    });
+    assert(annotationsWithoutOrigin.status() === 403, `annotation write without same-origin header should return 403, got ${annotationsWithoutOrigin.status()}`);
+    assert((annotationsWithoutOrigin.headers()["cache-control"] || "").includes("no-store"), "invalid-origin annotation response is cacheable");
+
     const adminRead = await context.request.get(`${baseURL}/api/admin/lessons/lesson-cells`);
     assert(adminRead.status() === 401, `guest admin read should return 401, got ${adminRead.status()}`);
     assert((adminRead.headers()["cache-control"] || "").includes("no-store"), "guest admin read is cacheable");
@@ -101,19 +121,44 @@ async function auditPublicInfrastructure(browser) {
     const page = await context.newPage();
     watchPage(page, "infrastructure shell");
     await page.goto(`${baseURL}/offline`, { waitUntil: "domcontentloaded" });
-    const adminAsGuest = await page.evaluate(async () => {
-      const response = await fetch("/api/admin/lessons/lesson-cells", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ revision: "fixture", body: [] }),
-      });
+    const privateWritesAsGuest = await page.evaluate(async () => {
+      const [adminResponse, annotationResponse] = await Promise.all([
+        fetch("/api/admin/lessons/lesson-cells", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ revision: "fixture", body: [] }),
+        }),
+        fetch("/api/annotations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonId: "lesson-cells",
+            kind: "highlight",
+            blockKey: "block-cells",
+            startOffset: 0,
+            endOffset: 6,
+            quote: "Qeliza",
+            prefix: "",
+            suffix: " është",
+            color: "yellow",
+          }),
+        }),
+      ]);
       return {
-        status: response.status,
-        cacheControl: response.headers.get("cache-control") || "",
+        admin: {
+          status: adminResponse.status,
+          cacheControl: adminResponse.headers.get("cache-control") || "",
+        },
+        annotation: {
+          status: annotationResponse.status,
+          cacheControl: annotationResponse.headers.get("cache-control") || "",
+        },
       };
     });
-    assert(adminAsGuest.status === 401, `same-origin guest admin write should return 401, got ${adminAsGuest.status}`);
-    assert(adminAsGuest.cacheControl.includes("no-store"), "same-origin guest admin write response is cacheable");
+    assert(privateWritesAsGuest.admin.status === 401, `same-origin guest admin write should return 401, got ${privateWritesAsGuest.admin.status}`);
+    assert(privateWritesAsGuest.admin.cacheControl.includes("no-store"), "same-origin guest admin write response is cacheable");
+    assert(privateWritesAsGuest.annotation.status === 401, `same-origin guest annotation write should return 401, got ${privateWritesAsGuest.annotation.status}`);
+    assert(privateWritesAsGuest.annotation.cacheControl.includes("no-store"), "same-origin guest annotation write response is cacheable");
 
     console.log("✓ PWA assets and private API boundaries");
   } finally {
@@ -121,8 +166,42 @@ async function auditPublicInfrastructure(browser) {
   }
 }
 
+async function auditServiceWorkerRegistration(browser) {
+  const context = await browser.newContext({ serviceWorkers: "allow" });
+  const page = await context.newPage();
+  watchPage(page, "service worker shell");
+  try {
+    await page.goto(`${baseURL}/offline`, { waitUntil: "domcontentloaded" });
+    let registered = false;
+
+    for (let attempt = 0; attempt < 4 && !registered; attempt += 1) {
+      try {
+        await page.waitForLoadState("domcontentloaded");
+        registered = await page.evaluate(async () => {
+          if (!("serviceWorker" in navigator)) return false;
+          const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            new Promise((_, reject) => setTimeout(() => reject(new Error("service worker readiness timeout")), 15_000)),
+          ]);
+          return registration instanceof ServiceWorkerRegistration
+            && Boolean(registration.active || registration.waiting || registration.installing);
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes("Execution context was destroyed") && !message.includes("frame was detached")) throw error;
+        await page.waitForTimeout(250);
+      }
+    }
+
+    assert(registered, "service worker did not register after controller reload");
+    console.log("✓ service worker registration and controller reload");
+  } finally {
+    await context.close();
+  }
+}
+
 async function auditThemeAndDesktop(browser) {
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
   await installSanityFixture(context);
   const page = await context.newPage();
   watchPage(page, "desktop shell");
@@ -135,6 +214,7 @@ async function auditThemeAndDesktop(browser) {
       return ids.filter((id, index) => ids.indexOf(id) !== index);
     });
     assert(duplicateIds.length === 0, `duplicate DOM ids: ${JSON.stringify([...new Set(duplicateIds)])}`);
+    assert(await page.locator("[data-lesson-annotations]").count() === 0, "guest homepage unexpectedly mounted private annotation controls");
 
     const toggle = page.locator('button.theme-switch[type="button"]');
     await toggle.waitFor({ state: "visible" });
@@ -150,23 +230,14 @@ async function auditThemeAndDesktop(browser) {
     const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
     assert(manifestHref === "/manifest.webmanifest", `manifest link is incorrect: ${manifestHref}`);
 
-    await page.evaluate(async () => {
-      if (!("serviceWorker" in navigator)) throw new Error("service worker API unavailable");
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("service worker readiness timeout")), 15_000)),
-      ]);
-      if (!(registration instanceof ServiceWorkerRegistration)) throw new Error("service worker did not register");
-    });
-
-    console.log("✓ desktop shell, theme isolation and service worker registration");
+    console.log("✓ desktop shell and theme isolation");
   } finally {
     await context.close();
   }
 }
 
 async function auditMobileShell(browser) {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   await installSanityFixture(context);
   const page = await context.newPage();
   watchPage(page, "mobile shell");
@@ -200,6 +271,7 @@ async function auditMobileShell(browser) {
 const browser = await chromium.launch({ headless: true });
 try {
   await auditPublicInfrastructure(browser).catch((error) => failures.push(error instanceof Error ? error.message : "infrastructure audit failed"));
+  await auditServiceWorkerRegistration(browser).catch((error) => failures.push(error instanceof Error ? error.message : "service worker audit failed"));
   await auditThemeAndDesktop(browser).catch((error) => failures.push(error instanceof Error ? error.message : "desktop smoothness audit failed"));
   await auditMobileShell(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile smoothness audit failed"));
 } finally {
