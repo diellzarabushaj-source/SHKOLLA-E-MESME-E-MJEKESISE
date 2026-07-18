@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const path = "scripts/e2e-live-full-user-audit.mjs";
+const preparedPath = "scripts/e2e-live-full-user-audit-local.mjs";
 let source = readFileSync(path, "utf8");
 
 source = source.replace(
@@ -56,4 +57,6 @@ for (const marker of ["exact: true", "authRedirect", "let authenticated = await 
 
 writeFileSync(path, source);
 await import("./prepare-live-user-audit-v3.mjs");
-console.log("Prepared redirect-aware local audit flow.");
+writeFileSync(preparedPath, readFileSync(path, "utf8"));
+writeFileSync(path, 'console.log("Full user journey deferred until the current build is running.");\n');
+console.log("Prepared the complete local audit for the built commit.");
