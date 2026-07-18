@@ -70,7 +70,7 @@ function watchPage(page, label) {
 }
 
 async function auditPublicInfrastructure(browser) {
-  const context = await browser.newContext();
+  const context = await browser.newContext({ serviceWorkers: "block" });
   try {
     const manifest = await context.request.get(`${baseURL}/manifest.webmanifest`);
     assert(manifest.ok(), `manifest returned ${manifest.status()}`);
@@ -166,8 +166,42 @@ async function auditPublicInfrastructure(browser) {
   }
 }
 
+async function auditServiceWorkerRegistration(browser) {
+  const context = await browser.newContext({ serviceWorkers: "allow" });
+  const page = await context.newPage();
+  watchPage(page, "service worker shell");
+  try {
+    await page.goto(`${baseURL}/offline`, { waitUntil: "domcontentloaded" });
+    let registered = false;
+
+    for (let attempt = 0; attempt < 4 && !registered; attempt += 1) {
+      try {
+        await page.waitForLoadState("domcontentloaded");
+        registered = await page.evaluate(async () => {
+          if (!("serviceWorker" in navigator)) return false;
+          const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            new Promise((_, reject) => setTimeout(() => reject(new Error("service worker readiness timeout")), 15_000)),
+          ]);
+          return registration instanceof ServiceWorkerRegistration
+            && Boolean(registration.active || registration.waiting || registration.installing);
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes("Execution context was destroyed") && !message.includes("frame was detached")) throw error;
+        await page.waitForTimeout(250);
+      }
+    }
+
+    assert(registered, "service worker did not register after controller reload");
+    console.log("✓ service worker registration and controller reload");
+  } finally {
+    await context.close();
+  }
+}
+
 async function auditThemeAndDesktop(browser) {
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
   await installSanityFixture(context);
   const page = await context.newPage();
   watchPage(page, "desktop shell");
@@ -196,23 +230,14 @@ async function auditThemeAndDesktop(browser) {
     const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
     assert(manifestHref === "/manifest.webmanifest", `manifest link is incorrect: ${manifestHref}`);
 
-    await page.evaluate(async () => {
-      if (!("serviceWorker" in navigator)) throw new Error("service worker API unavailable");
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("service worker readiness timeout")), 15_000)),
-      ]);
-      if (!(registration instanceof ServiceWorkerRegistration)) throw new Error("service worker did not register");
-    });
-
-    console.log("✓ desktop shell, theme isolation and service worker registration");
+    console.log("✓ desktop shell and theme isolation");
   } finally {
     await context.close();
   }
 }
 
 async function auditMobileShell(browser) {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   await installSanityFixture(context);
   const page = await context.newPage();
   watchPage(page, "mobile shell");
@@ -246,6 +271,7 @@ async function auditMobileShell(browser) {
 const browser = await chromium.launch({ headless: true });
 try {
   await auditPublicInfrastructure(browser).catch((error) => failures.push(error instanceof Error ? error.message : "infrastructure audit failed"));
+  await auditServiceWorkerRegistration(browser).catch((error) => failures.push(error instanceof Error ? error.message : "service worker audit failed"));
   await auditThemeAndDesktop(browser).catch((error) => failures.push(error instanceof Error ? error.message : "desktop smoothness audit failed"));
   await auditMobileShell(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile smoothness audit failed"));
 } finally {
