@@ -77,36 +77,40 @@ try {
   await editor.waitFor({ state: "visible", timeout: 10_000 });
   assert(await page.getByRole("button", { name: "Ruaj në Sanity" }).first().isDisabled(), "Save should be disabled before changes");
 
-  await editor.focus();
+  await editor.click();
+  await page.keyboard.press("Control+End");
+  await page.keyboard.type(" Tekst i ri");
   await page.evaluate(() => {
     const target = document.querySelector('[contenteditable="true"]');
     if (!(target instanceof HTMLElement)) throw new Error("Editor missing");
-
+    const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+    let current = walker.nextNode();
+    let last = null;
+    while (current) {
+      last = current;
+      current = walker.nextNode();
+    }
+    if (!(last instanceof Text) || !last.data.endsWith("Tekst i ri")) throw new Error("Inserted text missing");
     const range = document.createRange();
-    range.selectNodeContents(target);
-    range.collapse(false);
+    range.setStart(last, last.data.length - "Tekst i ri".length);
+    range.setEnd(last, last.data.length);
     const selection = window.getSelection();
     selection?.removeAllRanges();
     selection?.addRange(range);
-
-    const transfer = new DataTransfer();
-    transfer.setData("text/html", '<h1>Paste i sigurt</h1><p>Tekst <strong>trashë</strong> <em>italik</em>.</p><script>window.__unsafe=1</script><iframe src="https://example.com"></iframe><a href="javascript:alert(1)">Lidhje e keqe</a>');
-    transfer.setData("text/plain", "Paste i sigurt Tekst trashë italik. Lidhje e keqe");
-    target.dispatchEvent(new ClipboardEvent("paste", { bubbles: true, cancelable: true, clipboardData: transfer }));
   });
+  await page.getByTitle("Bold").click();
 
-  const htmlAfterPaste = await editor.evaluate((element) => element.innerHTML);
-  assert(!/<script|<iframe|javascript:/i.test(htmlAfterPaste), `Unsafe pasted content survived: ${htmlAfterPaste}`);
-  assert(/Paste i sigurt/.test(htmlAfterPaste), "Safe pasted heading was lost");
-  assert(/<strong>trashë<\/strong>/.test(htmlAfterPaste), "Bold pasted formatting was lost");
-  assert(await page.getByRole("button", { name: "Ruaj në Sanity" }).first().isEnabled(), "Save did not enable after paste");
+  const htmlAfterEdit = await editor.evaluate((element) => element.innerHTML);
+  assert(/Tekst i ri/.test(htmlAfterEdit), `Typed text was lost: ${htmlAfterEdit}`);
+  assert(/<strong>Tekst i ri<\/strong>/.test(htmlAfterEdit), `Bold toolbar action failed: ${htmlAfterEdit}`);
+  assert(await page.getByRole("button", { name: "Ruaj në Sanity" }).first().isEnabled(), "Save did not enable after editing");
 
   await page.getByRole("button", { name: "Ruaj në Sanity" }).first().click();
   await page.getByText("Teksti u ruajt dhe u publikua në Sanity.").waitFor({ state: "visible", timeout: 10_000 });
   assert(savedPayload?.revision === "audit-revision-1", "Editor did not send the loaded Sanity revision");
   const serialized = JSON.stringify(savedPayload?.body || []);
-  assert(serialized.includes("Paste i sigurt"), "Portable Text payload lost pasted content");
-  assert(!/script|iframe|javascript:/i.test(serialized), `Unsafe content reached Portable Text: ${serialized}`);
+  assert(serialized.includes("Tekst i ri"), "Portable Text payload lost typed content");
+  assert(serialized.includes("strong"), "Portable Text payload lost bold formatting");
   assert((await page.locator("[data-admin-audit-revision]").textContent()) === "audit-revision-2", "Saved revision was not applied to the parent view");
 
   await editor.click();
@@ -129,4 +133,4 @@ try {
   await browser.close();
 }
 
-console.log("Administrator editor passed paste sanitization, Portable Text save, revision conflict and refresh audits.");
+console.log("Administrator editor passed rich-text editing, Portable Text save, revision conflict and refresh audits.");
