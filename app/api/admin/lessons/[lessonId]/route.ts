@@ -21,6 +21,30 @@ function jsonError(error: string, status: number) {
   return NextResponse.json({ error }, { status, headers: noStoreHeaders });
 }
 
+function firstForwardedValue(value: string | null): string {
+  return value?.split(",")[0]?.trim() || "";
+}
+
+function isSameOriginRequest(request: Request): boolean {
+  const originHeader = request.headers.get("origin");
+  if (!originHeader) return false;
+
+  try {
+    const origin = new URL(originHeader);
+    const requestUrl = new URL(request.url);
+    const publicHost = firstForwardedValue(request.headers.get("x-forwarded-host"))
+      || request.headers.get("host")?.trim()
+      || requestUrl.host;
+    const publicProtocol = firstForwardedValue(request.headers.get("x-forwarded-proto"))
+      || requestUrl.protocol.replace(":", "");
+
+    return origin.host.toLowerCase() === publicHost.toLowerCase()
+      && origin.protocol.toLowerCase() === `${publicProtocol.toLowerCase()}:`;
+  } catch {
+    return false;
+  }
+}
+
 function isRecord(value: unknown): value is PortableNode {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -219,8 +243,7 @@ export async function PATCH(
   context: { params: Promise<{ lessonId: string }> },
 ) {
   try {
-    const requestOrigin = request.headers.get("origin");
-    if (!requestOrigin || requestOrigin !== new URL(request.url).origin) {
+    if (!isSameOriginRequest(request)) {
       return jsonError("INVALID_ORIGIN", 403);
     }
 
