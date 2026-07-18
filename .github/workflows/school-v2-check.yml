@@ -6,7 +6,11 @@ on:
       - main
     paths:
       - app/**
+      - public/sw.js
       - scripts/build-schoolv2-portal-v2.mjs
+      - scripts/align-sanity-v2.mjs
+      - scripts/harden-sanity-runtime.mjs
+      - scripts/audit-sanity-runtime.mjs
       - package.json
       - package-lock.json
       - tsconfig.json
@@ -32,11 +36,14 @@ jobs:
           node <<'NODE'
           const { readFileSync } = require('node:fs');
           const source = readFileSync('app/SchoolLearningPortal.tsx', 'utf8');
+          const worker = readFileSync('public/sw.js', 'utf8');
           const required = [
-            'dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"',
+            'projectId: "u5d5zn7n"',
+            'dataset: "schoolv2"',
             'count(flashcards[isActive != false])',
-            'useCdn: true',
+            'useCdn: false',
             '"url": asset->url',
+            'sanity-v2-contract-v2',
           ];
           for (const value of required) {
             if (!source.includes(value)) throw new Error(`Missing generated architecture marker: ${value}`);
@@ -44,7 +51,12 @@ jobs:
           if (source.includes('_type == "flashcard"')) {
             throw new Error('Standalone flashcard document query is still present.');
           }
-          console.log('School v2 data layer verified.');
+          if (!worker.includes('GROQ/query JSON must never be served stale')) {
+            throw new Error('Service worker can still serve stale Sanity query data.');
+          }
+          console.log('School v2 data layer verified with fixed dataset and fresh query delivery.');
           NODE
+      - name: Verify Sanity runtime protections
+        run: npm run audit:sanity-runtime
       - name: TypeScript check
         run: npm run typecheck
