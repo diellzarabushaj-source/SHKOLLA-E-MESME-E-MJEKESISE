@@ -89,6 +89,26 @@ async function auditPublicInfrastructure(browser) {
     assert(progress.status() === 401, `guest progress endpoint should return 401, got ${progress.status()}`);
     assert((progress.headers()["cache-control"] || "").includes("no-store"), "guest progress response is cacheable");
 
+    const annotations = await context.request.get(`${baseURL}/api/annotations?lessonId=lesson-cells`);
+    assert(annotations.status() === 401, `guest annotations endpoint should return 401, got ${annotations.status()}`);
+    assert((annotations.headers()["cache-control"] || "").includes("no-store"), "guest annotations response is cacheable");
+
+    const annotationsWithoutOrigin = await context.request.post(`${baseURL}/api/annotations`, {
+      data: {
+        lessonId: "lesson-cells",
+        kind: "highlight",
+        blockKey: "block-cells",
+        startOffset: 0,
+        endOffset: 6,
+        quote: "Qeliza",
+        prefix: "",
+        suffix: " është",
+        color: "yellow",
+      },
+    });
+    assert(annotationsWithoutOrigin.status() === 403, `annotation write without same-origin header should return 403, got ${annotationsWithoutOrigin.status()}`);
+    assert((annotationsWithoutOrigin.headers()["cache-control"] || "").includes("no-store"), "invalid-origin annotation response is cacheable");
+
     const adminRead = await context.request.get(`${baseURL}/api/admin/lessons/lesson-cells`);
     assert(adminRead.status() === 401, `guest admin read should return 401, got ${adminRead.status()}`);
     assert((adminRead.headers()["cache-control"] || "").includes("no-store"), "guest admin read is cacheable");
@@ -101,19 +121,44 @@ async function auditPublicInfrastructure(browser) {
     const page = await context.newPage();
     watchPage(page, "infrastructure shell");
     await page.goto(`${baseURL}/offline`, { waitUntil: "domcontentloaded" });
-    const adminAsGuest = await page.evaluate(async () => {
-      const response = await fetch("/api/admin/lessons/lesson-cells", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ revision: "fixture", body: [] }),
-      });
+    const privateWritesAsGuest = await page.evaluate(async () => {
+      const [adminResponse, annotationResponse] = await Promise.all([
+        fetch("/api/admin/lessons/lesson-cells", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ revision: "fixture", body: [] }),
+        }),
+        fetch("/api/annotations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonId: "lesson-cells",
+            kind: "highlight",
+            blockKey: "block-cells",
+            startOffset: 0,
+            endOffset: 6,
+            quote: "Qeliza",
+            prefix: "",
+            suffix: " është",
+            color: "yellow",
+          }),
+        }),
+      ]);
       return {
-        status: response.status,
-        cacheControl: response.headers.get("cache-control") || "",
+        admin: {
+          status: adminResponse.status,
+          cacheControl: adminResponse.headers.get("cache-control") || "",
+        },
+        annotation: {
+          status: annotationResponse.status,
+          cacheControl: annotationResponse.headers.get("cache-control") || "",
+        },
       };
     });
-    assert(adminAsGuest.status === 401, `same-origin guest admin write should return 401, got ${adminAsGuest.status}`);
-    assert(adminAsGuest.cacheControl.includes("no-store"), "same-origin guest admin write response is cacheable");
+    assert(privateWritesAsGuest.admin.status === 401, `same-origin guest admin write should return 401, got ${privateWritesAsGuest.admin.status}`);
+    assert(privateWritesAsGuest.admin.cacheControl.includes("no-store"), "same-origin guest admin write response is cacheable");
+    assert(privateWritesAsGuest.annotation.status === 401, `same-origin guest annotation write should return 401, got ${privateWritesAsGuest.annotation.status}`);
+    assert(privateWritesAsGuest.annotation.cacheControl.includes("no-store"), "same-origin guest annotation write response is cacheable");
 
     console.log("✓ PWA assets and private API boundaries");
   } finally {
@@ -135,6 +180,7 @@ async function auditThemeAndDesktop(browser) {
       return ids.filter((id, index) => ids.indexOf(id) !== index);
     });
     assert(duplicateIds.length === 0, `duplicate DOM ids: ${JSON.stringify([...new Set(duplicateIds)])}`);
+    assert(await page.locator("[data-lesson-annotations]").count() === 0, "guest homepage unexpectedly mounted private annotation controls");
 
     const toggle = page.locator('button.theme-switch[type="button"]');
     await toggle.waitFor({ state: "visible" });
