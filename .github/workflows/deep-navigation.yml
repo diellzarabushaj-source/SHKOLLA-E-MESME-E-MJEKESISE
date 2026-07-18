@@ -32,7 +32,20 @@ jobs:
           npm install --no-save playwright@1.57.0
           npx playwright install --with-deps chromium
       - name: Build application
-        run: npm run build
+        shell: bash
+        run: |
+          set +e
+          npm run build > navigation-build.log 2>&1
+          STATUS=$?
+          cat navigation-build.log
+          exit "$STATUS"
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-build-log
+          path: navigation-build.log
+          retention-days: 1
       - name: Run deep navigation audit
         shell: bash
         run: |
