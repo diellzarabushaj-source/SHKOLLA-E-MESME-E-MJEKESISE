@@ -8,7 +8,7 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const SERVICE_WORKER_URL = "/sw.js?v=7";
+const SERVICE_WORKER_URL = "/sw.js?v=8";
 
 export default function PwaRegistrar() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
@@ -19,23 +19,35 @@ export default function PwaRegistrar() {
     if (!("serviceWorker" in navigator)) return;
 
     let registration: ServiceWorkerRegistration | null = null;
+    let disposed = false;
 
     const register = async () => {
       try {
-        registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" });
-        await registration.update();
+        const nextRegistration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" });
+        if (disposed || !nextRegistration) return;
+        registration = nextRegistration;
 
-        if (registration.waiting) setUpdateReady(registration.waiting);
+        if (typeof nextRegistration.update === "function") {
+          await nextRegistration.update().catch(() => undefined);
+        }
+        if (disposed) return;
 
-        registration.addEventListener("updatefound", () => {
-          const worker = registration?.installing;
+        if (nextRegistration.waiting) setUpdateReady(nextRegistration.waiting);
+
+        nextRegistration.addEventListener("updatefound", () => {
+          const worker = nextRegistration.installing;
           if (!worker) return;
           worker.addEventListener("statechange", () => {
-            if (worker.state === "installed" && navigator.serviceWorker.controller) setUpdateReady(worker);
+            if (!disposed && worker.state === "installed" && navigator.serviceWorker.controller) {
+              setUpdateReady(worker);
+            }
           });
         });
       } catch (error) {
-        console.error("PWA registration failed", error);
+        // Service workers may be unavailable in private mode, restricted browsers,
+        // automated audits or when the user has disabled site storage. The portal
+        // remains fully usable as a normal website, so this is not a user-facing error.
+        if (process.env.NODE_ENV !== "production") console.warn("PWA registration unavailable", error);
       }
     };
 
@@ -59,6 +71,8 @@ export default function PwaRegistrar() {
     void register();
 
     return () => {
+      disposed = true;
+      registration = null;
       window.removeEventListener("beforeinstallprompt", onInstallPrompt);
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
