@@ -12,7 +12,7 @@
     "start": "next start",
     "pretypecheck": "npm run prepare:portal",
     "typecheck": "tsc --noEmit",
-    "audit:navigation": "node scripts/audit-navigation.mjs",
+    "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs",
     "audit:smoothness": "node scripts/audit-smoothness.mjs",
     "audit:annotations": "node scripts/audit-annotations.mjs",
     "audit:admin-sanity": "node scripts/audit-admin-sanity.mjs",
