@@ -54,6 +54,7 @@ async function installApi(context) {
 }
 
 async function selectPhrase(page, phrase) {
+  await page.locator("[data-audit-paragraph][data-annotation-block-key]").waitFor({ state: "visible", timeout: 5000 });
   await page.evaluate((selectedText) => {
     const paragraph = document.querySelector("[data-audit-paragraph]");
     const node = paragraph?.firstChild;
