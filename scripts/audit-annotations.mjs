@@ -75,7 +75,11 @@ requireText("Annotation API privacy", api, [
   "UUID_PATTERN",
 ]);
 
-requireText("Server-side ownership", server, [
+requireText("Server-side ownership and RLS role", server, [
+  "sql.transaction",
+  "SET LOCAL ROLE authenticated",
+  "set_config('request.jwt.claims'",
+  "claimsFor(userId)",
   "WHERE user_id=${userId} AND lesson_id=${lessonId}",
   "WHERE id=${input.id} AND user_id=${userId}",
   "WHERE id=${annotationId} AND user_id=${userId}",
