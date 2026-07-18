@@ -1,0 +1,16 @@
+/* Authentication-only touch target reinforcement. The visible text stays inline,
+   but the interactive area meets mobile touch guidance. */
+p[class*="switchText"] > a {
+  min-width: 40px;
+  min-height: 40px;
+  padding-inline: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+}
+
+p[class*="switchText"] > a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  outline-offset: 2px;
+}
