@@ -56,6 +56,15 @@ async function selectPhrase(page, phrase) {
   await page.locator("[data-annotation-selection-toolbar]").waitFor({ state: "visible", timeout: 5000 });
 }
 
+async function openLibrary(page) {
+  const button = page.getByRole("button", { name: /Shënimet e mia/ });
+  await button.waitFor({ state: "visible", timeout: 10000 });
+  await button.click();
+  const library = page.locator("#lesson-annotation-library");
+  await library.waitFor({ state: "visible", timeout: 10000 });
+  return library;
+}
+
 const browser = await chromium.launch({ headless: true });
 try {
   const mobile = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" };
@@ -81,10 +90,10 @@ try {
   await dialog.getByRole("textbox").fill("Kjo pjesë duhet përsëritur para testit.");
   await dialog.getByRole("button", { name: "E gjelbër" }).click();
   await dialog.getByRole("button", { name: "Ruaj sticky note" }).click();
+  await dialog.waitFor({ state: "detached", timeout: 10000 });
+  await page.getByText("Sticky note u ruajt privatisht.").waitFor();
 
-  await page.getByRole("button", { name: /Shënimet e mia/ }).click();
-  const library = page.locator("#lesson-annotation-library");
-  await library.waitFor();
+  const library = await openLibrary(page);
   assert(await library.locator("article").count() === 2, "Highlight and sticky note are not both listed");
   const note = library.locator("article").filter({ hasText: "Sticky note" });
   await note.getByRole("button", { name: "Ndrysho" }).click();
@@ -102,9 +111,9 @@ try {
   await installApi(secondContext);
   const secondPage = await secondContext.newPage();
   await secondPage.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
-  await secondPage.getByRole("button", { name: /Shënimet e mia/ }).click();
+  const secondLibrary = await openLibrary(secondPage);
   await secondPage.getByText("Shënim i ndryshuar dhe i sinkronizuar.").waitFor();
-  assert(await secondPage.locator("#lesson-annotation-library article").count() === 1, "Second-device account sync failed");
+  assert(await secondLibrary.locator("article").count() === 1, "Second-device account sync failed");
   await secondContext.close();
   await context.close();
 } finally {
