@@ -16,6 +16,17 @@ type SearchParams = Promise<{
   returnTo?: string | string[];
 }>;
 
+type SessionPayload = {
+  user?: { id?: string };
+  session?: { user?: { id?: string } };
+};
+
+function hasSignedInUser(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const session = value as SessionPayload;
+  return Boolean(session.user?.id || session.session?.user?.id);
+}
+
 export default async function SignUpPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const returnTo = safeReturnTo(params.returnTo);
@@ -23,7 +34,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Searc
   let signedIn = false;
   try {
     const { data: session } = await auth.getSession();
-    signedIn = Boolean(session?.user?.id);
+    signedIn = hasSignedInUser(session);
   } catch {
     signedIn = false;
   }
