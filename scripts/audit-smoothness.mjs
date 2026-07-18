@@ -23,13 +23,9 @@ function requireText(label, content, expected) {
   checks.push(label);
 }
 
-function fallbackFor(content, variable) {
-  const escaped = variable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return content.match(new RegExp(`${escaped}[^\\n]*?\\|\\|\\s*["']([^"']+)["']`))?.[1] || null;
-}
-
 const packageJson = JSON.parse(read("package.json") || "{}");
 const nextConfig = read("next.config.mjs");
+const sanityConfig = read("lib/sanity/config.ts");
 const writeClient = read("lib/sanity/write-client.ts");
 const generatedPortal = read("app/SchoolLearningPortal.tsx");
 const sanityAligner = read("scripts/align-sanity-v2.mjs");
@@ -46,24 +42,19 @@ const pwaRegistrar = read("app/PwaRegistrar.tsx");
 const progressClient = read("lib/progress/client.ts");
 const serviceWorker = read("public/sw.js");
 
-const projectIds = [
-  fallbackFor(nextConfig, "NEXT_PUBLIC_SANITY_PROJECT_ID"),
-  fallbackFor(writeClient, "NEXT_PUBLIC_SANITY_PROJECT_ID"),
-].filter(Boolean);
-const datasets = [
-  fallbackFor(nextConfig, "NEXT_PUBLIC_SANITY_DATASET_V2"),
-  fallbackFor(writeClient, "NEXT_PUBLIC_SANITY_DATASET_V2"),
-].filter(Boolean);
-
-if (projectIds.length !== 2 || new Set(projectIds).size !== 1 || projectIds[0] !== EXPECTED_SANITY_PROJECT) {
-  failures.push(`Sanity project ID nuk përputhet me projektin V2: ${JSON.stringify(projectIds)}.`);
-}
-if (datasets.length !== 2 || new Set(datasets).size !== 1 || datasets[0] !== EXPECTED_SANITY_DATASET) {
-  failures.push(`Sanity dataset nuk është unik në konfigurim: ${JSON.stringify(datasets)}.`);
-}
-if (!nextConfig.includes("process.env.NEXT_PUBLIC_SANITY_PROJECT_ID")) {
-  failures.push("next.config duhet ta respektojë Sanity project ID nga environment-i i deployment-it.");
-}
+const projectIds = [EXPECTED_SANITY_PROJECT, EXPECTED_SANITY_PROJECT];
+const datasets = [EXPECTED_SANITY_DATASET, EXPECTED_SANITY_DATASET];
+requireText("Canonical Next Sanity configuration", nextConfig, [
+  `const sanityProjectId = "${EXPECTED_SANITY_PROJECT}"`,
+  `const sanityDataset = "${EXPECTED_SANITY_DATASET}"`,
+]);
+requireText("Canonical Sanity constants", sanityConfig, [
+  `SANITY_PROJECT_ID = "${EXPECTED_SANITY_PROJECT}"`,
+  `SANITY_DATASET = "${EXPECTED_SANITY_DATASET}"`,
+]);
+requireText("Canonical Sanity write client", writeClient, [
+  "SANITY_PROJECT_ID", "SANITY_DATASET", "SANITY_API_VERSION", "useCdn: false",
+]);
 requireText("Sanity V2 schema alignment", sanityAligner, [
   `"${EXPECTED_SANITY_PROJECT}"`,
   '"gradeNumber": coalesce(gradeNumber, order)',
@@ -74,9 +65,13 @@ requireText("Sanity V2 schema alignment", sanityAligner, [
 ]);
 requireText("Effective generated portal", generatedPortal, [
   "sanity-v2-contract-v2",
+  "canonical-sanity-schoolv2",
+  'projectId: "u5d5zn7n"',
+  'dataset: "schoolv2"',
   '"gradeNumber": coalesce(gradeNumber, order)',
   "defined(audio.asset)",
   "freshClient.fetch<Lesson | null>",
+  "SANITY_PORTAL_DATA_INCOMPLETE",
 ]);
 checks.push("Sanity read/write configuration");
 
@@ -135,9 +130,7 @@ requireText("Safe PWA registration", pwaRegistrar, [
   "nextRegistration.update().catch",
   'process.env.NODE_ENV !== "production"',
 ]);
-if (/await\s+registration\.update\(\)/.test(pwaRegistrar)) {
-  failures.push("PWA registrar nuk duhet të thërrasë update() pa verifikuar objektin e regjistrimit.");
-}
+if (/await\s+registration\.update\(\)/.test(pwaRegistrar)) failures.push("PWA registrar nuk duhet të thërrasë update() pa verifikuar objektin e regjistrimit.");
 requireText("Session-safe progress identity", progressClient, [
   "export function clearProgressUserCache",
   "getSignedInUser(forceRefresh = false)",
@@ -146,9 +139,7 @@ requireText("Session-safe progress identity", progressClient, [
   "response = await sendProgressRequest(body, true)",
   'credentials: "same-origin"',
 ]);
-if (/value \? 5 \* 60_000 : 30_000/.test(progressClient)) {
-  failures.push("Identiteti bosh i progresit nuk duhet të ruhet 30 sekonda pas kyçjes ose regjistrimit.");
-}
+if (/value \? 5 \* 60_000 : 30_000/.test(progressClient)) failures.push("Identiteti bosh i progresit nuk duhet të ruhet 30 sekonda pas kyçjes ose regjistrimit.");
 requireText("Private PWA handling", serviceWorker, [
   'const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"]',
   "networkFirstNavigation(request)",
@@ -168,18 +159,18 @@ const preparePortal = String(scripts["prepare:portal"] || "");
 if (!preparePortal.includes("align-sanity-v2.mjs")) failures.push("prepare:portal nuk e harmonizon portalin me schema-n Sanity V2.");
 if (!preparePortal.includes("add-rich-text-marks.mjs")) failures.push("prepare:portal nuk gjeneron rich-text marks.");
 if (!preparePortal.includes("harden-admin-editor.mjs")) failures.push("prepare:portal nuk aplikon mbrojtjet e editorit të adminit.");
+if (!preparePortal.includes("pin-live-sanity.mjs")) failures.push("prepare:portal nuk e lidh portalin me burimin kanonik të Sanity.");
 if (!String(scripts["audit:app"] || "").includes("audit:smoothness")) failures.push("audit:app nuk e përfshin auditimin e smoothness-it.");
 checks.push("Package scripts");
 
 console.log("Full application smoothness audit");
 console.log(`- ${checks.length} audit groups checked`);
-console.log(`- Sanity project: ${projectIds[0] || "unknown"}`);
-console.log(`- Sanity dataset: ${datasets[0] || "unknown"}`);
+console.log(`- Sanity project: ${projectIds[0]}`);
+console.log(`- Sanity dataset: ${datasets[0]}`);
 
 if (failures.length) {
   console.error("\nFull application smoothness audit failed:");
   for (const failure of [...new Set(failures)]) console.error(`- ${failure}`);
   process.exit(1);
 }
-
 console.log("Full application smoothness audit passed.");
