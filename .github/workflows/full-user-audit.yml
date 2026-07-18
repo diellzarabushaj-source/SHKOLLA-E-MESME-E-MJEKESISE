@@ -24,7 +24,9 @@ jobs:
           npm install --no-save playwright@1.57.0
           npx playwright install --with-deps chromium
       - name: Prepare live audit
-        run: node scripts/prepare-live-user-audit.mjs
+        run: |
+          node scripts/prepare-live-user-audit.mjs
+          node scripts/prepare-live-user-audit-v2.mjs
       - name: Run complete live user journey
         shell: bash
         run: |
