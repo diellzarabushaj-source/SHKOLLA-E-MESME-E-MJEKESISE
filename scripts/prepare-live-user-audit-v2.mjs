@@ -5,7 +5,7 @@ let source = readFileSync(path, "utf8");
 
 source = source.replace(
   'const baseURL = (process.env.E2E_BASE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app").replace(/\\/$/, "");',
-  'const baseURL = "https://shkolla-e-mesme-e-mje-git-c35ab8-diellzarabushaj-2665s-projects.vercel.app";',
+  'const baseURL = "http://127.0.0.1:3000";',
 );
 
 source = source.replace(
@@ -50,10 +50,10 @@ const newRegistrationFlow = `  let authenticated = await page.waitForURL((url) =
 if (!source.includes(oldRegistrationFlow)) throw new Error("Registration audit flow was not found");
 source = source.replace(oldRegistrationFlow, newRegistrationFlow);
 
-for (const marker of ["exact: true", "authRedirect", "let authenticated = await page.waitForURL", "git-c35ab8"]) {
+for (const marker of ["exact: true", "authRedirect", "let authenticated = await page.waitForURL", "127.0.0.1:3000"]) {
   if (!source.includes(marker)) throw new Error(`Missing audit marker: ${marker}`);
 }
 
 writeFileSync(path, source);
 await import("./prepare-live-user-audit-v3.mjs");
-console.log("Prepared redirect-aware preview audit flow.");
+console.log("Prepared redirect-aware local audit flow.");
