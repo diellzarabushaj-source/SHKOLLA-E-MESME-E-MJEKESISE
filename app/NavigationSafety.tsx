@@ -16,7 +16,6 @@ function portalIsOpen(): boolean {
 
 function dispatchPortalNavigation(eventName: string): void {
   window.dispatchEvent(new CustomEvent(eventName));
-  window.dispatchEvent(new CustomEvent("medical-portal:navigation"));
 }
 
 export default function NavigationSafety() {
@@ -31,21 +30,11 @@ export default function NavigationSafety() {
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin || url.pathname !== "/" || window.location.pathname !== "/") return;
       if (url.hash && url.hash !== "#klasat") return;
-
-      const open = portalIsOpen();
-      if (!open && url.hash !== "#klasat") return;
-      if (!open && url.hash === "#klasat") return;
+      if (!portalIsOpen()) return;
 
       event.preventDefault();
       window.localStorage.removeItem(SELECTED_GRADE_KEY);
-
-      if (url.hash === "#klasat") {
-        window.history.pushState({ __medicalPortal: true }, "", "/#klasat");
-        dispatchPortalNavigation(CLASSES_EVENT);
-      } else {
-        window.history.pushState({ __medicalPortal: true }, "", "/");
-        dispatchPortalNavigation(HOME_EVENT);
-      }
+      dispatchPortalNavigation(url.hash === "#klasat" ? CLASSES_EVENT : HOME_EVENT);
     };
 
     document.addEventListener("click", handleClick, true);
