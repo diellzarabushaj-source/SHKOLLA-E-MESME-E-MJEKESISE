@@ -58,7 +58,7 @@ async function auditSignIn(browser) {
 }
 
 async function auditSignUp(browser) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block" });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 1100 }, serviceWorkers: "block" });
   const page = await context.newPage();
   watch(page, "sign up");
 
@@ -73,6 +73,7 @@ async function auditSignUp(browser) {
     await main.getByText("@alketa-03", { exact: false }).waitFor({ state: "visible" });
 
     const password = main.getByLabel("Krijo password-in");
+    const confirmation = main.getByLabel("Përsërite password-in");
     await password.fill("1234567");
     const shortValidity = await password.evaluate((input) => input.validity.valid);
     assert(shortValidity === false, "sign-up accepted a password shorter than eight characters");
@@ -83,15 +84,29 @@ async function auditSignUp(browser) {
     assert(validPassword === true, "valid sign-up password was rejected by browser validation");
     assert((await main.locator('[data-level="strong"]').textContent())?.includes("I fortë"), "password strength feedback did not update");
 
-    await main.getByRole("button", { name: "Shfaq password-in" }).click();
-    assert(await password.getAttribute("type") === "text", "sign-up password toggle did not reveal the field");
-    await main.getByRole("button", { name: "Fshehe password-in" }).click();
+    await confirmation.fill("password-tjeter");
+    const mismatchValidity = await confirmation.evaluate((input) => input.validity.valid);
+    assert(mismatchValidity === false, "registration accepted mismatched passwords");
+    assert((await main.locator("#password-match").textContent())?.includes("nuk përputhen"), "password mismatch guidance is missing");
+
+    await confirmation.fill("password-shume-i-mire");
+    const matchValidity = await confirmation.evaluate((input) => input.validity.valid);
+    assert(matchValidity === true, "matching registration passwords stayed invalid");
+    assert((await main.locator("#password-match").textContent())?.includes("përputhen"), "password match confirmation is missing");
+
+    await main.getByRole("button", { name: "Shfaqi password-at" }).click();
+    assert(await password.getAttribute("type") === "text", "sign-up password toggle did not reveal the first field");
+    assert(await confirmation.getAttribute("type") === "text", "sign-up password toggle did not reveal confirmation");
+    await main.getByRole("button", { name: "Fshehi password-at" }).click();
+    assert(await password.getAttribute("type") === "password", "sign-up password toggle did not hide the first field");
+    assert(await confirmation.getAttribute("type") === "password", "sign-up password toggle did not hide confirmation");
 
     const signInHref = await main.getByRole("link", { name: "Kyçu", exact: true }).getAttribute("href");
     assert(signInHref?.includes("/auth/sign-in?returnTo=%2Fprogress"), `sign-in link lost returnTo: ${signInHref}`);
     assert(await main.getByRole("link", { name: "Vazhdo pa llogari" }).getAttribute("href") === "/progress", "sign-up guest link lost returnTo");
+    assert((await main.textContent() || "").includes("nuk mund të rikuperohet automatikisht"), "password recovery limitation is not explained");
 
-    console.log("✓ registration normalization, browser validation, strength feedback and return flow");
+    console.log("✓ registration normalization, confirmed passwords, strength feedback and return flow");
   } finally {
     await context.close();
   }
