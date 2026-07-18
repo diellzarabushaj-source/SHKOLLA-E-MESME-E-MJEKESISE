@@ -46,6 +46,48 @@ function hasSafeBlankRel(tag) {
   return rel.split(/\s+/).includes("noopener") && rel.split(/\s+/).includes("noreferrer");
 }
 
+function openingTags(input, tagName) {
+  const tags = [];
+  const needle = `<${tagName}`;
+  let index = 0;
+
+  while (index < input.length) {
+    const start = input.indexOf(needle, index);
+    if (start === -1) break;
+    const boundary = input[start + needle.length];
+    if (boundary && !/[\s/>]/.test(boundary)) {
+      index = start + needle.length;
+      continue;
+    }
+
+    let cursor = start + needle.length;
+    let braceDepth = 0;
+    let quote = null;
+    let escaped = false;
+    for (; cursor < input.length; cursor += 1) {
+      const character = input[cursor];
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (character === "\\") escaped = true;
+        else if (character === quote) quote = null;
+        continue;
+      }
+      if (character === '"' || character === "'" || character === "`") {
+        quote = character;
+        continue;
+      }
+      if (character === "{") braceDepth += 1;
+      else if (character === "}") braceDepth = Math.max(0, braceDepth - 1);
+      else if (character === ">" && braceDepth === 0) break;
+    }
+    if (cursor >= input.length) break;
+    tags.push(input.slice(start, cursor + 1));
+    index = cursor + 1;
+  }
+
+  return tags;
+}
+
 const appFiles = walk(appDir);
 const sourceFiles = appFiles.filter((file) => /\.(?:ts|tsx|js|jsx|mjs)$/.test(file));
 const pageFiles = appFiles.filter((file) => path.basename(file) === "page.tsx");
@@ -83,8 +125,8 @@ for (const file of sourceFiles) {
   }
 
   for (const formMatch of content.matchAll(/<form\b[\s\S]*?<\/form>/gi)) {
-    for (const buttonMatch of formMatch[0].matchAll(/<button\b([^>]*)>/gi)) {
-      if (!/\btype\s*=/.test(buttonMatch[1])) failures.push(`${relative}: një button brenda formës nuk ka type të përcaktuar dhe mund të shkaktojë submit/navigim të paqëllimshëm.`);
+    for (const buttonTag of openingTags(formMatch[0], "button")) {
+      if (!/\btype\s*=/.test(buttonTag)) failures.push(`${relative}: një button brenda formës nuk ka type të përcaktuar dhe mund të shkaktojë submit/navigim të paqëllimshëm.`);
     }
   }
 
@@ -156,7 +198,7 @@ for (const requiredHistoryFeature of ["pushState", "replaceState", "popstate", "
 }
 if (!generatedPortal.includes('window.location.hash === "#klasat"')) failures.push("Navigimi direkt te /#klasat nuk e anashkalon klasën e ruajtur.");
 if (!navigationSafety.includes("window.localStorage.removeItem(SELECTED_GRADE_KEY)")) failures.push("Ballina/Klasat nuk pastrojnë klasën e ruajtur në navigimin global.");
-if (/<button\b(?![^>]*\btype\s*=)[^>]*>/i.test(generatedPortal)) failures.push("Portali i gjeneruar ka button pa type=button.");
+if (openingTags(generatedPortal, "button").some((tag) => !/\btype\s*=/.test(tag))) failures.push("Portali i gjeneruar ka button pa type=button.");
 
 for (const boundary of appFiles.filter((file) => ["global-error.tsx", "not-found.tsx"].includes(path.basename(file)))) {
   const content = readFileSync(boundary, "utf8");
