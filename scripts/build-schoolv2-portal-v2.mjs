@@ -197,10 +197,24 @@ replacePattern(
         { perspective: "published" },
       );
       setSelectedLesson(details || lesson);
+      pushPortalHistory({
+        __medicalPortal: true,
+        gradeId: selectedGrade?._id,
+        subjectId: selectedSubject?._id,
+        chapterId: selectedChapter?._id,
+        lessonId: lesson._id,
+      });
     } catch (fetchError) {
       console.error(fetchError);
       setSelectedLesson(lesson);
       setError("Mësimi nuk mund të ngarkohej plotësisht. Provo përsëri.");
+      pushPortalHistory({
+        __medicalPortal: true,
+        gradeId: selectedGrade?._id,
+        subjectId: selectedSubject?._id,
+        chapterId: selectedChapter?._id,
+        lessonId: lesson._id,
+      });
     } finally {
       setLoading(false);
     }
@@ -218,10 +232,372 @@ replacePattern(
       setCards(normalizeCards(result));`,
 );
 
+replacePattern(
+  "portal history type",
+  /type StudyScope = \{[\s\S]*?\n\};\n/,
+  `type StudyScope = {
+  kind: "lesson" | "chapter";
+  title: string;
+  chapter: Chapter;
+  lesson?: Lesson;
+};
+
+type PortalHistoryState = {
+  __medicalPortal: true;
+  gradeId?: string;
+  subjectId?: string;
+  chapterId?: string;
+  lessonId?: string;
+  studyKind?: "lesson" | "chapter";
+  studyTitle?: string;
+};
+`,
+);
+
+replacePattern(
+  "portal history refs",
+  /  const selectedLessonRef = useRef<Lesson \| null>\(null\);/,
+  `  const selectedLessonRef = useRef<Lesson | null>(null);
+  const historyReadyRef = useRef(false);
+  const restoringHistoryRef = useRef(false);`,
+);
+
+replacePattern(
+  "portal history helpers",
+  /  function resetStudy\(\) \{[\s\S]*?\n  \}\n\n  function chooseGrade/,
+  `  function resetStudy() {
+    setStudying(false);
+    setStudyScope(null);
+    setCards([]);
+    setCardIndex(0);
+    setRevealed(false);
+    setFinished(false);
+    setRatings(emptyRatings);
+  }
+
+  function currentPortalHistoryState(): PortalHistoryState {
+    return {
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: selectedSubject?._id,
+      chapterId: selectedChapter?._id,
+      lessonId: selectedLesson?._id,
+      studyKind: studying ? studyScope?.kind : undefined,
+      studyTitle: studying ? studyScope?.title : undefined,
+    };
+  }
+
+  function portalHistoryUrl(state: PortalHistoryState, hash = ""): string {
+    const params = new URLSearchParams();
+    if (state.gradeId) params.set("grade", state.gradeId);
+    if (state.subjectId) params.set("subject", state.subjectId);
+    if (state.chapterId) params.set("chapter", state.chapterId);
+    if (state.lessonId) params.set("lesson", state.lessonId);
+    if (state.studyKind) params.set("study", state.studyKind);
+    const query = params.toString();
+    return (query ? "/?" + query : "/") + hash;
+  }
+
+  function announcePortalNavigation() {
+    window.dispatchEvent(new CustomEvent("medical-portal:navigation"));
+  }
+
+  function pushPortalHistory(state: PortalHistoryState, options?: { replace?: boolean; hash?: string }) {
+    if (restoringHistoryRef.current) return;
+    const method = options?.replace ? "replaceState" : "pushState";
+    window.history[method](state, "", portalHistoryUrl(state, options?.hash));
+    announcePortalNavigation();
+  }
+
+  function chooseGrade`,
+);
+
+replacePattern(
+  "choose grade history",
+  /  function chooseGrade\(grade: Grade\) \{[\s\S]*?\n  \}\n\n  function changeGrade/,
+  `  function chooseGrade(grade: Grade) {
+    window.localStorage.setItem(SELECTED_GRADE_KEY, grade._id);
+    setSelectedGrade(grade);
+    setSelectedSubject(null);
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    setSearch("");
+    resetStudy();
+    pushPortalHistory({ __medicalPortal: true, gradeId: grade._id });
+    scrollTop();
+  }
+
+  function changeGrade`,
+);
+
+replacePattern(
+  "change grade history",
+  /  function changeGrade\(\) \{[\s\S]*?\n  \}\n\n  function goToGrade/,
+  `  function changeGrade() {
+    window.localStorage.removeItem(SELECTED_GRADE_KEY);
+    setSelectedGrade(null);
+    setSelectedSubject(null);
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    setSearch("");
+    resetStudy();
+    pushPortalHistory({ __medicalPortal: true });
+    scrollTop();
+  }
+
+  function goToGrade`,
+);
+
+replacePattern(
+  "go to grade history",
+  /  function goToGrade\(\) \{[\s\S]*?\n  \}\n\n  function goToSubject/,
+  `  function goToGrade() {
+    setSelectedSubject(null);
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    resetStudy();
+    pushPortalHistory({ __medicalPortal: true, gradeId: selectedGrade?._id });
+    scrollTop();
+  }
+
+  function goToSubject`,
+);
+
+replacePattern(
+  "go to subject history",
+  /  function goToSubject\(\) \{[\s\S]*?\n  \}\n\n  function goToChapter/,
+  `  function goToSubject() {
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    resetStudy();
+    pushPortalHistory({
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: selectedSubject?._id,
+    });
+    scrollTop();
+  }
+
+  function goToChapter`,
+);
+
+replacePattern(
+  "go to chapter history",
+  /  function goToChapter\(\) \{[\s\S]*?\n  \}\n\n  function chooseSubject/,
+  `  function goToChapter() {
+    setSelectedLesson(null);
+    resetStudy();
+    pushPortalHistory({
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: selectedSubject?._id,
+      chapterId: selectedChapter?._id,
+    });
+    scrollTop();
+  }
+
+  function chooseSubject`,
+);
+
+replacePattern(
+  "choose subject history",
+  /  function chooseSubject\(subject: Subject\) \{[\s\S]*?\n  \}\n\n  function chooseChapter/,
+  `  function chooseSubject(subject: Subject) {
+    setSelectedSubject(subject);
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    resetStudy();
+    pushPortalHistory({
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: subject._id,
+    });
+    scrollTop();
+  }
+
+  function chooseChapter`,
+);
+
+replacePattern(
+  "choose chapter history",
+  /  function chooseChapter\(chapter: Chapter\) \{[\s\S]*?\n  \}\n\n  function applySavedLesson/,
+  `  function chooseChapter(chapter: Chapter) {
+    setSelectedChapter(chapter);
+    setSelectedLesson(null);
+    resetStudy();
+    pushPortalHistory({
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: selectedSubject?._id,
+      chapterId: chapter._id,
+    });
+    scrollTop();
+  }
+
+  function applySavedLesson`,
+);
+
+replacePattern(
+  "study history",
+  /  async function startTest\(scope: StudyScope\) \{[\s\S]*?\n  \}\n\n  function rateCard/,
+  `  async function loadStudyScope(scope: StudyScope, recordHistory: boolean) {
+    setSelectedChapter(scope.chapter);
+    setSelectedLesson(scope.lesson || null);
+    setStudyScope(scope);
+    setLoading(true);
+    setError("");
+
+    try {
+      const query = scope.kind === "lesson" ? lessonCardsQuery : chapterCardsQuery;
+      const params = scope.kind === "lesson" ? { lessonId: scope.lesson?._id } : { chapterId: scope.chapter._id };
+      const result = await client.fetch<LessonDeck[]>(query, params, { perspective: "published" });
+      setCards(normalizeCards(result));
+      setCardIndex(0);
+      setRevealed(false);
+      setFinished(false);
+      setRatings(emptyRatings);
+      setStudying(true);
+      if (recordHistory) {
+        pushPortalHistory({
+          __medicalPortal: true,
+          gradeId: selectedGrade?._id,
+          subjectId: selectedSubject?._id,
+          chapterId: scope.chapter._id,
+          lessonId: scope.lesson?._id,
+          studyKind: scope.kind,
+          studyTitle: scope.title,
+        });
+      }
+    } catch (fetchError) {
+      console.error(fetchError);
+      setError("Flashcards nuk mund të ngarkoheshin.");
+      setStudying(false);
+    } finally {
+      setLoading(false);
+    }
+
+    scrollTop();
+  }
+
+  async function startTest(scope: StudyScope) {
+    await loadStudyScope(scope, true);
+  }
+
+  function exitStudy() {
+    resetStudy();
+    pushPortalHistory({
+      __medicalPortal: true,
+      gradeId: selectedGrade?._id,
+      subjectId: selectedSubject?._id,
+      chapterId: selectedChapter?._id,
+      lessonId: selectedLesson?._id,
+    });
+    scrollTop();
+  }
+
+  function rateCard`,
+);
+
+source = source.replaceAll("onClick={resetStudy}", "onClick={exitStudy}");
+
+replacePattern(
+  "browser and global navigation effects",
+  /  useEffect\(\(\) => \{\n    function onKeyDown\(event: KeyboardEvent\) \{/,
+  `  async function restorePortalHistory(state: PortalHistoryState) {
+    restoringHistoryRef.current = true;
+    try {
+      const grade = state.gradeId ? grades.find((item) => item._id === state.gradeId) || null : null;
+      const subject = state.subjectId ? grade?.subjects.find((item) => item._id === state.subjectId) || null : null;
+      const chapter = state.chapterId ? subject?.chapters.find((item) => item._id === state.chapterId) || null : null;
+      const lesson = state.lessonId ? chapter?.lessons.find((item) => item._id === state.lessonId) || null : null;
+
+      if (grade) window.localStorage.setItem(SELECTED_GRADE_KEY, grade._id);
+      else window.localStorage.removeItem(SELECTED_GRADE_KEY);
+
+      setSelectedGrade(grade);
+      setSelectedSubject(subject);
+      setSelectedChapter(chapter);
+      setSelectedLesson(lesson);
+      setSearch("");
+      resetStudy();
+
+      if (state.studyKind && chapter) {
+        await loadStudyScope({
+          kind: state.studyKind,
+          title: state.studyTitle || (lesson?.title ?? chapter.title),
+          chapter,
+          lesson: state.studyKind === "lesson" ? lesson || undefined : undefined,
+        }, false);
+      } else {
+        scrollTop();
+      }
+    } finally {
+      window.setTimeout(() => {
+        restoringHistoryRef.current = false;
+        announcePortalNavigation();
+      }, 0);
+    }
+  }
+
+  useEffect(() => {
+    if (loading || historyReadyRef.current) return;
+    historyReadyRef.current = true;
+    const existing = window.history.state as PortalHistoryState | null;
+    if (existing?.__medicalPortal && (existing.subjectId || existing.chapterId || existing.lessonId || existing.studyKind)) {
+      void restorePortalHistory(existing);
+      return;
+    }
+    pushPortalHistory(currentPortalHistoryState(), { replace: true });
+  }, [loading]);
+
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const state = event.state as PortalHistoryState | null;
+      void restorePortalHistory(state?.__medicalPortal ? state : { __medicalPortal: true });
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [grades]);
+
+  useEffect(() => {
+    const resetToHome = () => {
+      window.localStorage.removeItem(SELECTED_GRADE_KEY);
+      setSelectedGrade(null);
+      setSelectedSubject(null);
+      setSelectedChapter(null);
+      setSelectedLesson(null);
+      setSearch("");
+      resetStudy();
+      pushPortalHistory({ __medicalPortal: true });
+      scrollTop();
+    };
+    const resetToClasses = () => {
+      window.localStorage.removeItem(SELECTED_GRADE_KEY);
+      setSelectedGrade(null);
+      setSelectedSubject(null);
+      setSelectedChapter(null);
+      setSelectedLesson(null);
+      setSearch("");
+      resetStudy();
+      pushPortalHistory({ __medicalPortal: true }, { hash: "#klasat" });
+      window.requestAnimationFrame(() => document.getElementById("klasat")?.scrollIntoView({ block: "start" }));
+    };
+    window.addEventListener("medical-portal:home", resetToHome);
+    window.addEventListener("medical-portal:classes", resetToClasses);
+    return () => {
+      window.removeEventListener("medical-portal:home", resetToHome);
+      window.removeEventListener("medical-portal:classes", resetToClasses);
+    };
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {`,
+);
+
 source = source.replace(
   `"use client";`,
   `"use client";\n\n// Generated from ClassicLearningPortal.tsx. Keep all UI changes in the template file.`,
 );
 
 writeFileSync(outputPath, source);
-console.log(`Generated ${outputPath} with the optimized School v2 data layer.`);
+console.log(`Generated ${outputPath} with optimized data and safe browser navigation.`);
