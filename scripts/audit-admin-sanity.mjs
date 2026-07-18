@@ -25,8 +25,10 @@ function requireAll(label, content, values) {
 
 const packageJson = JSON.parse(read("package.json") || "{}");
 const nextConfig = read("next.config.mjs");
+const sanityConfig = read("lib/sanity/config.ts");
 const writeClient = read("lib/sanity/write-client.ts");
 const aligner = read("scripts/align-sanity-v2.mjs");
+const runtimePinner = read("scripts/pin-live-sanity.mjs");
 const generatedPortal = read("app/SchoolLearningPortal.tsx");
 const adminIdentity = read("lib/admin/server.ts");
 const adminEditor = read("app/LessonAdminEditor.tsx");
@@ -36,13 +38,19 @@ const page = read("app/page.tsx");
 const buildWorkflow = read(".github/workflows/build.yml");
 const browserWorkflow = read(".github/workflows/deep-navigation.yml");
 
-requireAll("Canonical Sanity project", nextConfig, [
-  `process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "${EXPECTED_PROJECT}"`,
-  `process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "${EXPECTED_DATASET}"`,
+requireAll("Canonical Sanity constants", sanityConfig, [
+  `SANITY_PROJECT_ID = "${EXPECTED_PROJECT}"`,
+  `SANITY_DATASET = "${EXPECTED_DATASET}"`,
+  'SANITY_API_VERSION = "2026-07-17"',
+]);
+requireAll("Canonical Next configuration", nextConfig, [
+  `const sanityProjectId = "${EXPECTED_PROJECT}"`,
+  `const sanityDataset = "${EXPECTED_DATASET}"`,
 ]);
 requireAll("Canonical Sanity write client", writeClient, [
-  `process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "${EXPECTED_PROJECT}"`,
-  `process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "${EXPECTED_DATASET}"`,
+  "SANITY_PROJECT_ID",
+  "SANITY_DATASET",
+  "SANITY_API_VERSION",
   "useCdn: false",
   "SANITY_API_WRITE_TOKEN",
 ]);
@@ -54,19 +62,37 @@ requireAll("Generated Sanity compatibility", aligner, [
   "defined(audio.asset)",
   "freshClient.fetch<Lesson | null>",
 ]);
+requireAll("Canonical runtime pinner", runtimePinner, [
+  'projectId: "u5d5zn7n"',
+  'dataset: "schoolv2"',
+  'apiVersion: "2026-07-17"',
+  "SANITY_PORTAL_DATA_INCOMPLETE",
+]);
 requireAll("Generated portal result", generatedPortal, [
   "sanity-v2-contract-v2",
+  "canonical-sanity-schoolv2",
+  'projectId: "u5d5zn7n"',
+  'dataset: "schoolv2"',
+  'apiVersion: "2026-07-17"',
   '"gradeNumber": coalesce(gradeNumber, order)',
   "defined(audio.asset)",
   "freshClient.fetch<Lesson | null>",
+  "SANITY_PORTAL_DATA_INCOMPLETE",
 ]);
+if (generatedPortal.includes("projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID")) {
+  failures.push("Portali final nuk duhet të pranojë project ID nga Vercel environment.");
+}
+if (generatedPortal.includes("dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2")) {
+  failures.push("Portali final nuk duhet të pranojë dataset nga Vercel environment.");
+}
 
 const prepare = String(packageJson.scripts?.["prepare:portal"] || "");
 const buildIndex = prepare.indexOf("build-schoolv2-portal-v2.mjs");
 const alignIndex = prepare.indexOf("align-sanity-v2.mjs");
 const hardenIndex = prepare.indexOf("harden-navigation-v3.mjs");
-if (buildIndex < 0 || alignIndex <= buildIndex || hardenIndex <= alignIndex) {
-  failures.push("prepare:portal duhet ta gjenerojë portalin, ta harmonizojë me Sanity V2 dhe pastaj ta forcojë navigimin.");
+const pinIndex = prepare.indexOf("pin-live-sanity.mjs");
+if (buildIndex < 0 || alignIndex <= buildIndex || hardenIndex <= alignIndex || pinIndex <= hardenIndex) {
+  failures.push("prepare:portal duhet ta gjenerojë, harmonizojë, forcojë dhe në fund ta lidhë portalin me Sanity kanonik.");
 }
 if (!String(packageJson.scripts?.["audit:app"] || "").includes("audit:admin-sanity")) {
   failures.push("audit:app nuk e përfshin auditimin admin/Sanity.");
