@@ -43,6 +43,7 @@ const authControls = read("app/AuthControls.tsx");
 const layout = read("app/layout.tsx");
 const manifestSource = read("app/manifest.ts");
 const pwaRegistrar = read("app/PwaRegistrar.tsx");
+const progressClient = read("lib/progress/client.ts");
 const serviceWorker = read("public/sw.js");
 
 const projectIds = [
@@ -136,6 +137,17 @@ requireText("Safe PWA registration", pwaRegistrar, [
 ]);
 if (/await\s+registration\.update\(\)/.test(pwaRegistrar)) {
   failures.push("PWA registrar nuk duhet të thërrasë update() pa verifikuar objektin e regjistrimit.");
+}
+requireText("Session-safe progress identity", progressClient, [
+  "export function clearProgressUserCache",
+  "getSignedInUser(forceRefresh = false)",
+  "denied.error === \"PROGRESS_USER_MISMATCH\"",
+  "clearProgressUserCache();",
+  "response = await sendProgressRequest(body, true)",
+  "credentials: \"same-origin\"",
+]);
+if (/value \? 5 \* 60_000 : 30_000/.test(progressClient)) {
+  failures.push("Identiteti bosh i progresit nuk duhet të ruhet 30 sekonda pas kyçjes ose regjistrimit.");
 }
 requireText("Private PWA handling", serviceWorker, [
   'const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"]',
