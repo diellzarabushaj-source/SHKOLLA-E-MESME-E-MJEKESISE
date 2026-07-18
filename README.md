@@ -44,7 +44,9 @@ Dataset-i i editorit merret nga `NEXT_PUBLIC_SANITY_DATASET_V2` dhe, kur mungon,
 
 ## Production dhe Sanity CORS
 
-Portali live lexon përmbajtjen e publikuar nga projekti `u5d5zn7n`, dataset-i `schoolv2`. Domain-i production dhe origjinat `https://*.vercel.app` duhet të jenë të lejuara në Sanity CORS pa kredenciale, në mënyrë që klasat, lëndët, kapitujt dhe mësimet të ngarkohen nga browser-i.
+Portali live lexon përmbajtjen e publikuar nga projekti `u5d5zn7n`, dataset-i `schoolv2`. Këto vlera janë të fiksuara edhe në `next.config.mjs`, që një environment variable e vjetër në Vercel të mos e drejtojë portalin te projekti ose dataset-i i gabuar.
+
+Domain-i production dhe origjinat `https://*.vercel.app` duhet të jenë të lejuara në Sanity CORS pa kredenciale, në mënyrë që klasat, lëndët, kapitujt dhe mësimet të ngarkohen nga browser-i.
 
 Domain-i aktual production:
 
