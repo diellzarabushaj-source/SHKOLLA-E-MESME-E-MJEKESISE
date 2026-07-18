@@ -32,7 +32,7 @@ requireText("Safe return paths", redirectHelper, [
   'candidate.includes("\\\\")',
   "decodeURIComponent(candidate)",
   'normalized.startsWith("/api/")',
-  'AUTH_PATHS.some',
+  "AUTH_PATHS.some",
   "encodeURIComponent(safePath)",
 ]);
 
@@ -71,7 +71,7 @@ requireText("Sign-in form", signInForm, [
   'aria-pressed={showPassword}',
   'provider: "google"',
   "callbackURL: returnTo",
-  'Admini — Kyçu me Google',
+  "Admini — Kyçu me Google",
   'href={returnTo}',
 ]);
 requireText("Sign-up form", signUpForm, [
@@ -104,9 +104,11 @@ requireText("Auth responsive styles", authStyles, [
 requireText("Private auth PWA handling", serviceWorker, ['const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"]']);
 
 const authAudit = String(packageJson.scripts?.["audit:auth"] || "");
+const smoothnessAudit = String(packageJson.scripts?.["audit:smoothness"] || "");
 const appAudit = String(packageJson.scripts?.["audit:app"] || "");
 if (!authAudit.includes("scripts/audit-auth.mjs")) failures.push("package.json nuk ka audit:auth.");
-if (!appAudit.includes("audit:auth")) failures.push("audit:app nuk e ekzekuton audit:auth.");
+if (!smoothnessAudit.includes("scripts/audit-auth.mjs")) failures.push("CI smoothness audit nuk e ekzekuton audit-auth.mjs.");
+if (!appAudit.includes("audit:smoothness")) failures.push("audit:app nuk e ekzekuton audit:smoothness.");
 
 if (failures.length) {
   console.error("\nAuthentication audit failed:");
