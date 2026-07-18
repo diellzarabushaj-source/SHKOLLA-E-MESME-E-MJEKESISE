@@ -1,0 +1,73 @@
+name: Private annotations browser audit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  annotations-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEON_AUTH_BASE_URL: https://ep-long-wind-at258oxo.neonauth.c-9.us-east-1.aws.neon.tech/neondb/auth
+      NEON_AUTH_COOKIE_SECRET: ci-only-cookie-secret-with-more-than-32-characters
+      NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
+      NEXT_PUBLIC_SANITY_PROJECT_ID: u5d5zn7n
+      NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_PUBLIC_SANITY_DATASET_V2: schoolv2
+      E2E_ANNOTATIONS_AUDIT: 1
+      E2E_BASE_URL: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install application dependencies
+        run: npm install
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Build application
+        run: npm run build
+      - name: Run mobile annotations audit
+        shell: bash
+        run: |
+          set -uo pipefail
+          npm run start > annotations-server.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              break
+            fi
+            if ! kill -0 "$APP_PID" 2>/dev/null; then
+              cat annotations-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          set +e
+          node scripts/e2e-annotations.mjs > annotations-e2e.log 2>&1
+          STATUS=$?
+          set -e
+          cat annotations-e2e.log
+          if [ "$STATUS" -ne 0 ]; then
+            cat annotations-server.log
+            exit "$STATUS"
+          fi
+      - name: Upload annotations diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: annotations-browser-logs
+          path: |
+            annotations-e2e.log
+            annotations-server.log
+          retention-days: 1
