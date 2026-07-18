@@ -8,8 +8,8 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-site" },
 ];
 
-const sanityProjectId = "u5d5zn7n";
-const sanityDataset = "schoolv2";
+const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "u5d5zn7n";
+const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
