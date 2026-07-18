@@ -49,8 +49,8 @@ jobs:
       - name: Run deep navigation audit
         shell: bash
         run: |
-          set -euo pipefail
-          npm run start > /tmp/medical-school-next.log 2>&1 &
+          set -uo pipefail
+          npm run start > navigation-server.log 2>&1 &
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
 
@@ -59,15 +59,27 @@ jobs:
               break
             fi
             if ! kill -0 "$APP_PID" 2>/dev/null; then
-              cat /tmp/medical-school-next.log
+              cat navigation-server.log
               exit 1
             fi
             sleep 1
           done
 
           if ! curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
-            cat /tmp/medical-school-next.log
+            cat navigation-server.log
             exit 1
           fi
 
-          node scripts/e2e-navigation.mjs
+          node scripts/e2e-navigation.mjs > navigation-e2e.log 2>&1
+          STATUS=$?
+          cat navigation-e2e.log
+          exit "$STATUS"
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-browser-logs
+          path: |
+            navigation-e2e.log
+            navigation-server.log
+          retention-days: 1
