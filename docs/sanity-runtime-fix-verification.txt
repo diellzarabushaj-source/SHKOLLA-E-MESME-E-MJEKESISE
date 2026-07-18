@@ -1,0 +1,2 @@
+Sanity runtime fix verification target: u5d5zn7n / schoolv2 / cache v9.
+Expected published content: 3 grades, 1 subject, 9 chapters, 43 lessons.
