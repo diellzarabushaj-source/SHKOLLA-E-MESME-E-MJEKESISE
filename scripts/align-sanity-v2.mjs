@@ -42,7 +42,7 @@ replaceRegex(
   "Summary compatibility",
   /^(\s*)summary,$/gm,
   '$1"summary": coalesce(summary, description),',
-  2,
+  3,
 );
 
 const legacyRecordingProjection = `    recording {
