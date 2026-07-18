@@ -30,8 +30,15 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
   const normalizedUsername = useMemo(() => normalizeUsername(username), [username]);
   const strength = useMemo(() => passwordStrength(password.length), [password.length]);
   const passwordsMatch = Boolean(confirmPassword) && password === confirmPassword;
+  const isRedirecting = Boolean(state?.success && state.returnTo);
+  const busy = isPending || isRedirecting;
 
   useEffect(() => {
+    if (state?.success && state.returnTo) {
+      window.location.replace(state.returnTo);
+      return;
+    }
+
     if (!state?.error) return;
     if (state.username) setUsername(state.username);
     if (state.field === "password") passwordRef.current?.focus();
@@ -55,11 +62,11 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
           <h1 className={styles.title} id="sign-up-title">Krijo llogari</h1>
           <p className={styles.subtitle}>Duhet vetëm një username dhe një password. Nuk kërkohet email apo numër telefoni.</p>
 
-          <form action={formAction} className={styles.form} aria-busy={isPending}>
+          <form action={formAction} className={styles.form} aria-busy={busy}>
             <input type="hidden" name="returnTo" value={returnTo} />
             <div className={styles.field}>
               <label className={styles.label} htmlFor="username">Zgjidh username-in</label>
-              <input ref={usernameRef} className={`${styles.input} ${state?.field === "username" ? styles.inputError : ""}`} id="username" name="username" type="text" value={username} onChange={(event) => setUsername(event.target.value.slice(0, 80))} minLength={2} maxLength={80} autoComplete="username" autoCapitalize="none" autoCorrect="off" enterKeyHint="next" spellCheck={false} placeholder="p.sh. alketa03" aria-invalid={state?.field === "username" || undefined} aria-describedby="sign-up-username-hint username-preview" disabled={isPending} required />
+              <input ref={usernameRef} className={`${styles.input} ${state?.field === "username" ? styles.inputError : ""}`} id="username" name="username" type="text" value={username} onChange={(event) => setUsername(event.target.value.slice(0, 80))} minLength={2} maxLength={80} autoComplete="username" autoCapitalize="none" autoCorrect="off" enterKeyHint="next" spellCheck={false} placeholder="p.sh. alketa03" aria-invalid={state?.field === "username" || undefined} aria-describedby="sign-up-username-hint username-preview" disabled={busy} required />
               <span className={styles.hint} id="sign-up-username-hint">Lejohen shkronja, numra, pikë, _ dhe -. Hapësirat dhe ë/ç rregullohen automatikisht.</span>
               <span className={styles.usernamePreview} id="username-preview" aria-live="polite">{normalizedUsername ? <>Username-i yt do të jetë <b>@{normalizedUsername}</b></> : "Shembull: @alketa03"}</span>
             </div>
@@ -67,8 +74,8 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
             <div className={styles.field}>
               <label className={styles.label} htmlFor="password">Krijo password-in</label>
               <div className={styles.passwordField}>
-                <input ref={passwordRef} className={`${styles.input} ${state?.field === "password" ? styles.inputError : ""}`} id="password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value.slice(0, 128))} minLength={8} maxLength={128} autoComplete="new-password" enterKeyHint="next" placeholder="Së paku 8 karaktere" onKeyUp={(event) => setCapsLock(event.getModifierState("CapsLock"))} onBlur={() => setCapsLock(false)} aria-invalid={state?.field === "password" || undefined} aria-describedby="password-strength sign-up-password-hint" disabled={isPending} required />
-                <button className={styles.passwordToggle} type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Fshehi password-at" : "Shfaqi password-at"} aria-pressed={showPassword} disabled={isPending}>{showPassword ? "Fshehi" : "Shfaqi"}</button>
+                <input ref={passwordRef} className={`${styles.input} ${state?.field === "password" ? styles.inputError : ""}`} id="password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value.slice(0, 128))} minLength={8} maxLength={128} autoComplete="new-password" enterKeyHint="next" placeholder="Së paku 8 karaktere" onKeyUp={(event) => setCapsLock(event.getModifierState("CapsLock"))} onBlur={() => setCapsLock(false)} aria-invalid={state?.field === "password" || undefined} aria-describedby="password-strength sign-up-password-hint" disabled={busy} required />
+                <button className={styles.passwordToggle} type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Fshehi password-at" : "Shfaqi password-at"} aria-pressed={showPassword} disabled={busy}>{showPassword ? "Fshehi" : "Shfaqi"}</button>
               </div>
               <div className={styles.passwordStrength} id="password-strength" data-level={strength.level} aria-live="polite"><span className={styles.strengthTrack} aria-hidden="true"><span className={styles.strengthBar} style={{ width: `${strength.value}%` }} /></span><span>{strength.label}</span></div>
               <span className={styles.hint} id="sign-up-password-hint">Përdor një password që e mban mend, por që nuk e përdor askush tjetër.</span>
@@ -77,12 +84,12 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
 
             <div className={styles.field}>
               <label className={styles.label} htmlFor="confirmPassword">Përsërite password-in</label>
-              <input ref={confirmPasswordRef} className={`${styles.input} ${state?.field === "confirmPassword" ? styles.inputError : ""}`} id="confirmPassword" name="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value.slice(0, 128))} minLength={8} maxLength={128} autoComplete="new-password" enterKeyHint="go" placeholder="Shkruaje edhe një herë" aria-invalid={state?.field === "confirmPassword" || (confirmPassword && !passwordsMatch) || undefined} aria-describedby="password-match" disabled={isPending} required />
+              <input ref={confirmPasswordRef} className={`${styles.input} ${state?.field === "confirmPassword" ? styles.inputError : ""}`} id="confirmPassword" name="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value.slice(0, 128))} minLength={8} maxLength={128} autoComplete="new-password" enterKeyHint="go" placeholder="Shkruaje edhe një herë" aria-invalid={state?.field === "confirmPassword" || (confirmPassword && !passwordsMatch) || undefined} aria-describedby="password-match" disabled={busy} required />
               <span className={!confirmPassword ? styles.hint : passwordsMatch ? styles.usernamePreview : styles.capsLock} id="password-match" aria-live="polite">{!confirmPassword ? "Kjo të mbron nga gabimet gjatë shkrimit." : passwordsMatch ? "Password-at përputhen." : "Password-at nuk përputhen ende."}</span>
             </div>
 
             {state?.error && <p className={styles.error} role="alert" aria-live="assertive">{state.error}</p>}
-            <button className={styles.submit} type="submit" disabled={isPending}>{isPending && <span className={styles.spinner} aria-hidden="true" />}<span>{isPending ? "Duke krijuar llogarinë..." : "Krijo llogarinë"}</span></button>
+            <button className={styles.submit} type="submit" disabled={busy}>{(isPending || isRedirecting) && <span className={styles.spinner} aria-hidden="true" />}<span>{isRedirecting ? "Duke hapur portalin..." : isPending ? "Duke krijuar llogarinë..." : "Krijo llogarinë"}</span></button>
           </form>
 
           <div className={styles.securityNote}><strong>Mbaje mend password-in.</strong><span>Pasi nuk kërkohet email apo telefon, password-i nuk mund të rikuperohet automatikisht.</span></div>
