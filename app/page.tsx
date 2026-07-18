@@ -5,10 +5,8 @@ import { currentSessionUser, isCurrentUserAdmin } from "@/lib/admin/server";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [user, isAdmin] = await Promise.all([
-    currentSessionUser(),
-    isCurrentUserAdmin(),
-  ]);
+  const user = await currentSessionUser();
+  const isAdmin = await isCurrentUserAdmin(user);
 
   return (
     <SchoolLearningPortal
