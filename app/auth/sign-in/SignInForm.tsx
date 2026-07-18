@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { authPageHref } from "@/lib/auth/redirect";
-import { normalizeUsername } from "@/lib/auth/username";
 import StethoscopeLogo from "../../StethoscopeLogo";
 import styles from "../auth.module.css";
 import { signInWithUsername } from "./actions";
@@ -21,13 +20,18 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
   const [state, formAction, isPending] = useActionState(signInWithUsername, null);
   const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [capsLock, setCapsLock] = useState(false);
   const [googleError, setGoogleError] = useState("");
   const [isGooglePending, setIsGooglePending] = useState(false);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const normalizedUsername = useMemo(() => normalizeUsername(username), [username]);
-  const busy = isPending || isGooglePending;
+  const isCompleting = Boolean(state?.success);
+  const busy = isPending || isGooglePending || isCompleting;
+
+  useEffect(() => {
+    if (!state?.success) return;
+    window.dispatchEvent(new Event("medical-portal:auth-changed"));
+    window.location.replace(state.returnTo || returnTo);
+  }, [returnTo, state]);
 
   useEffect(() => {
     if (!state?.error) return;
@@ -69,7 +73,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
           <div className={styles.brand} aria-hidden="true"><StethoscopeLogo /></div>
           <span className={styles.eyebrow}>Mirë se u ktheve</span>
           <h1 className={styles.title} id="sign-in-title">Kyçu</h1>
-          <p className={styles.subtitle}>Hape progresin, shënimet dhe mësimet e tua me llogarinë personale.</p>
+          <p className={styles.subtitle}>Shkruaj username-in dhe password-in tënd.</p>
 
           {notice && (
             <p className={`${styles.notice} ${styles[`notice-${noticeTone}`]}`} role="status" aria-live="polite">
@@ -77,7 +81,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
             </p>
           )}
 
-          <form action={formAction} className={styles.form} aria-busy={isPending}>
+          <form action={formAction} className={styles.form} aria-busy={busy}>
             <input type="hidden" name="returnTo" value={returnTo} />
 
             <div className={styles.field}>
@@ -94,22 +98,14 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
                 maxLength={80}
                 autoComplete="username"
                 autoCapitalize="none"
+                autoCorrect="off"
                 enterKeyHint="next"
                 spellCheck={false}
-                placeholder="p.sh. alketa03"
+                placeholder="Username-i yt"
                 aria-invalid={state?.field === "username" || undefined}
-                aria-describedby="sign-in-username-hint"
                 disabled={busy}
                 required
               />
-              <span className={styles.hint} id="sign-in-username-hint">
-                Shkruaje siç e mban mend; hapësirat dhe ë/ç rregullohen automatikisht.
-              </span>
-              {username.trim() && normalizedUsername && (
-                <span className={styles.usernamePreview} aria-live="polite">
-                  Do të përdoret <b>@{normalizedUsername}</b>
-                </span>
-              )}
             </div>
 
             <div className={styles.field}>
@@ -126,10 +122,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
                   autoComplete="current-password"
                   enterKeyHint="go"
                   placeholder="Password-i yt"
-                  onKeyUp={(event) => setCapsLock(event.getModifierState("CapsLock"))}
-                  onBlur={() => setCapsLock(false)}
                   aria-invalid={state?.field === "password" || undefined}
-                  aria-describedby={capsLock ? "sign-in-caps-lock" : undefined}
                   disabled={busy}
                   required
                 />
@@ -144,14 +137,14 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
                   {showPassword ? "Fshehe" : "Shfaqe"}
                 </button>
               </div>
-              {capsLock && <span className={styles.capsLock} id="sign-in-caps-lock">Caps Lock është aktiv.</span>}
             </div>
 
             {state?.error && <p className={styles.error} role="alert" aria-live="assertive">{state.error}</p>}
+            {isCompleting && <p className={styles.notice} role="status" aria-live="polite">U kyçe. Po hapim portalin…</p>}
 
             <button className={styles.submit} type="submit" disabled={busy}>
-              {isPending && <span className={styles.spinner} aria-hidden="true" />}
-              <span>{isPending ? "Duke u kyçur..." : "Kyçu"}</span>
+              {(isPending || isCompleting) && <span className={styles.spinner} aria-hidden="true" />}
+              <span>{isCompleting ? "Po hapet portali…" : isPending ? "Duke u kyçur…" : "Kyçu"}</span>
             </button>
           </form>
 
@@ -159,8 +152,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
             Nuk ke llogari? <Link href={authPageHref("/auth/sign-up", returnTo)}>Regjistrohu</Link>
           </p>
 
-          <div className={styles.divider}>ose, për administratorin</div>
-
+          <div className={styles.divider}>Administratori</div>
           <button
             className={styles.googleButton}
             type="button"
@@ -177,14 +169,13 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
                 <path fill="#EA4335" d="M12 5.94c1.47 0 2.78.5 3.82 1.49l2.87-2.87A9.63 9.63 0 0 0 12 2a10 10 0 0 0-8.96 5.45l3.35 2.62C7.18 7.7 9.39 5.94 12 5.94Z" />
               </svg>
             )}
-            <span>{isGooglePending ? "Duke u lidhur..." : "Admini — Kyçu me Google"}</span>
+            <span>{isGooglePending ? "Duke u lidhur…" : "Kyçu me Google"}</span>
           </button>
-          <p className={styles.adminHint}>Qasja e administratorit verifikohet përsëri në server para çdo ndryshimi.</p>
+          <p className={styles.adminHint}>Vetëm llogaria e autorizuar e administratorit pranohet.</p>
           {googleError && <p className={styles.error} role="alert" aria-live="assertive">{googleError}</p>}
 
           <div className={styles.divider}>ose</div>
           <Link className={styles.guest} href={returnTo}>Vazhdo pa llogari</Link>
-          <p className={styles.privacy}>Sesioni dhe progresi yt janë privatë dhe nuk ruhen në cache publike.</p>
         </section>
       </div>
     </main>
