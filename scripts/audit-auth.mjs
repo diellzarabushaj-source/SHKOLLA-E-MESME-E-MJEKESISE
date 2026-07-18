@@ -43,6 +43,7 @@ requireText("Safe return paths", redirectHelper, [
 for (const [label, page] of [["Sign-in page", signInPage], ["Sign-up page", signUpPage]]) {
   requireText(label, page, [
     "await auth.getSession()",
+    "session.session?.user?.id",
     "safeReturnTo(params.returnTo)",
     "if (signedIn) redirect(returnTo)",
     'robots: { index: false, follow: false }',
@@ -55,7 +56,8 @@ requireText("Sign-in action", signInAction, [
   "password.length < 8",
   "password.length > 128",
   "safeReturnTo",
-  "redirect(returnTo)",
+  "success: true",
+  "returnTo",
 ]);
 requireText("Sign-up action", signUpAction, [
   'slice(0, 80)',
@@ -64,7 +66,8 @@ requireText("Sign-up action", signUpAction, [
   "password.length > 128",
   "user_already_exists",
   "safeReturnTo",
-  "redirect(returnTo)",
+  "success: true",
+  "returnTo",
 ]);
 
 requireText("Sign-in form", signInForm, [
@@ -76,6 +79,8 @@ requireText("Sign-in form", signInForm, [
   'provider: "google"',
   "callbackURL: returnTo",
   "Admini — Kyçu me Google",
+  "window.location.replace(state.returnTo)",
+  "Duke hapur portalin...",
   'href={returnTo}',
 ]);
 requireText("Sign-up form", signUpForm, [
@@ -86,6 +91,8 @@ requireText("Sign-up form", signUpForm, [
   'aria-pressed={showPassword}',
   "normalizeUsername(username)",
   "passwordStrength(password.length)",
+  "window.location.replace(state.returnTo)",
+  "Duke hapur portalin...",
   'href={returnTo}',
 ]);
 
@@ -94,6 +101,9 @@ if (/gmail\.com/i.test(signInForm) || /loginHint\s*:/.test(signInForm)) {
 }
 if (/auth\.signIn\.email/.test(signUpAction)) {
   failures.push("Regjistrimi nuk duhet të bëjë sign-in të dytë pas sign-up.");
+}
+if (/redirect\(returnTo\)/.test(signInAction) || /redirect\(returnTo\)/.test(signUpAction)) {
+  failures.push("Server actions duhet t'ia kthejnë suksesin formës; navigimi i plotë bëhet në browser për sesion të freskët.");
 }
 
 requireText("Auth responsive styles", authStyles, [
@@ -140,4 +150,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: safe redirects, session-aware pages, robust validation, Google-only admin entry and responsive forms.");
+console.log("Authentication audit passed: safe redirects, complete session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
