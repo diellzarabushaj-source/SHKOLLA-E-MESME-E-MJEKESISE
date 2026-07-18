@@ -23,19 +23,33 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
   const [state, formAction, isPending] = useActionState(signUpWithUsername, null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [capsLock, setCapsLock] = useState(false);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const normalizedUsername = useMemo(() => normalizeUsername(username), [username]);
   const strength = useMemo(() => passwordStrength(password.length), [password.length]);
+  const passwordsMatch = Boolean(confirmPassword) && password === confirmPassword;
 
   useEffect(() => {
     if (!state?.error) return;
     if (state.username) setUsername(state.username);
     if (state.field === "password") passwordRef.current?.focus();
+    else if (state.field === "confirmPassword") confirmPasswordRef.current?.focus();
     else usernameRef.current?.focus();
   }, [state]);
+
+  useEffect(() => {
+    const field = confirmPasswordRef.current;
+    if (!field) return;
+    field.setCustomValidity(
+      confirmPassword && password !== confirmPassword
+        ? "Password-at nuk përputhen."
+        : "",
+    );
+  }, [confirmPassword, password]);
 
   return (
     <main className={styles.page}>
@@ -67,6 +81,7 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
                 maxLength={80}
                 autoComplete="username"
                 autoCapitalize="none"
+                autoCorrect="off"
                 enterKeyHint="next"
                 spellCheck={false}
                 placeholder="p.sh. alketa03"
@@ -97,7 +112,7 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
                   minLength={8}
                   maxLength={128}
                   autoComplete="new-password"
-                  enterKeyHint="done"
+                  enterKeyHint="next"
                   placeholder="Së paku 8 karaktere"
                   onKeyUp={(event) => setCapsLock(event.getModifierState("CapsLock"))}
                   onBlur={() => setCapsLock(false)}
@@ -110,11 +125,11 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
                   className={styles.passwordToggle}
                   type="button"
                   onClick={() => setShowPassword((current) => !current)}
-                  aria-label={showPassword ? "Fshehe password-in" : "Shfaq password-in"}
+                  aria-label={showPassword ? "Fshehi password-at" : "Shfaqi password-at"}
                   aria-pressed={showPassword}
                   disabled={isPending}
                 >
-                  {showPassword ? "Fshehe" : "Shfaqe"}
+                  {showPassword ? "Fshehi" : "Shfaqi"}
                 </button>
               </div>
 
@@ -124,8 +139,37 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
                 </span>
                 <span>{strength.label}</span>
               </div>
-              <span className={styles.hint} id="sign-up-password-hint">Nuk kërkohen simbole, numra ose shkronja të mëdha.</span>
+              <span className={styles.hint} id="sign-up-password-hint">Përdor një password që e mban mend, por që nuk e përdor askush tjetër.</span>
               {capsLock && <span className={styles.capsLock}>Caps Lock është aktiv.</span>}
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="confirmPassword">Përsërite password-in</label>
+              <input
+                ref={confirmPasswordRef}
+                className={`${styles.input} ${state?.field === "confirmPassword" ? styles.inputError : ""}`}
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value.slice(0, 128))}
+                minLength={8}
+                maxLength={128}
+                autoComplete="new-password"
+                enterKeyHint="go"
+                placeholder="Shkruaje edhe një herë"
+                aria-invalid={state?.field === "confirmPassword" || (confirmPassword && !passwordsMatch) || undefined}
+                aria-describedby="password-match"
+                disabled={isPending}
+                required
+              />
+              <span
+                className={`${styles.passwordMatch} ${confirmPassword ? (passwordsMatch ? styles.passwordMatchSuccess : styles.passwordMatchError) : ""}`}
+                id="password-match"
+                aria-live="polite"
+              >
+                {!confirmPassword ? "Kjo të mbron nga gabimet gjatë shkrimit." : passwordsMatch ? "Password-at përputhen." : "Password-at nuk përputhen ende."}
+              </span>
             </div>
 
             {state?.error && <p className={styles.error} role="alert" aria-live="assertive">{state.error}</p>}
@@ -138,7 +182,7 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
 
           <div className={styles.securityNote}>
             <strong>Mbaje mend password-in.</strong>
-            <span>Llogaria krijohet menjëherë dhe progresi lidhet vetëm me këtë username.</span>
+            <span>Pasi nuk kërkohet email apo telefon, password-i nuk mund të rikuperohet automatikisht.</span>
           </div>
 
           <p className={styles.switchText}>
