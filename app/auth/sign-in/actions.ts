@@ -44,6 +44,15 @@ export async function signInWithUsername(
     });
 
     if (error) {
+      const message = `${error.code || ""} ${error.message || ""}`.toLowerCase();
+      if (message.includes("rate") || message.includes("too many")) {
+        return {
+          error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.",
+          username,
+          field: "form",
+        };
+      }
+
       return {
         error: "Username ose password gabim. Kontrolloji dhe provo përsëri.",
         username,
@@ -52,7 +61,7 @@ export async function signInWithUsername(
     }
   } catch {
     return {
-      error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Provo përsëri pas pak.",
+      error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.",
       username,
       field: "form",
     };
