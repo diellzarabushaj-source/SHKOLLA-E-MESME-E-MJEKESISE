@@ -17,6 +17,7 @@ import "./branding.css";
 import "./action-buttons.css";
 import "./progress.css";
 import "./lesson-rich.css";
+import "./portable-rich-text.css";
 import "./system-pages.css";
 import "./test-results.css";
 import "./interaction-enhancements.css";

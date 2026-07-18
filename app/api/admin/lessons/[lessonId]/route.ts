@@ -8,12 +8,13 @@ type PortableNode = Record<string, unknown>;
 type LessonDocument = {
   _id: string;
   _rev: string;
+  title?: string;
   body?: PortableNode[];
 };
 
 const LESSON_ID_PATTERN = /^[A-Za-z0-9_.-]{1,128}$/;
 const TEXT_STYLES = new Set(["normal", "h2", "h3", "h4", "blockquote"]);
-const INLINE_MARKS = new Set(["strong", "em", "underline", "code"]);
+const INLINE_MARKS = new Set(["strong", "em", "underline", "code", "highlight"]);
 
 function jsonError(error: string, status: number) {
   return NextResponse.json({ error }, { status, headers: { "Cache-Control": "no-store" } });
@@ -28,29 +29,76 @@ function safeText(value: unknown, maxLength: number): string {
   return value;
 }
 
+function safeLink(value: unknown): string {
+  const href = safeText(value, 2048).trim();
+  if (!href) throw new Error("INVALID_LESSON_BODY");
+  if (href.startsWith("/") || href.startsWith("#")) return href;
+
+  try {
+    const parsed = new URL(href);
+    if (!["http:", "https:", "mailto:"].includes(parsed.protocol)) throw new Error("INVALID_LESSON_BODY");
+    return href;
+  } catch {
+    throw new Error("INVALID_LESSON_BODY");
+  }
+}
+
+function sanitizeMarkDefs(proposed: unknown, current: unknown): PortableNode[] {
+  const currentDefs = Array.isArray(current) ? current.filter(isRecord) : [];
+  const currentByKey = new Map(
+    currentDefs
+      .map((definition) => [typeof definition._key === "string" ? definition._key : "", definition] as const)
+      .filter(([key]) => Boolean(key)),
+  );
+
+  if (!Array.isArray(proposed)) return currentDefs;
+  if (proposed.length > 100) throw new Error("INVALID_LESSON_BODY");
+
+  const used = new Set<string>();
+  return proposed.map((value) => {
+    if (!isRecord(value)) throw new Error("INVALID_LESSON_BODY");
+    const key = safeText(value._key, 80);
+    if (used.has(key)) throw new Error("DUPLICATE_MARK_KEY");
+    used.add(key);
+
+    const trustedCurrent = currentByKey.get(key);
+    if (trustedCurrent) return trustedCurrent;
+
+    if (value._type === "link") {
+      return {
+        _key: key,
+        _type: "link",
+        href: safeLink(value.href),
+      };
+    }
+
+    throw new Error("INVALID_LESSON_BODY");
+  });
+}
+
 function sanitizeBlock(node: PortableNode, current?: PortableNode): PortableNode {
   const key = safeText(node._key, 80);
   const style = typeof node.style === "string" && TEXT_STYLES.has(node.style) ? node.style : "normal";
-  const currentMarkDefs = Array.isArray(current?.markDefs) ? current.markDefs : [];
-  const markKeys = new Set(currentMarkDefs
-    .filter(isRecord)
+  const markDefs = sanitizeMarkDefs(node.markDefs, current?.markDefs);
+  const markKeys = new Set(markDefs
     .map((mark) => typeof mark._key === "string" ? mark._key : "")
     .filter(Boolean));
   const children = Array.isArray(node.children) ? node.children : [];
 
-  if (children.length > 100) throw new Error("INVALID_LESSON_BODY");
+  if (children.length > 250) throw new Error("INVALID_LESSON_BODY");
 
   const cleanChildren = children.map((child, index) => {
     if (!isRecord(child) || child._type !== "span") throw new Error("INVALID_LESSON_BODY");
     const marks = Array.isArray(child.marks)
       ? child.marks
         .filter((mark): mark is string => typeof mark === "string" && (INLINE_MARKS.has(mark) || markKeys.has(mark)))
-        .slice(0, 20)
+        .slice(0, 24)
       : [];
+
     return {
       _key: typeof child._key === "string" && child._key.length <= 80 ? child._key : `${key}-span-${index}`,
       _type: "span",
-      text: safeText(child.text ?? "", 20_000),
+      text: safeText(child.text ?? "", 30_000),
       marks,
     };
   });
@@ -59,7 +107,7 @@ function sanitizeBlock(node: PortableNode, current?: PortableNode): PortableNode
     _key: key,
     _type: "block",
     style,
-    markDefs: currentMarkDefs,
+    markDefs,
     children: cleanChildren,
   };
 
@@ -90,12 +138,58 @@ function sanitizeBody(proposed: unknown, currentBody: PortableNode[]): PortableN
     const current = currentByKey.get(key);
     if (value._type === "block") return sanitizeBlock(value, current);
 
-    // Images and future custom blocks are immutable in this editor. The API
-    // restores the trusted version already in Sanity instead of accepting an
-    // asset reference or custom payload from the browser.
+    // Images and future custom blocks are immutable in the web editor. The API
+    // restores the trusted version already stored in Sanity.
     if (!current || current._type !== value._type) throw new Error("INVALID_EMBEDDED_CONTENT");
     return current;
   });
+}
+
+async function readLesson(lessonId: string) {
+  const client = getSanityWriteClient();
+  return client.fetch<LessonDocument | null>(
+    `*[_type == "lesson" && _id == $lessonId][0]{
+      _id,
+      _rev,
+      title,
+      body[]{
+        ...,
+        _type == "image" => {
+          alt,
+          caption,
+          asset,
+          "assetUrl": asset->url
+        }
+      }
+    }`,
+    { lessonId },
+    { perspective: "published" },
+  );
+}
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ lessonId: string }> },
+) {
+  try {
+    await requireAdminUser();
+    const { lessonId } = await context.params;
+    if (!LESSON_ID_PATTERN.test(lessonId)) return jsonError("INVALID_LESSON_ID", 400);
+
+    const lesson = await readLesson(lessonId);
+    if (!lesson) return jsonError("LESSON_NOT_FOUND", 404);
+
+    return NextResponse.json({ lesson }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "AUTH_REQUIRED") return jsonError("AUTH_REQUIRED", 401);
+      if (error.message === "ADMIN_REQUIRED") return jsonError("ADMIN_REQUIRED", 403);
+      if (error.message === "SANITY_WRITE_TOKEN_MISSING") return jsonError("EDITOR_NOT_CONFIGURED", 503);
+    }
+
+    console.error("Admin lesson read failed", error);
+    return jsonError("LESSON_READ_FAILED", 500);
+  }
 }
 
 export async function PATCH(
@@ -119,7 +213,7 @@ export async function PATCH(
 
     const client = getSanityWriteClient();
     const current = await client.fetch<LessonDocument | null>(
-      `*[_type == "lesson" && _id == $lessonId][0]{_id, _rev, body}`,
+      `*[_type == "lesson" && _id == $lessonId][0]{_id, _rev, title, body}`,
       { lessonId },
       { perspective: "published" },
     );
@@ -130,27 +224,20 @@ export async function PATCH(
     const body = sanitizeBody(payload.body, Array.isArray(current.body) ? current.body : []);
     await client.patch(lessonId).ifRevisionId(revision).set({ body }).commit({ autoGenerateArrayKeys: true });
 
-    const lesson = await client.fetch(
-      `*[_type == "lesson" && _id == $lessonId][0]{
-        _id,
-        _rev,
-        title,
-        body[]{
-          ...,
-          _type == "image" => {asset, "assetUrl": asset->url}
-        }
-      }`,
-      { lessonId },
-      { perspective: "published" },
-    );
-
+    const lesson = await readLesson(lessonId);
     return NextResponse.json({ lesson }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "AUTH_REQUIRED") return jsonError("AUTH_REQUIRED", 401);
       if (error.message === "ADMIN_REQUIRED") return jsonError("ADMIN_REQUIRED", 403);
       if (error.message === "SANITY_WRITE_TOKEN_MISSING") return jsonError("EDITOR_NOT_CONFIGURED", 503);
-      if (["INVALID_LESSON_BODY", "LESSON_BODY_TOO_LARGE", "DUPLICATE_BLOCK_KEY", "INVALID_EMBEDDED_CONTENT"].includes(error.message)) {
+      if ([
+        "INVALID_LESSON_BODY",
+        "LESSON_BODY_TOO_LARGE",
+        "DUPLICATE_BLOCK_KEY",
+        "DUPLICATE_MARK_KEY",
+        "INVALID_EMBEDDED_CONTENT",
+      ].includes(error.message)) {
         return jsonError(error.message, 400);
       }
     }

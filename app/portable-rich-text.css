@@ -1,0 +1,35 @@
+.portable-highlight {
+  padding: .05em .2em;
+  border-radius: .28em;
+  background: #fde68a;
+  color: #342500;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.portable-underline {
+  text-decoration: underline;
+  text-decoration-thickness: .09em;
+  text-underline-offset: .16em;
+}
+
+.portable-code {
+  padding: .12em .35em;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--line));
+  border-radius: .38em;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-soft));
+  color: var(--text);
+  font-size: .92em;
+}
+
+.portable-link {
+  color: var(--accent);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .2em;
+}
+
+.portable-link:hover {
+  color: var(--primary);
+}
