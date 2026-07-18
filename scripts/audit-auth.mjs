@@ -42,8 +42,8 @@ requireText("Safe return paths", redirectHelper, [
 ]);
 
 requireText("Header session recognition", rootLayout, [
-  "await auth.getSession()",
-  "value.user || value.session?.user || null",
+  "currentSessionUser",
+  "const user = await currentSessionUser()",
   "AuthControls username={username}",
 ]);
 
@@ -157,4 +157,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: safe redirects, complete header/session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
+console.log("Authentication audit passed: safe redirects, shared session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
