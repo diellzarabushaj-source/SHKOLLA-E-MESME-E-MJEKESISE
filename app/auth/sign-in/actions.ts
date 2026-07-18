@@ -1,15 +1,16 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import { safeReturnTo } from "@/lib/auth/redirect";
 import { normalizeUsername, USERNAME_PATTERN, usernameToEmail } from "@/lib/auth/username";
 
 export type SignInField = "username" | "password" | "form";
 export type SignInState = {
-  error: string;
+  error?: string;
   username?: string;
   field?: SignInField;
+  success?: boolean;
+  returnTo?: string;
 } | null;
 
 export async function signInWithUsername(
@@ -42,5 +43,7 @@ export async function signInWithUsername(
     return { error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", username, field: "form" };
   }
 
-  redirect(returnTo);
+  // Kthejmë suksesin te forma dhe bëjmë një navigim të plotë në browser.
+  // Kjo e detyron portalin ta lexojë cookie-n e re pa përdorur RSC cache të vjetër.
+  return { success: true, returnTo, username };
 }
