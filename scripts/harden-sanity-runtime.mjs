@@ -74,11 +74,13 @@ registrar = registrar.replace(
 );
 write(registrarPath, registrar);
 
-for (const [label, source, markers] of [
+const validations = [
   ["portal", portal, ['projectId: "u5d5zn7n"', 'dataset: "schoolv2"', "useCdn: false"]],
   ["service worker", serviceWorker, ['medical-portal-v9', "GROQ/query JSON must never be served stale", "event.respondWith(fetch(request))"]],
-  ["PWA registrar", registrar, ['const SERVICE_WORKER_URL = "/sw.js?v=9"']]],
-) {
+  ["PWA registrar", registrar, ['const SERVICE_WORKER_URL = "/sw.js?v=9"']],
+];
+
+for (const [label, source, markers] of validations) {
   for (const marker of markers) {
     if (!source.includes(marker)) throw new Error(`${label}: missing ${marker}`);
   }
