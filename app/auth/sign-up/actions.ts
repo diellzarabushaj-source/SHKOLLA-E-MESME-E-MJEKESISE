@@ -1,15 +1,16 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import { safeReturnTo } from "@/lib/auth/redirect";
 import { normalizeUsername, USERNAME_PATTERN, usernameToEmail } from "@/lib/auth/username";
 
 export type SignUpField = "username" | "password" | "confirmPassword" | "form";
 export type SignUpState = {
-  error: string;
+  error?: string;
   username?: string;
   field?: SignUpField;
+  success?: boolean;
+  returnTo?: string;
 } | null;
 
 export async function signUpWithUsername(
@@ -54,5 +55,7 @@ export async function signUpWithUsername(
     return { error: "Shërbimi i regjistrimit nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", username, field: "form" };
   }
 
-  redirect(returnTo);
+  // Neon Auth e krijon sesionin gjatë sign-up. Forma bën pastaj një navigim
+  // të plotë, që portali ta njohë menjëherë llogarinë e sapokrijuar.
+  return { success: true, returnTo, username };
 }
