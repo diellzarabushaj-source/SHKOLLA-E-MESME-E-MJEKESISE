@@ -54,6 +54,7 @@ requireText("Sign-in action", signInAction, [
   "USERNAME_PATTERN.test(username)",
   "password.length < 8",
   "password.length > 128",
+  'message.includes("rate")',
   "safeReturnTo",
   "redirect(returnTo)",
 ]);
@@ -62,7 +63,11 @@ requireText("Sign-up action", signUpAction, [
   "USERNAME_PATTERN.test(username)",
   "password.length < 8",
   "password.length > 128",
+  'formData.get("confirmPassword")',
+  "password !== confirmPassword",
+  'field: "confirmPassword"',
   "user_already_exists",
+  'message.includes("rate")',
   "safeReturnTo",
   "redirect(returnTo)",
 ]);
@@ -81,7 +86,11 @@ requireText("Sign-in form", signInForm, [
 requireText("Sign-up form", signUpForm, [
   'name="returnTo"',
   'autoComplete="username"',
+  'name="password"',
+  'name="confirmPassword"',
   'autoComplete="new-password"',
+  'setCustomValidity(',
+  'id="password-match"',
   'aria-live="assertive"',
   'aria-pressed={showPassword}',
   "normalizeUsername(username)",
@@ -111,6 +120,9 @@ requireText("Auth switch touch targets", authTouchStyles, [
   "min-width: 40px",
   "min-height: 40px",
   "display: inline-flex",
+  "#password-match",
+  "#confirmPassword:valid",
+  "#confirmPassword:invalid",
 ]);
 requireText("Auth browser audit", authBrowserAudit, [
   "auditSignIn(browser)",
@@ -118,6 +130,7 @@ requireText("Auth browser audit", authBrowserAudit, [
   "auditMobile(browser)",
   "external returnTo was not rejected",
   "administrator email leaked",
+  "registration accepted mismatched passwords",
 ]);
 requireText("Auth browser integration", authBrowserIntegration, [
   'await import("./e2e-auth.mjs");',
@@ -140,4 +153,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: safe redirects, session-aware pages, robust validation, Google-only admin entry and responsive forms.");
+console.log("Authentication audit passed: safe redirects, session-aware pages, confirmed passwords, robust validation, Google-only admin entry and responsive forms.");
