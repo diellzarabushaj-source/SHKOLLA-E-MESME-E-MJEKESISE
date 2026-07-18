@@ -48,9 +48,9 @@ export async function currentSessionUser(): Promise<SessionUser | null> {
   return sessionUser(data);
 }
 
-export async function isCurrentUserAdmin(): Promise<boolean> {
+export async function isCurrentUserAdmin(userOverride?: SessionUser | null): Promise<boolean> {
   try {
-    const user = await currentSessionUser();
+    const user = userOverride === undefined ? await currentSessionUser() : userOverride;
     return Boolean(
       isAdminIdentity(user)
       && user?.id
