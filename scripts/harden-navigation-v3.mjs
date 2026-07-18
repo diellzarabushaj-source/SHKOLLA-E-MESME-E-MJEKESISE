@@ -11,7 +11,7 @@ function replaceRequired(label, pattern, replacement) {
 
 replaceRequired(
   "classes hash must override saved grade",
-  /      const savedId = window\.localStorage\.getItem\(SELECTED_GRADE_KEY\);\n      const gradeId = selectedGradeRef\.current\?_id \|\| savedId;/,
+  /      const savedId = window\.localStorage\.getItem\(SELECTED_GRADE_KEY\);\n      const gradeId = selectedGradeRef\.current\?\._id \|\| savedId;/,
   `      const classesRequested = window.location.hash === "#klasat";
       if (classesRequested) window.localStorage.removeItem(SELECTED_GRADE_KEY);
       const savedId = classesRequested ? null : window.localStorage.getItem(SELECTED_GRADE_KEY);
