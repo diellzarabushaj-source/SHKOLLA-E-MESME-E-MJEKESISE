@@ -100,10 +100,21 @@ function NavigationLinks({ className, label }: { className: string; label: strin
   );
 }
 
+type LayoutSessionUser = {
+  name?: string;
+};
+
+function sessionUser(data: unknown): LayoutSessionUser | null {
+  if (!data || typeof data !== "object") return null;
+  const value = data as { user?: LayoutSessionUser; session?: { user?: LayoutSessionUser } };
+  return value.user || value.session?.user || null;
+}
+
 async function getCurrentUsername(): Promise<string | null> {
   try {
     const { data: session } = await auth.getSession();
-    return session?.user?.name || null;
+    const name = sessionUser(session)?.name;
+    return typeof name === "string" && name.trim() ? name.trim() : null;
   } catch {
     return null;
   }
