@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/add-user-annotations.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs",
+    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/add-user-annotations.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs",
     "predev": "npm run prepare:portal",
     "dev": "next dev",
     "prebuild": "npm run prepare:portal",
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs",
     "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs",
-    "audit:annotations": "node scripts/audit-annotations.mjs",
+    "audit:annotations": "node scripts/audit-annotations.mjs && node scripts/audit-highlight-removal.mjs",
     "audit:admin-sanity": "node scripts/audit-admin-sanity.mjs",
     "audit:sanity-runtime": "node scripts/audit-sanity-runtime.mjs",
     "audit:auth": "node scripts/audit-auth.mjs",

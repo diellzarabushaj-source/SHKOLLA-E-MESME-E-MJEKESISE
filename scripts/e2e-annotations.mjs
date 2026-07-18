@@ -84,6 +84,15 @@ try {
   await page.getByRole("button", { name: "Thekso e verdhë" }).click();
   await page.getByText("Teksti u theksua dhe u ruajt privatisht.").waitFor();
 
+  await selectPhrase(page, "Qeliza është njësia themelore");
+  await page.getByRole("button", { name: "Hiq highlighting-un nga teksti i zgjedhur" }).click();
+  await page.getByText("Highlighting-u u hoq.").waitFor();
+  assert(records.filter((record) => record.kind === "highlight").length === 0, "None control did not delete the selected highlight");
+
+  await selectPhrase(page, "Qeliza është njësia themelore");
+  await page.getByRole("button", { name: "Thekso e verdhë" }).click();
+  await page.getByText("Teksti u theksua dhe u ruajt privatisht.").waitFor();
+
   await selectPhrase(page, "Membrana kontrollon shkëmbimin");
   await page.getByRole("button", { name: "+ Sticky note" }).click();
   const dialog = page.getByRole("dialog", { name: "Shto sticky note" });
@@ -121,4 +130,4 @@ try {
   await browser.close();
 }
 
-console.log("Private highlights and sticky notes passed mobile, editing, deletion and cross-device audits.");
+console.log("Private highlights and sticky notes passed mobile, None removal, editing, deletion and cross-device audits.");
