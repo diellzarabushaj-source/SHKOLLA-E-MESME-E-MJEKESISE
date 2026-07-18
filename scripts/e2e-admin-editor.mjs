@@ -36,6 +36,19 @@ function assert(value, message) {
   if (!value) throw new Error(message);
 }
 
+async function placeCaretAtEnd(editor) {
+  await editor.evaluate((element) => {
+    if (!(element instanceof HTMLElement)) throw new Error("Editor missing");
+    element.focus();
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  });
+}
+
 const browser = await chromium.launch({ headless: true });
 try {
   const context = await browser.newContext({ viewport: { width: 1365, height: 960 }, serviceWorkers: "block" });
@@ -77,8 +90,7 @@ try {
   await editor.waitFor({ state: "visible", timeout: 10_000 });
   assert(await page.getByRole("button", { name: "Ruaj në Sanity" }).first().isDisabled(), "Save should be disabled before changes");
 
-  await editor.click();
-  await page.keyboard.press("Control+End");
+  await placeCaretAtEnd(editor);
   await page.keyboard.type(" Tekst i ri");
   await page.evaluate(() => {
     const target = document.querySelector('[contenteditable="true"]');
@@ -90,7 +102,7 @@ try {
       last = current;
       current = walker.nextNode();
     }
-    if (!(last instanceof Text) || !last.data.endsWith("Tekst i ri")) throw new Error("Inserted text missing");
+    if (!(last instanceof Text) || !last.data.endsWith("Tekst i ri")) throw new Error(`Inserted text missing: ${target.innerHTML}`);
     const range = document.createRange();
     range.setStart(last, last.data.length - "Tekst i ri".length);
     range.setEnd(last, last.data.length);
@@ -113,8 +125,7 @@ try {
   assert(serialized.includes("strong"), "Portable Text payload lost bold formatting");
   assert((await page.locator("[data-admin-audit-revision]").textContent()) === "audit-revision-2", "Saved revision was not applied to the parent view");
 
-  await editor.click();
-  await page.keyboard.press("Control+End");
+  await placeCaretAtEnd(editor);
   await page.keyboard.type(" Ndryshim me konflikt.");
   await page.getByRole("button", { name: "Ruaj në Sanity" }).first().click();
   await page.getByText("Mësimi është ndryshuar në Sanity. Rifreskoje përmbajtjen dhe provo përsëri.").waitFor({ state: "visible", timeout: 10_000 });
