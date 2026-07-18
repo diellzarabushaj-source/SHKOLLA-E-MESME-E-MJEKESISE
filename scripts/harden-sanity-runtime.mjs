@@ -34,6 +34,20 @@ portal = replaceRequired(
   "  useCdn: true,",
   "  useCdn: false,",
 );
+portal = replaceRequired(
+  portal,
+  "background refresh error isolation",
+  `    } catch (fetchError) {
+      console.error(fetchError);
+      setError("Portali nuk mund të ngarkohej. Provo përsëri.");
+    } finally {`,
+  `    } catch (fetchError) {
+      console.error(fetchError);
+      // A failed background refresh must not replace already rendered portal data
+      // with a blocking red error. Initial loading failures still stay visible.
+      if (showLoader) setError("Portali nuk mund të ngarkohej. Provo përsëri.");
+    } finally {`,
+);
 write(portalPath, portal);
 
 const serviceWorkerPath = "public/sw.js";
@@ -75,7 +89,7 @@ registrar = registrar.replace(
 write(registrarPath, registrar);
 
 const validations = [
-  ["portal", portal, ['projectId: "u5d5zn7n"', 'dataset: "schoolv2"', "useCdn: false"]],
+  ["portal", portal, ['projectId: "u5d5zn7n"', 'dataset: "schoolv2"', "useCdn: false", "if (showLoader) setError"]],
   ["service worker", serviceWorker, ['medical-portal-v9', "GROQ/query JSON must never be served stale", "event.respondWith(fetch(request))"]],
   ["PWA registrar", registrar, ['const SERVICE_WORKER_URL = "/sw.js?v=9"']],
 ];
@@ -86,4 +100,4 @@ for (const [label, source, markers] of validations) {
   }
 }
 
-console.log("Hardened Sanity runtime: fixed project/dataset, fresh queries and cache v9.");
+console.log("Hardened Sanity runtime: fixed project/dataset, fresh queries, safe background refreshes and cache v9.");
