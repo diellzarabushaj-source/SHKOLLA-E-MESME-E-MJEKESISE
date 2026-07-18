@@ -9,6 +9,46 @@ function replaceRequired(label, pattern, replacement) {
   source = source.replace(pattern, replacement);
 }
 
+function addExplicitButtonTypes(input) {
+  let output = "";
+  let index = 0;
+
+  while (index < input.length) {
+    const start = input.indexOf("<button", index);
+    if (start === -1) return output + input.slice(index);
+
+    output += input.slice(index, start);
+    let cursor = start + "<button".length;
+    let braceDepth = 0;
+    let quote = null;
+    let escaped = false;
+
+    for (; cursor < input.length; cursor += 1) {
+      const character = input[cursor];
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (character === "\\") escaped = true;
+        else if (character === quote) quote = null;
+        continue;
+      }
+      if (character === '"' || character === "'" || character === "`") {
+        quote = character;
+        continue;
+      }
+      if (character === "{") braceDepth += 1;
+      else if (character === "}") braceDepth = Math.max(0, braceDepth - 1);
+      else if (character === ">" && braceDepth === 0) break;
+    }
+
+    if (cursor >= input.length) throw new Error("Unclosed <button> tag in generated portal");
+    const tag = input.slice(start, cursor + 1);
+    output += /\btype\s*=/.test(tag) ? tag : tag.replace("<button", '<button type="button"');
+    index = cursor + 1;
+  }
+
+  return output;
+}
+
 replaceRequired(
   "classes hash must override saved grade",
   /      const savedId = window\.localStorage\.getItem\(SELECTED_GRADE_KEY\);\n      const gradeId = selectedGradeRef\.current\?\._id \|\| savedId;/,
@@ -148,12 +188,7 @@ replaceRequired(
   }, [loading]);`,
 );
 
-// Every portal control is an in-page action. Explicit button types prevent a future
-// surrounding form from turning navigation controls into accidental submissions.
-source = source.replace(/<button\b([^>]*)>/g, (tag, attributes) => {
-  if (/\btype\s*=/.test(attributes)) return tag;
-  return `<button type="button"${attributes}>`;
-});
+source = addExplicitButtonTypes(source);
 
 writeFileSync(portalPath, source);
 console.log(`Hardened ${portalPath} for direct links, Back/Forward, Home, Classes and safe buttons.`);
