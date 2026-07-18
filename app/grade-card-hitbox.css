@@ -1,0 +1,8 @@
+#klasat [class*="gradeCard"] {
+  pointer-events: none;
+}
+
+#klasat [class*="gradeOpen"] {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
