@@ -1,5 +1,7 @@
 import { createClient } from "next-sanity";
 
+// This check protects the exact production failure where grades appeared but
+// their nested subjects and lessons were missing from the public portal.
 const client = createClient({
   projectId: "u5d5zn7n",
   dataset: "schoolv2",
