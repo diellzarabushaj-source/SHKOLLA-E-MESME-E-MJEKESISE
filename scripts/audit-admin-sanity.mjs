@@ -82,7 +82,8 @@ requireAll("Single administrator identity", adminIdentity, [
 ]);
 requireAll("Admin rendering boundary", page, [
   "isCurrentUserAdmin",
-  "<SchoolLearningPortal isAdmin={isAdmin}",
+  "isAdmin={isAdmin}",
+  "isAuthenticated={Boolean(user?.id)}",
 ]);
 requireAll("Admin editor synchronization", adminEditor, [
   "readLatestFromSanity",
