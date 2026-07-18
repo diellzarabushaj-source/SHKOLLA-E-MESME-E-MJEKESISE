@@ -23,6 +23,7 @@ import "./interaction-enhancements.css";
 import "./mobile-study-fixes.css";
 import "./mobile-polish.css";
 import "./theme-hitbox-fix.css";
+import "./grade-card-uiverse.css";
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app",
