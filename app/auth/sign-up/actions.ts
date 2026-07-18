@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth/server";
 import { safeReturnTo } from "@/lib/auth/redirect";
 import { normalizeUsername, USERNAME_PATTERN, usernameToEmail } from "@/lib/auth/username";
 
-export type SignUpField = "username" | "password" | "form";
+export type SignUpField = "username" | "password" | "confirmPassword" | "form";
 export type SignUpState = {
   error: string;
   username?: string;
@@ -19,6 +19,7 @@ export async function signUpWithUsername(
   const rawUsername = String(formData.get("username") || "").slice(0, 80);
   const username = normalizeUsername(rawUsername);
   const password = String(formData.get("password") || "");
+  const confirmPassword = String(formData.get("confirmPassword") || "");
   const returnTo = safeReturnTo(String(formData.get("returnTo") || "/"));
 
   if (!USERNAME_PATTERN.test(username)) {
@@ -34,6 +35,14 @@ export async function signUpWithUsername(
       error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.",
       username,
       field: "password",
+    };
+  }
+
+  if (password !== confirmPassword) {
+    return {
+      error: "Password-at nuk përputhen. Shkruaje të njëjtin password në të dy fushat.",
+      username,
+      field: "confirmPassword",
     };
   }
 
@@ -55,6 +64,14 @@ export async function signUpWithUsername(
         };
       }
 
+      if (message.includes("rate") || message.includes("too many")) {
+        return {
+          error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.",
+          username,
+          field: "form",
+        };
+      }
+
       if (message.includes("password")) {
         return {
           error: "Ky password nuk u pranua. Përdor 8–128 karaktere dhe provo përsëri.",
@@ -71,7 +88,7 @@ export async function signUpWithUsername(
     }
   } catch {
     return {
-      error: "Shërbimi i regjistrimit nuk është i arritshëm për momentin. Provo përsëri pas pak.",
+      error: "Shërbimi i regjistrimit nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.",
       username,
       field: "form",
     };
