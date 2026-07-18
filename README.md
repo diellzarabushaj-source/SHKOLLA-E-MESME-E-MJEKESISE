@@ -41,3 +41,13 @@ SANITY_API_WRITE_TOKEN=token-me-te-drejte-editor-ne-schoolv2
 ```
 
 Dataset-i i editorit merret nga `NEXT_PUBLIC_SANITY_DATASET_V2` dhe, kur mungon, përdoret `schoolv2`.
+
+## Production dhe Sanity CORS
+
+Portali live lexon përmbajtjen e publikuar nga projekti `u5d5zn7n`, dataset-i `schoolv2`. Domain-i production dhe origjinat `https://*.vercel.app` duhet të jenë të lejuara në Sanity CORS pa kredenciale, në mënyrë që klasat, lëndët, kapitujt dhe mësimet të ngarkohen nga browser-i.
+
+Domain-i aktual production:
+
+```text
+https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app
+```
