@@ -56,11 +56,14 @@ jobs:
           set +e
           node scripts/e2e-annotations.mjs > annotations-e2e.log 2>&1
           STATUS=$?
+          node scripts/e2e-adobe-sticky.mjs > adobe-sticky-e2e.log 2>&1
+          ADOBE_STATUS=$?
           set -e
           cat annotations-e2e.log
-          if [ "$STATUS" -ne 0 ]; then
+          cat adobe-sticky-e2e.log
+          if [ "$STATUS" -ne 0 ] || [ "$ADOBE_STATUS" -ne 0 ]; then
             cat annotations-server.log
-            exit "$STATUS"
+            exit 1
           fi
       - name: Upload annotations diagnostics
         if: always()
@@ -69,5 +72,6 @@ jobs:
           name: annotations-browser-logs
           path: |
             annotations-e2e.log
+            adobe-sticky-e2e.log
             annotations-server.log
           retention-days: 1
