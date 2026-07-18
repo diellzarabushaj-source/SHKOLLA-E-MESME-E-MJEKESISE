@@ -98,11 +98,22 @@ async function auditPublicInfrastructure(browser) {
     });
     assert(adminWithoutOrigin.status() === 403, `admin write without same-origin header should return 403, got ${adminWithoutOrigin.status()}`);
 
-    const adminAsGuest = await context.request.patch(`${baseURL}/api/admin/lessons/lesson-cells`, {
-      headers: { Origin: baseURL },
-      data: { revision: "fixture", body: [] },
+    const page = await context.newPage();
+    watchPage(page, "infrastructure shell");
+    await page.goto(`${baseURL}/offline`, { waitUntil: "domcontentloaded" });
+    const adminAsGuest = await page.evaluate(async () => {
+      const response = await fetch("/api/admin/lessons/lesson-cells", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ revision: "fixture", body: [] }),
+      });
+      return {
+        status: response.status,
+        cacheControl: response.headers.get("cache-control") || "",
+      };
     });
-    assert(adminAsGuest.status() === 401, `same-origin guest admin write should return 401, got ${adminAsGuest.status()}`);
+    assert(adminAsGuest.status === 401, `same-origin guest admin write should return 401, got ${adminAsGuest.status}`);
+    assert(adminAsGuest.cacheControl.includes("no-store"), "same-origin guest admin write response is cacheable");
 
     console.log("✓ PWA assets and private API boundaries");
   } finally {
