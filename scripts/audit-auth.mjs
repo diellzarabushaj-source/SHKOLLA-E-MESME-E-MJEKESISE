@@ -17,6 +17,8 @@ function requireText(label, source, values) {
 }
 
 const redirectHelper = read("lib/auth/redirect.ts");
+const authLayout = read("app/auth/layout.tsx");
+const authTouchStyles = read("app/auth/auth-touch.css");
 const signInPage = read("app/auth/sign-in/page.tsx");
 const signInForm = read("app/auth/sign-in/SignInForm.tsx");
 const signInAction = read("app/auth/sign-in/actions.ts");
@@ -102,6 +104,13 @@ requireText("Auth responsive styles", authStyles, [
   ".spinner",
   ":focus-visible",
   "prefers-reduced-motion",
+]);
+requireText("Auth scoped layout", authLayout, ['import "./auth-touch.css"', "return children"]);
+requireText("Auth switch touch targets", authTouchStyles, [
+  'p[class*="switchText"] > a',
+  "min-width: 40px",
+  "min-height: 40px",
+  "display: inline-flex",
 ]);
 requireText("Auth browser audit", authBrowserAudit, [
   "auditSignIn(browser)",
