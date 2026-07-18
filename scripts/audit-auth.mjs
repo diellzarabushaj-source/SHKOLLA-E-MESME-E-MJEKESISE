@@ -17,6 +17,7 @@ function requireText(label, source, values) {
 }
 
 const redirectHelper = read("lib/auth/redirect.ts");
+const rootLayout = read("app/layout.tsx");
 const authLayout = read("app/auth/layout.tsx");
 const authTouchStyles = read("app/auth/auth-touch.css");
 const signInPage = read("app/auth/sign-in/page.tsx");
@@ -38,6 +39,12 @@ requireText("Safe return paths", redirectHelper, [
   'normalized.startsWith("/api/")',
   "AUTH_PATHS.some",
   "encodeURIComponent(safePath)",
+]);
+
+requireText("Header session recognition", rootLayout, [
+  "await auth.getSession()",
+  "value.user || value.session?.user || null",
+  "AuthControls username={username}",
 ]);
 
 for (const [label, page] of [["Sign-in page", signInPage], ["Sign-up page", signUpPage]]) {
@@ -150,4 +157,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: safe redirects, complete session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
+console.log("Authentication audit passed: safe redirects, complete header/session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
