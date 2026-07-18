@@ -1,0 +1,80 @@
+[data-annotation-remove-highlight] {
+  min-width: 58px;
+  min-height: 32px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, var(--muted) 38%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 88%, var(--bg-soft));
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+[data-annotation-remove-highlight] > span:first-child {
+  font-size: 17px;
+  line-height: 1;
+}
+
+[data-annotation-remove-highlight]:hover:not(:disabled),
+[data-annotation-remove-highlight]:focus-visible {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--line));
+  background: color-mix(in srgb, var(--danger) 9%, var(--panel));
+  color: var(--danger);
+  transform: translateY(-1px);
+}
+
+[data-annotation-remove-highlight]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--danger) 22%, transparent);
+  outline-offset: 2px;
+}
+
+[data-annotation-remove-highlight]:disabled {
+  opacity: 0.58;
+  cursor: wait;
+  transform: none;
+}
+
+@media (pointer: coarse), (max-width: 700px) {
+  [data-annotation-selection-toolbar] > span:first-child {
+    display: none;
+  }
+
+  [data-annotation-remove-highlight] {
+    min-width: 54px;
+    min-height: 36px;
+    padding-inline: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  [data-annotation-remove-highlight] {
+    min-width: 36px;
+    width: 36px;
+    padding: 0;
+  }
+
+  [data-annotation-none-label] {
+    display: none;
+  }
+
+  [data-annotation-add-note] {
+    width: 36px;
+    min-width: 36px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    font-size: 0 !important;
+  }
+
+  [data-annotation-add-note]::before {
+    content: "+";
+    font-size: 18px;
+    line-height: 1;
+  }
+}
