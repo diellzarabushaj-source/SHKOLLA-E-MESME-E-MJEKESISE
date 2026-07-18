@@ -141,7 +141,7 @@ export async function PATCH(request: Request) {
 
     const id = cleanText(body.id, 80);
     const color = body.color === undefined ? undefined : body.color as AnnotationColor;
-    const noteText = body.noteText === undefined ? undefined : cleanText(body.noteText, 4_000, true);
+    const noteText = body.noteText === undefined ? undefined : cleanText(body.noteText, 4_000);
 
     if (!id || !UUID_PATTERN.test(id)) return jsonError("INVALID_ANNOTATION_ID", 400);
     if (color !== undefined && !COLORS.has(color)) return jsonError("INVALID_ANNOTATION_COLOR", 400);
