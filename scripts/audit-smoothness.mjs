@@ -42,6 +42,7 @@ const themeToggle = read("app/ThemeToggle.tsx");
 const authControls = read("app/AuthControls.tsx");
 const layout = read("app/layout.tsx");
 const manifestSource = read("app/manifest.ts");
+const pwaRegistrar = read("app/PwaRegistrar.tsx");
 const serviceWorker = read("public/sw.js");
 
 const projectIds = [
@@ -126,6 +127,16 @@ requireText("Safe Portable Text rendering", richMarks, [
 requireText("Theme and logout isolation", themeToggle, ['type="button"', "localStorage.setItem"]);
 requireText("Logout action", authControls, ['type="submit"', "signOutAction"]);
 requireText("Root UI mounting", layout, ['<ThemeToggle />', '<NavigationSafety />', 'import "./theme-hitbox-fix.css"']);
+requireText("Safe PWA registration", pwaRegistrar, [
+  "const nextRegistration = await navigator.serviceWorker.register",
+  "if (disposed || !nextRegistration) return",
+  'typeof nextRegistration.update === "function"',
+  "nextRegistration.update().catch",
+  'process.env.NODE_ENV !== "production"',
+]);
+if (/await\s+registration\.update\(\)/.test(pwaRegistrar)) {
+  failures.push("PWA registrar nuk duhet të thërrasë update() pa verifikuar objektin e regjistrimit.");
+}
 requireText("Private PWA handling", serviceWorker, [
   'const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"]',
   "networkFirstNavigation(request)",
