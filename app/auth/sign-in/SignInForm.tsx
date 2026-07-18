@@ -27,9 +27,15 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const normalizedUsername = useMemo(() => normalizeUsername(username), [username]);
-  const busy = isPending || isGooglePending;
+  const isRedirecting = Boolean(state?.success && state.returnTo);
+  const busy = isPending || isGooglePending || isRedirecting;
 
   useEffect(() => {
+    if (state?.success && state.returnTo) {
+      window.location.replace(state.returnTo);
+      return;
+    }
+
     if (!state?.error) return;
     if (state.username) setUsername(state.username);
     if (state.field === "password") passwordRef.current?.focus();
@@ -77,7 +83,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
             </p>
           )}
 
-          <form action={formAction} className={styles.form} aria-busy={isPending}>
+          <form action={formAction} className={styles.form} aria-busy={isPending || isRedirecting}>
             <input type="hidden" name="returnTo" value={returnTo} />
 
             <div className={styles.field}>
@@ -94,6 +100,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
                 maxLength={80}
                 autoComplete="username"
                 autoCapitalize="none"
+                autoCorrect="off"
                 enterKeyHint="next"
                 spellCheck={false}
                 placeholder="p.sh. alketa03"
@@ -150,8 +157,8 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
             {state?.error && <p className={styles.error} role="alert" aria-live="assertive">{state.error}</p>}
 
             <button className={styles.submit} type="submit" disabled={busy}>
-              {isPending && <span className={styles.spinner} aria-hidden="true" />}
-              <span>{isPending ? "Duke u kyçur..." : "Kyçu"}</span>
+              {(isPending || isRedirecting) && <span className={styles.spinner} aria-hidden="true" />}
+              <span>{isRedirecting ? "Duke hapur portalin..." : isPending ? "Duke u kyçur..." : "Kyçu"}</span>
             </button>
           </form>
 
