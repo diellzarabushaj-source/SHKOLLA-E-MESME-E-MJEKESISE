@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+≠rá^—f•ñÿ¶{~¨y 'v√Æ∂õ≠import { readFileSync, writeFileSync } from "node:fs";
 
 const sourcePath = "app/ClassicLearningPortal.tsx";
 const outputPath = "app/SchoolLearningPortal.tsx";
@@ -191,7 +191,7 @@ replacePattern(
     resetStudy();
 
     try {
-      const details = await client.fetch<Lesson | null>(
+      const details = await freshClient.fetch<Lesson | null>(
         lessonDetailsQuery,
         { lessonId: lesson._id },
         { perspective: "published" },
@@ -212,10 +212,14 @@ replacePattern(
 );
 
 replacePattern(
-  "embedded deck loading",
-  /      const result = await client\.fetch<Flashcard\[\]>\(query, params, \{ perspective: "published" \}\);\n      setCards\(result\);/,
-  `      const result = await client.fetch<LessonDeck[]>(query, params, { perspective: "published" });
-      setCards(normalizeCards(result));`,
+  "embedded deck loader",
+  /async function fetchCardsForScope\(scope: StudyScope\): Promise<Flashcard\[\]> \{[\s\S]*?\n\}/,
+  `async function fetchCardsForScope(scope: StudyScope): Promise<Flashcard[]> {
+  const query = scope.kind === "lesson" ? lessonCardsQuery : chapterCardsQuery;
+  const params = scope.kind === "lesson" ? { lessonId: scope.lesson?._id } : { chapterId: scope.chapter._id };
+  const decks = await freshClient.fetch<LessonDeck[]>(query, params, { perspective: "published" });
+  return normalizeCards(decks);
+}`,
 );
 
 source = source.replace(

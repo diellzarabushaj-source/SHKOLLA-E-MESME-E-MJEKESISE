@@ -1,4 +1,4 @@
-.adminBar,
+­r‡^Ñf¥–Ø¦{}ìyÊ'vÃ®¶›­.adminBar,
 .editor {
   margin: 24px 0;
   border: 1px solid color-mix(in srgb, var(--warning) 48%, var(--line));
@@ -167,6 +167,348 @@
 .cancel:disabled,
 .orderActions button:disabled { cursor: not-allowed; opacity: 0.45; }
 
+.visuallyHidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.editorTabs {
+  margin: 24px 0 16px;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg-soft);
+}
+
+.editorTabs button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.editorTabs button span {
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  font-size: 11px;
+}
+
+.editorTabs .tabActive {
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.tabPanel[hidden] { display: none; }
+.conflict {
+  margin-bottom: 14px;
+  padding: 13px 15px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid color-mix(in srgb, var(--warning) 55%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--warning) 11%, transparent);
+}
+.conflict span { color: var(--muted); font-size: 13px; }
+
+.richToolbar {
+  position: sticky;
+  top: 8px;
+  z-index: 6;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 14px 14px 0 0;
+  background: color-mix(in srgb, var(--panel) 95%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 7%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.richToolbar button,
+.richToolbar select {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+.richToolbar button { min-width: 40px; padding: 0 11px; }
+.richToolbar select { min-width: 150px; padding: 0 10px; }
+.richToolbar button:disabled,
+.richToolbar select:disabled { cursor: not-allowed; opacity: 0.45; }
+.richToolbar .toolActive {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 15%, var(--panel));
+  color: var(--primary);
+}
+.toolGroup { display: flex; gap: 5px; }
+.codeLabel { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.richEditable {
+  min-height: 440px;
+  max-height: min(70vh, 820px);
+  padding: clamp(18px, 3vw, 34px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: var(--panel);
+  color: var(--text);
+  line-height: 1.72;
+}
+
+.richEditable:focus {
+  outline: 3px solid color-mix(in srgb, var(--primary) 27%, transparent);
+  outline-offset: 2px;
+}
+.richEditable p { margin: 0.7em 0; }
+.richEditable h2 { margin: 1.35em 0 0.55em; font-size: clamp(24px, 3vw, 34px); }
+.richEditable h3 { margin: 1.15em 0 0.45em; font-size: clamp(20px, 2.5vw, 27px); }
+.richEditable h4 { margin: 1em 0 0.4em; font-size: 19px; }
+.richEditable blockquote {
+  margin: 1em 0;
+  padding: 10px 16px;
+  border-left: 4px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+}
+.richEditable code { padding: 2px 5px; border-radius: 5px; background: var(--bg-soft); }
+.editorLink { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+.pasteHint { margin: 9px 3px 0; color: var(--muted); font-size: 12px; }
+
+.editableImage {
+  margin: 20px 0;
+  padding: 13px;
+  border: 2px solid transparent;
+  border-radius: 15px;
+  background: var(--bg-soft);
+}
+.editableImage[data-selected] { border-color: var(--primary); }
+.editableImage > img {
+  display: block;
+  max-width: 100%;
+  max-height: 520px;
+  margin: 0 auto 12px;
+  border-radius: 11px;
+  object-fit: contain;
+}
+.imageFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 10px;
+}
+.imageFields label,
+.imageDialog label,
+.cardForm label,
+.cardImageMeta label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.imageFields input,
+.imageDialog input,
+.cardForm input,
+.cardForm textarea,
+.cardForm select,
+.cardImageMeta input,
+.cardSearch input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+.cardForm textarea { resize: vertical; line-height: 1.55; }
+.imageMissing,
+.imagePlaceholder {
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  color: var(--muted);
+  font-weight: 750;
+}
+.removeImage {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--line));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--danger) 7%, var(--panel));
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.imageDialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 15, 28, 0.7);
+  backdrop-filter: blur(7px);
+}
+.imageDialog {
+  width: min(560px, 100%);
+  max-height: 92vh;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+}
+.imageDialog header,
+.imageDialog footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.imageDialog header div { display: grid; gap: 4px; }
+.imageDialog header small { color: var(--muted); }
+.imageDialog header > button {
+  width: 38px;
+  min-width: 38px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 22px;
+}
+.imageDialog > img { width: 100%; max-height: 320px; border-radius: 12px; object-fit: contain; background: var(--bg-soft); }
+.imageDialog footer { justify-content: flex-end; }
+.inlineError { margin: 0; color: var(--danger); font-size: 13px; font-weight: 750; }
+
+.flashcardEditor {
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.cardList,
+.cardForm,
+.emptyCardEditor {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--panel);
+}
+.cardList { position: sticky; top: 74px; overflow: hidden; }
+.cardListHeader { padding: 13px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); }
+.cardListHeader > div { display: grid; gap: 3px; }
+.cardListHeader small { color: var(--muted); font-size: 10px; }
+.cardListHeader button,
+.emptyCardEditor button,
+.imageButtons button {
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid var(--primary);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--primary) 10%, var(--panel));
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 800;
+}
+.cardSearch { display: block; padding: 10px; border-bottom: 1px solid var(--line); }
+.cardListItems { max-height: 600px; padding: 7px; overflow: auto; }
+.cardListItems > button {
+  width: 100%;
+  padding: 9px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.cardListItems > button > span:first-child {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+.cardListItems > button > span:last-child { min-width: 0; display: grid; gap: 2px; }
+.cardListItems strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.cardListItems small { color: var(--muted); font-size: 10px; }
+.cardListItems .cardSelected { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 9%, transparent); }
+.noCards { padding: 16px; color: var(--muted); text-align: center; }
+
+.cardForm { padding: clamp(14px, 2.5vw, 22px); }
+.cardForm > header { margin-bottom: 17px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cardForm > header > div:first-child { min-width: 0; display: grid; gap: 4px; }
+.cardForm > header span { color: var(--muted); font-size: 11px; font-weight: 850; }
+.cardForm > header strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cardOrderActions { display: flex; gap: 6px; }
+.cardOrderActions button { min-width: 38px; min-height: 38px; }
+.cardFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.cardFormGrid .fullField { grid-column: 1 / -1; }
+.cardFormGrid label > b { color: var(--danger); }
+.activeToggle {
+  padding: 10px;
+  grid-template-columns: auto 1fr !important;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.activeToggle input { width: 20px; min-height: 20px; }
+.activeToggle span { display: grid; gap: 2px; color: var(--text); }
+.activeToggle small { color: var(--muted); font-weight: 500; }
+.cardImagePanel {
+  margin-top: 16px;
+  padding: 13px;
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+.cardImagePanel > img { width: 180px; height: 130px; border-radius: 10px; object-fit: contain; background: var(--panel); }
+.cardImagePanel p { margin: 5px 0 10px; color: var(--muted); font-size: 12px; }
+.imageButtons { display: flex; gap: 7px; }
+.cardImageMeta { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.emptyCardEditor { min-height: 300px; padding: 30px; display: grid; place-items: center; align-content: center; gap: 8px; text-align: center; }
+.emptyCardEditor p { margin: 0 0 8px; color: var(--muted); }
+
 @media (max-width: 760px) {
   .adminBar { grid-template-columns: 1fr; }
   .adminBar > button { width: 100%; }
@@ -182,4 +524,22 @@
   .orderActions button { flex: 1; }
   .immutable { grid-template-columns: auto 1fr; }
   .immutable .orderActions { grid-column: 1 / -1; }
+  .editorTabs { width: 100%; }
+  .editorTabs button { flex: 1; padding: 0 9px; }
+  .richToolbar { position: static; overflow-x: auto; flex-wrap: nowrap; }
+  .styleSelector select { min-width: 135px; }
+  .richEditable { min-height: 360px; max-height: none; padding: 17px; }
+  .imageFields { grid-template-columns: 1fr; }
+  .flashcardEditor { grid-template-columns: 1fr; }
+  .cardList { position: static; }
+  .cardListItems { max-height: 270px; }
+  .cardFormGrid,
+  .cardImageMeta { grid-template-columns: 1fr; }
+  .cardFormGrid .fullField { grid-column: auto; }
+  .cardForm > header { align-items: flex-start; flex-direction: column; }
+  .cardOrderActions { width: 100%; }
+  .cardOrderActions button { flex: 1; }
+  .cardImagePanel { grid-template-columns: 1fr; }
+  .cardImagePanel > img,
+  .cardImagePanel .imagePlaceholder { width: 100%; }
 }

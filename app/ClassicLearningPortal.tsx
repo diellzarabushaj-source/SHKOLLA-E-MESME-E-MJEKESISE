@@ -1,11 +1,17 @@
-"use client";
+­r‡^Ñf¥–Ø¦{~ìyÊ'vÃ®¶›­"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient, PortableText, type PortableTextComponents } from "next-sanity";
+import dynamic from "next/dynamic";
 import styles from "./portal.module.css";
 import experience from "./learning-experience.module.css";
 import classic from "./classic-learning.module.css";
-import LessonAdminEditor, { type AdminEditableLesson } from "./LessonAdminEditor";
+import type { AdminEditableLesson } from "./LessonAdminEditor";
+
+const LessonAdminEditor = dynamic(() => import("./LessonAdminEditor"), {
+  ssr: false,
+  loading: () => null,
+});
 
 type SanityImage = {
   alt?: string;
@@ -102,6 +108,21 @@ const client = createClient({
 
 const freshClient = client.withConfig({ useCdn: false });
 
+function boundedSanityImageUrl(value: string, maxWidth = 1_600): string {
+  try {
+    const url = new URL(value);
+    if (url.hostname === "cdn.sanity.io") {
+      url.searchParams.set("w", String(maxWidth));
+      url.searchParams.set("fit", "max");
+      url.searchParams.set("auto", "format");
+      return url.toString();
+    }
+  } catch {
+    // Existing external images keep their original URL.
+  }
+  return value;
+}
+
 const portalQuery = `
   *[_type == "grade" && isActive != false] | order(order asc, gradeNumber asc) {
     _id,
@@ -191,14 +212,27 @@ const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       const image = value as SanityImage;
-      const url = image.assetUrl || image.asset?.url;
-      if (!url) return null;
+      const sourceUrl = image.assetUrl || image.asset?.url;
+      if (!sourceUrl) return null;
+      const url = boundedSanityImageUrl(sourceUrl);
       return (
         <figure className={styles.portableImage}>
           <img src={url} alt={image.alt || "Foto e mÃ«simit"} loading="lazy" />
           {image.caption && <figcaption>{image.caption}</figcaption>}
         </figure>
       );
+    },
+  },
+  marks: {
+    link: ({ children, value }) => {
+      const mark = value as { href?: unknown; title?: unknown };
+      const href = typeof mark.href === "string" ? mark.href : "";
+      const safe = href.startsWith("/") && !href.startsWith("//")
+        || /^https?:\/\//i.test(href)
+        || /^mailto:/i.test(href);
+      if (!safe) return <>{children}</>;
+      const external = /^https?:\/\//i.test(href);
+      return <a href={href} title={typeof mark.title === "string" ? mark.title : undefined} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{children}</a>;
     },
   },
 };
@@ -235,6 +269,12 @@ const contentMutationQuery = `
     !(_id in path("drafts.**"))
   ]
 `;
+
+async function fetchCardsForScope(scope: StudyScope): Promise<Flashcard[]> {
+  const query = scope.kind === "lesson" ? lessonCardsQuery : chapterCardsQuery;
+  const params = scope.kind === "lesson" ? { lessonId: scope.lesson?._id } : { chapterId: scope.chapter._id };
+  return freshClient.fetch<Flashcard[]>(query, params, { perspective: "published" });
+}
 
 function getSubjectStats(subject: Subject) {
   const lessonCount = subject.chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0);
@@ -329,13 +369,19 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
   const selectedSubjectRef = useRef<Subject | null>(null);
   const selectedChapterRef = useRef<Chapter | null>(null);
   const selectedLessonRef = useRef<Lesson | null>(null);
+  const studyScopeRef = useRef<StudyScope | null>(null);
+  const studyingRef = useRef(false);
+  const cardsRef = useRef<Flashcard[]>([]);
 
   useEffect(() => {
     selectedGradeRef.current = selectedGrade;
     selectedSubjectRef.current = selectedSubject;
     selectedChapterRef.current = selectedChapter;
     selectedLessonRef.current = selectedLesson;
-  }, [selectedGrade, selectedSubject, selectedChapter, selectedLesson]);
+    studyScopeRef.current = studyScope;
+    studyingRef.current = studying;
+    cardsRef.current = cards;
+  }, [cards, selectedGrade, selectedSubject, selectedChapter, selectedLesson, studyScope, studying]);
 
   const fetchPortal = useCallback(async (showLoader = true, fresh = false) => {
     if (showLoader) setLoading(true);
@@ -371,774 +417,48 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
   }, []);
 
   useEffect(() => {
-    void fetchPortal();
-  }, [fetchPortal]);
-
-  useEffect(() => {
     let stopped = false;
     let refreshTimer: number | null = null;
+    let refreshInFlight = false;
+    let rerunRequested = false;
 
-    const refreshPublishedContent = async () => {
-      await fetchPortal(false, true);
-      const activeLesson = selectedLessonRef.current;
-      if (!activeLesson || stopped) return;
-
-      try {
-        const details = await freshClient.fetch<Lesson | null>(
-          liveLessonQuery,
-          { lessonId: activeLesson._id },
-          { perspective: "published" },
-        );
-        if (!stopped && details && selectedLessonRef.current?._id === details._id) {
-          selectedLessonRef.current = details;
-          setSelectedLesson(details);
-        }
-      } catch (refreshError) {
-        console.error("Live lesson refresh failed", refreshError);
-      }
-    };
-
-    const scheduleRefresh = () => {
+    const refreshPublishedContent = async (showLoader = false) => {
       if (stopped) return;
-      if (refreshTimer) window.clearTimeout(refreshTimer);
-      refreshTimer = window.setTimeout(() => void refreshPublishedContent(), 350);
-    };
-
-    const subscription = freshClient
-      .listen(contentMutationQuery, {}, { includeResult: false, visibility: "query" })
-      .subscribe({
-        next: scheduleRefresh,
-        error: (listenError) => console.error("Sanity live sync disconnected", listenError),
-      });
-
-    const onVisible = () => {
-      if (document.visibilityState === "visible") scheduleRefresh();
-    };
-    const fallbackRefresh = window.setInterval(onVisible, 5 * 60_000);
-    window.addEventListener("focus", scheduleRefresh);
-    document.addEventListener("visibilitychange", onVisible);
-
-    return () => {
-      stopped = true;
-      subscription.unsubscribe();
-      if (refreshTimer) window.clearTimeout(refreshTimer);
-      window.clearInterval(fallbackRefresh);
-      window.removeEventListener("focus", scheduleRefresh);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [fetchPortal]);
-
-  const totalStats = useMemo(() => grades.reduce(
-    (stats, grade) => {
-      const gradeStats = getGradeStats(grade);
-      stats.subjects += gradeStats.subjectCount;
-      stats.lessons += gradeStats.lessonCount;
-      stats.flashcards += gradeStats.flashcardCount;
-      return stats;
-    },
-    { subjects: 0, lessons: 0, flashcards: 0 },
-  ), [grades]);
-
-  const visibleSubjects = useMemo(() => {
-    if (!selectedGrade) return [];
-    const term = search.trim().toLocaleLowerCase("sq");
-    if (!term) return selectedGrade.subjects;
-    return selectedGrade.subjects.filter((subject) =>
-      `${subject.title} ${subject.shortDescription || ""}`.toLocaleLowerCase("sq").includes(term),
-    );
-  }, [search, selectedGrade]);
-
-  const card = cards[cardIndex];
-  const progress = cards.length ? (finished ? 100 : ((cardIndex + 1) / cards.length) * 100) : 0;
-  const answeredCount = ratings.again + ratings.hard + ratings.good + ratings.easy;
-  const learnedCount = ratings.good + ratings.easy;
-
-  const cardContextPosition = useMemo(() => {
-    if (!card) return { current: 1, total: 1 };
-    return {
-      current: cards.slice(0, cardIndex + 1).filter((item) => item.lessonId === card.lessonId).length || 1,
-      total: cards.filter((item) => item.lessonId === card.lessonId).length || 1,
-    };
-  }, [card, cardIndex, cards]);
-
-  function scrollTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function resetStudy() {
-    setStudying(false);
-    setStudyScope(null);
-    setCards([]);
-    setCardIndex(0);
-    setRevealed(false);
-    setFinished(false);
-    setRatings(emptyRatings);
-  }
-
-  function chooseGrade(grade: Grade) {
-    window.localStorage.setItem(SELECTED_GRADE_KEY, grade._id);
-    setSelectedGrade(grade);
-    setSelectedSubject(null);
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    setSearch("");
-    resetStudy();
-    scrollTop();
-  }
-
-  function changeGrade() {
-    window.localStorage.removeItem(SELECTED_GRADE_KEY);
-    setSelectedGrade(null);
-    setSelectedSubject(null);
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    setSearch("");
-    resetStudy();
-    scrollTop();
-  }
-
-  function goToGrade() {
-    setSelectedSubject(null);
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    resetStudy();
-    scrollTop();
-  }
-
-  function goToSubject() {
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    resetStudy();
-    scrollTop();
-  }
-
-  function goToChapter() {
-    setSelectedLesson(null);
-    resetStudy();
-    scrollTop();
-  }
-
-  function chooseSubject(subject: Subject) {
-    setSelectedSubject(subject);
-    setSelectedChapter(null);
-    setSelectedLesson(null);
-    resetStudy();
-    scrollTop();
-  }
-
-  function chooseChapter(chapter: Chapter) {
-    setSelectedChapter(chapter);
-    setSelectedLesson(null);
-    resetStudy();
-    scrollTop();
-  }
-
-  function applySavedLesson(savedLesson: AdminEditableLesson) {
-    setSelectedLesson((current) => current && current._id === savedLesson._id
-      ? (() => {
-        const updated = { ...current, _rev: savedLesson._rev, body: savedLesson.body as PortableContent };
-        selectedLessonRef.current = updated;
-        return updated;
-      })()
-      : current);
-  }
-
-  function chooseLesson(lesson: Lesson) {
-    setSelectedLesson(lesson);
-    resetStudy();
-    scrollTop();
-  }
-
-  async function startTest(scope: StudyScope) {
-    setSelectedChapter(scope.chapter);
-    setSelectedLesson(scope.lesson || null);
-    setStudyScope(scope);
-    setLoading(true);
-    setError("");
-
-    try {
-      const query = scope.kind === "lesson" ? lessonCardsQuery : chapterCardsQuery;
-      const params = scope.kind === "lesson" ? { lessonId: scope.lesson?._id } : { chapterId: scope.chapter._id };
-      const result = await client.fetch<Flashcard[]>(query, params, { perspective: "published" });
-      setCards(result);
-      setCardIndex(0);
-      setRevealed(false);
-      setFinished(false);
-      setRatings(emptyRatings);
-      setStudying(true);
-    } catch (fetchError) {
-      console.error(fetchError);
-      setError("Flashcards nuk mund tÃ« ngarkoheshin.");
-    } finally {
-      setLoading(false);
-    }
-
-    scrollTop();
-  }
-
-  function rateCard(rating: Rating) {
-    if (!card || !revealed) return;
-    setRatings((current) => ({ ...current, [rating]: current[rating] + 1 }));
-    setRevealed(false);
-    if (cardIndex >= cards.length - 1) setFinished(true);
-    else setCardIndex((index) => index + 1);
-  }
-
-  function previousCard() {
-    setRevealed(false);
-    if (finished) {
-      setFinished(false);
-      setCardIndex(Math.max(cards.length - 1, 0));
-      return;
-    }
-    setCardIndex((index) => Math.max(index - 1, 0));
-  }
-
-  function restartDeck(shuffle = false) {
-    if (shuffle) setCards((current) => [...current].sort(() => Math.random() - 0.5));
-    setCardIndex(0);
-    setRevealed(false);
-    setFinished(false);
-    setRatings(emptyRatings);
-  }
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      const target = event.target as HTMLElement | null;
-      if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA") return;
-      if (!studying || finished || !card) return;
-
-      if (event.code === "Space") {
-        event.preventDefault();
-        setRevealed((value) => !value);
+      if (refreshInFlight) {
+        rerunRequested = true;
+        return;
       }
-      if (revealed && event.key === "1") rateCard("again");
-      if (revealed && event.key === "2") rateCard("hard");
-      if (revealed && event.key === "3") rateCard("good");
-      if (revealed && event.key === "4") rateCard("easy");
-    }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [studying, finished, card, revealed]);
+      refreshInFlight = true;
+      try {
+        let nextShowLoader = showLoader;
+        do {
+          rerunRequested = false;
+          await fetchPortal(nextShowLoader, true);
+          nextShowLoader = false;
+          const activeLesson = selectedLessonRef.current;
+          if (stopped) return;
 
-  if (loading) {
-    return (
-      <main className="loading-screen">
-        <div className="loader" />
-        <span>Duke pÃ«rgatitur portalin...</span>
-      </main>
-    );
-  }
+          try {
+            if (activeLesson) {
+              const details = await freshClient.fetch<Lesson | null>(
+                liveLessonQuery,
+                { lessonId: activeLesson._id },
+                { perspective: "published" },
+              );
+              if (!stopped && details && selectedLessonRef.current?._id === details._id) {
+                selectedLessonRef.current = details;
+                setSelectedLesson(details);
+              }
+            }
 
-  if (studying && selectedGrade && selectedSubject && selectedChapter && studyScope) {
-    const showFrontImage = card?.image?.asset?.url && (card.imageSide === "front" || card.imageSide === "both");
-    const showBackImage = card?.image?.asset?.url && card.imageSide !== "front";
-
-    return (
-      <main className="inner-page study-page">
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <button onClick={goToChapter}>{selectedChapter.title}</button><span>/</span>
-          <span>{studyScope.kind === "chapter" ? "Testi i kapitullit" : "Testi i mÃ«simit"}</span>
-        </div>
-
-        {!card ? (
-          <div className="empty-state large">
-            <strong>Nuk ka flashcards pÃ«r kÃ«tÃ« test.</strong>
-            <button className="secondary-button" onClick={resetStudy}>Kthehu</button>
-          </div>
-        ) : finished ? (
-          <section className="finish-card">
-            <span className="finish-icon">âœ“</span>
-            <span className="eyebrow">Testi pÃ«rfundoi</span>
-            <h2>{studyScope.title}</h2>
-            <p>I kalove tÃ« gjitha {cards.length} kartelat.</p>
-            <div className="finish-stats">
-              <div><strong>{ratings.again}</strong><span>PÃ«rsÃ«ri</span></div>
-              <div><strong>{ratings.hard}</strong><span>VÃ«shtirÃ«</span></div>
-              <div><strong>{ratings.good}</strong><span>MirÃ«</span></div>
-              <div><strong>{ratings.easy}</strong><span>LehtÃ«</span></div>
-            </div>
-            <div className="finish-actions">
-              <button className="secondary-button" onClick={resetStudy}>Kthehu</button>
-              <button className="secondary-button" onClick={() => restartDeck(true)}>PÃ«rzieje</button>
-              <button className="primary-button" onClick={() => restartDeck(false)}>Rifillo</button>
-            </div>
-          </section>
-        ) : (
-          <section className="study-shell">
-            <div className="study-toolbar">
-              <div className="study-context">
-                <span className="eyebrow">{card.lessonTitle}</span>
-                <strong>{cardIndex + 1} <small>/ {cards.length}</small></strong>
-              </div>
-              <div className="study-tools">
-                <button className="icon-button" onClick={previousCard} disabled={cardIndex === 0} aria-label="Kartela paraprake">â†</button>
-                <button className="ghost-button" onClick={() => restartDeck(true)}>PÃ«rziej</button>
-              </div>
-            </div>
-
-            <div className="progress-track" aria-label={`${Math.round(progress)}% e pÃ«rfunduar`}>
-              <span style={{ width: `${progress}%` }} />
-            </div>
-
-            <button
-              className={`flashcard ${revealed ? "is-flipped" : ""}`}
-              onClick={() => setRevealed((value) => !value)}
-              type="button"
-              aria-label={revealed ? "Kthehu te pyetja" : "Shfaq pÃ«rgjigjen"}
-              data-progress-grade-id={selectedGrade._id}
-              data-progress-subject-id={selectedSubject._id}
-              data-progress-chapter-id={selectedChapter._id}
-              data-progress-lesson-id={card.lessonId}
-              data-progress-flashcard-id={card._id}
-              data-progress-current-card={cardContextPosition.current}
-              data-progress-total-cards={cardContextPosition.total}
-            >
-              <span className="flashcard-inner">
-                <span className="flashcard-face flashcard-front">
-                  <span className="card-kicker">
-                    <b>PYETJA</b>
-                    <i className={card.difficulty || "medium"}>
-                      {card.difficulty === "easy" ? "E lehtÃ«" : card.difficulty === "hard" ? "E vÃ«shtirÃ«" : "Mesatare"}
-                    </i>
-                  </span>
-                  {showFrontImage && (
-                    <span className={styles.flashImage}>
-                      <img src={card.image?.asset?.url} alt={card.image?.alt || card.front} />
-                    </span>
-                  )}
-                  <strong>{card.front}</strong>
-                  <small>Preke kartelÃ«n ose shtyp Space</small>
-                </span>
-                <span className="flashcard-face flashcard-back">
-                  <span className="card-kicker"><b>PÃ‹RGJIGJJA</b><i className="answer-ready">Gati pÃ«r vlerÃ«sim</i></span>
-                  <span className="answer-question">{card.front}</span>
-                  {showBackImage && (
-                    <span className={styles.flashImage}>
-                      <img src={card.image?.asset?.url} alt={card.image?.alt || card.front} />
-                    </span>
-                  )}
-                  <span className="answer">{card.back}</span>
-                  {card.explanation && <span className="explanation">{card.explanation}</span>}
-                  {!!card.tags?.length && <span className="tags">{card.tags.map((tag) => <em key={tag}>{tag}</em>)}</span>}
-                  <small>VlerÃ«soje mÃ« poshtÃ«</small>
-                </span>
-              </span>
-            </button>
-
-            {!revealed ? (
-              <button className="reveal-button" onClick={() => setRevealed(true)} type="button">
-                Shfaq pÃ«rgjigjen <kbd>Space</kbd>
-              </button>
-            ) : (
-              <div className="rating-actions" aria-label="VlerÃ«so kartelÃ«n">
-                <button className="rating-again" onClick={() => rateCard("again")}><b>PÃ«rsÃ«ri</b><span>&lt; 1 min</span><kbd>1</kbd></button>
-                <button className="rating-hard" onClick={() => rateCard("hard")}><b>VÃ«shtirÃ«</b><span>6 min</span><kbd>2</kbd></button>
-                <button className="rating-good" onClick={() => rateCard("good")}><b>MirÃ«</b><span>10 min</span><kbd>3</kbd></button>
-                <button className="rating-easy" onClick={() => rateCard("easy")}><b>LehtÃ«</b><span>4 ditÃ«</span><kbd>4</kbd></button>
-              </div>
-            )}
-
-            <div className="study-stats">
-              <span><b>{answeredCount}</b> tÃ« vlerÃ«suara</span>
-              <span><b>{ratings.again}</b> pÃ«r pÃ«rsÃ«ritje</span>
-              <span><b>{learnedCount}</b> tÃ« mÃ«suara</span>
-            </div>
-          </section>
-        )}
-      </main>
-    );
-  }
-
-  if (selectedGrade && selectedSubject && selectedChapter && selectedLesson) {
-    const imageUrl = selectedLesson.coverImage?.asset?.url;
-    const recordingUrl = selectedLesson.recording?.url;
-    const currentLessonIndex = selectedChapter.lessons.findIndex((lesson) => lesson._id === selectedLesson._id);
-    const previousLesson = currentLessonIndex > 0
-      ? selectedChapter.lessons[currentLessonIndex - 1]
-      : null;
-    const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < selectedChapter.lessons.length - 1
-      ? selectedChapter.lessons[currentLessonIndex + 1]
-      : null;
-
-    return (
-      <main
-        className="inner-page"
-        data-progress-page="lesson"
-        data-progress-grade-id={selectedGrade._id}
-        data-progress-subject-id={selectedSubject._id}
-        data-progress-chapter-id={selectedChapter._id}
-        data-progress-lesson-id={selectedLesson._id}
-      >
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <button onClick={goToChapter}>{selectedChapter.title}</button><span>/</span>
-          <span>{selectedLesson.title}</span>
-        </div>
-
-        <section className={styles.lessonHero}>
-          <div>
-            <span className={styles.eyebrow}>MÃ«simi Â· {selectedGrade.title}</span>
-            <h1>{selectedLesson.title}</h1>
-            <p>{selectedLesson.summary || "MÃ«simi i kapitullit."}</p>
-          </div>
-          {imageUrl && <img className={styles.coverImage} src={imageUrl} alt={selectedLesson.coverImage?.alt || selectedLesson.title} />}
-        </section>
-
-        {recordingUrl && (
-          <section className={experience.audioCard} aria-label="Incizimi i mÃ«simit">
-            <span className={experience.audioIcon}><AudioIcon /></span>
-            <div className={experience.audioCopy}>
-              <span>DÃ«gjo mÃ«simin</span>
-              <strong>{selectedLesson.recording?.title || selectedLesson.title}</strong>
-              <small>{selectedLesson.recording?.originalFilename || "Incizim audio"}</small>
-            </div>
-            <audio className={experience.audioPlayer} controls preload="metadata" src={recordingUrl}>
-              Shfletuesi yt nuk e mbÃ«shtet audion.
-            </audio>
-          </section>
-        )}
-
-        {isAdmin && (
-          <LessonAdminEditor
-            lesson={{
-              _id: selectedLesson._id,
-              _rev: selectedLesson._rev,
-              title: selectedLesson.title,
-              body: selectedLesson.body,
-            }}
-            onSaved={applySavedLesson}
-          />
-        )}
-
-        <article className={styles.lessonBody}>
-          {selectedLesson.body?.length ? (
-            <PortableText value={selectedLesson.body as never} components={portableTextComponents} />
-          ) : (
-            <div className={styles.lessonEmpty}>Teksti i plotÃ« i kÃ«tij mÃ«simi ende nuk Ã«shtÃ« publikuar.</div>
-          )}
-        </article>
-
-        <nav className={styles.lessonNavigation} aria-label="Navigimi ndÃ«rmjet mÃ«simeve">
-          <button
-            className={styles.lessonNavButton}
-            type="button"
-            onClick={() => previousLesson && void chooseLesson(previousLesson)}
-            disabled={!previousLesson}
-          >
-            <span className={styles.lessonNavArrow} aria-hidden="true">â†</span>
-            <span className={styles.lessonNavCopy}>
-              <small>MÃ«simi paraprak</small>
-              <strong>{previousLesson?.title || "Ky Ã«shtÃ« mÃ«simi i parÃ«"}</strong>
-            </span>
-          </button>
-
-          <button
-            className={`${styles.lessonNavButton} ${styles.lessonNavNext}`}
-            type="button"
-            onClick={() => nextLesson && void chooseLesson(nextLesson)}
-            disabled={!nextLesson}
-          >
-            <span className={styles.lessonNavCopy}>
-              <small>MÃ«simi tjetÃ«r</small>
-              <strong>{nextLesson?.title || "Ky Ã«shtÃ« mÃ«simi i fundit"}</strong>
-            </span>
-            <span className={styles.lessonNavArrow} aria-hidden="true">â†’</span>
-          </button>
-        </nav>
-
-        <section className={styles.lessonStudyBar}>
-          <div>
-            <strong>Testoje kÃ«tÃ« mÃ«sim</strong>
-            <span>{selectedLesson.flashcardCount} kartela nga vetÃ«m ky mÃ«sim</span>
-          </div>
-          <button
-            className={styles.startStudy}
-            onClick={() => void startTest({ kind: "lesson", title: selectedLesson.title, chapter: selectedChapter, lesson: selectedLesson })}
-            disabled={selectedLesson.flashcardCount === 0}
-          >
-            {selectedLesson.flashcardCount ? "Testo mÃ«simin" : "Ende pa flashcards"}
-          </button>
-        </section>
-      </main>
-    );
-  }
-
-  if (selectedGrade && selectedSubject && selectedChapter) {
-    const chapterCards = getChapterFlashcardCount(selectedChapter);
-
-    return (
-      <main className="inner-page">
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <button onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
-          <span>{selectedChapter.title}</span>
-        </div>
-
-        <section className="chapter-hero">
-          <span className="large-icon">Â§</span>
-          <div>
-            <span className="eyebrow">Kapitulli Â· {selectedGrade.title}</span>
-            <h1>{selectedChapter.title}</h1>
-            <p>{selectedChapter.summary || "MÃ«simet dhe flashcards e kÃ«tij kapitulli."}</p>
-          </div>
-        </section>
-
-        <ModeChooser mode={contentMode} onChange={setContentMode} />
-
-        <section className="chapters-section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">{contentMode === "lessons" ? "Teksti dhe audio" : "Testo veten"}</span>
-              <h2>{contentMode === "lessons" ? "MÃ«simet e kapitullit" : "Flashcards e kapitullit"}</h2>
-            </div>
-            {contentMode === "flashcards" && (
-              <button
-                className={classic.chapterTest}
-                onClick={() => void startTest({ kind: "chapter", title: selectedChapter.title, chapter: selectedChapter })}
-                disabled={chapterCards === 0}
-                type="button"
-              >
-                Testo krejt kapitullin Â· {chapterCards} kartela
-              </button>
-            )}
-          </div>
-
-          {selectedChapter.lessons.length ? (
-            contentMode === "lessons" ? (
-              <div className={styles.lessonList}>
-                {selectedChapter.lessons.map((lesson, index) => (
-                  <article className={styles.lessonRow} key={lesson._id}>
-                    <span className={styles.lessonIndex}>{String(index + 1).padStart(2, "0")}</span>
-                    <div className={styles.lessonCopy}>
-                      <h3>{lesson.title}</h3>
-                      <p>{lesson.summary || "MÃ«sim me tekst, audio dhe flashcards."}</p>
-                      <span className={styles.lessonCount}>
-                        {lesson.recording?.url ? "Audio Â· " : ""}{lesson.flashcardCount} flashcards
-                      </span>
-                    </div>
-                    <button className={styles.lessonOpen} onClick={() => chooseLesson(lesson)}>Hape mÃ«simin</button>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className={classic.deckGrid}>
-                {selectedChapter.lessons.map((lesson) => (
-                  <article className={classic.deckCard} key={lesson._id}>
-                    <span className={classic.deckIcon}><ModeIcon mode="flashcards" /></span>
-                    <small>Test i mÃ«simit</small>
-                    <h3>{lesson.title}</h3>
-                    <p>{lesson.summary || "PÃ«rsÃ«rit pikat kryesore tÃ« mÃ«simit."}</p>
-                    <strong>{lesson.flashcardCount} kartela</strong>
-                    <button
-                      onClick={() => void startTest({ kind: "lesson", title: lesson.title, chapter: selectedChapter, lesson })}
-                      disabled={lesson.flashcardCount === 0}
-                      type="button"
-                    >
-                      {lesson.flashcardCount ? "Testo mÃ«simin" : "Ende pa flashcards"}
-                    </button>
-                  </article>
-                ))}
-              </div>
-            )
-          ) : (
-            <div className={styles.emptyGrade}><strong>Ende nuk ka mÃ«sime.</strong><span>PÃ«rmbajtja do tÃ« shfaqet pasi tÃ« publikohet.</span></div>
-          )}
-        </section>
-      </main>
-    );
-  }
-
-  if (selectedGrade && selectedSubject) {
-    const subjectStats = getSubjectStats(selectedSubject);
-
-    return (
-      <main className="inner-page subject-page">
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span>
-          <button onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
-          <span>{selectedSubject.title}</span>
-        </div>
-
-        <section className="subject-hero">
-          <span className="large-icon">{selectedSubject.emoji || "âœš"}</span>
-          <div>
-            <span className="eyebrow">{selectedGrade.title} Â· LÃ«nda</span>
-            <h1>{selectedSubject.title}</h1>
-            <p>{selectedSubject.shortDescription}</p>
-          </div>
-          <div className="subject-summary">
-            <div><strong>{subjectStats.chapterCount}</strong><span>Kapituj</span></div>
-            <div><strong>{subjectStats.flashcardCount}</strong><span>Flashcards</span></div>
-          </div>
-        </section>
-
-        <ModeChooser mode={contentMode} onChange={setContentMode} />
-
-        <section className="chapters-section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">Hapi tjetÃ«r</span>
-              <h2>{contentMode === "lessons" ? "Zgjidh kapitullin pÃ«r mÃ«sime" : "Zgjidh kapitullin pÃ«r flashcards"}</h2>
-            </div>
-          </div>
-
-          {selectedSubject.chapters.length ? (
-            <div className="chapter-list">
-              {selectedSubject.chapters.map((chapter, index) => {
-                const flashcardCount = getChapterFlashcardCount(chapter);
-                return (
-                  <article className="chapter-row" key={chapter._id}>
-                    <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>
-                    <div className="chapter-copy">
-                      <h3>{chapter.title}</h3>
-                      <p>{chapter.summary || "MÃ«simet e kapitullit."}</p>
-                      <span className="chapter-count-mobile">{chapter.lessons.length} mÃ«sime Â· {flashcardCount} kartela</span>
-                    </div>
-                    <span className="chapter-count">{chapter.lessons.length} mÃ«sime Â· {flashcardCount} kartela</span>
-                    <button className={classic.openButton} onClick={() => chooseChapter(chapter)} type="button">
-                      {contentMode === "lessons" ? "Hape kapitullin" : "Hape flashcards"}
-                      <span>â†’</span>
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={styles.emptyGrade}><strong>Ende nuk ka kapituj.</strong><span>Kjo lÃ«ndÃ« i pÃ«rket vetÃ«m {selectedGrade.title}.</span></div>
-          )}
-        </section>
-      </main>
-    );
-  }
-
-  if (selectedGrade) {
-    const gradeStats = getGradeStats(selectedGrade);
-
-    return (
-      <main className="inner-page">
-        <div className={styles.hierarchy}>
-          <button onClick={changeGrade}>Klasat</button><span>/</span><span>{selectedGrade.title}</span>
-        </div>
-
-        <section className={styles.portalHero}>
-          <div>
-            <span className={styles.eyebrow}>Klasa aktive</span>
-            <h1>{selectedGrade.title}</h1>
-            <p>{selectedGrade.shortDescription || "Portali mÃ«simor i kÃ«saj klase."}</p>
-            <div className={styles.portalActions}>
-              <button className={styles.secondaryAction} onClick={changeGrade}>Ndrysho klasÃ«n</button>
-              <button className={styles.primaryAction} onClick={() => document.getElementById("lendet")?.scrollIntoView({ behavior: "smooth" })}>Shiko lÃ«ndÃ«t</button>
-            </div>
-          </div>
-          <div className={styles.portalStats}>
-            <div><strong>{gradeStats.subjectCount}</strong><span>LÃ«ndÃ«</span></div>
-            <div><strong>{gradeStats.chapterCount}</strong><span>Kapituj</span></div>
-            <div><strong>{gradeStats.lessonCount}</strong><span>MÃ«sime</span></div>
-            <div><strong>{gradeStats.flashcardCount}</strong><span>Flashcards</span></div>
-          </div>
-        </section>
-
-        <section className="subjects-section" id="lendet">
-          <div className="section-heading">
-            <div><span className="eyebrow">VetÃ«m {selectedGrade.title}</span><h2>Zgjidh lÃ«ndÃ«n</h2></div>
-            <div className="library-tools">
-              <label className="search-box"><span>âŒ•</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="KÃ«rko lÃ«ndÃ«n..." /></label>
-              <button className="refresh-button" onClick={() => void fetchPortal(true)} title="Rifresko tÃ« dhÃ«nat">â†»</button>
-            </div>
-          </div>
-
-          <ModeChooser mode={contentMode} onChange={setContentMode} />
-
-          {error && <div className="error-box">{error}</div>}
-          {visibleSubjects.length ? (
-            <div className="subject-grid">
-              {visibleSubjects.map((subject, index) => {
-                const stats = getSubjectStats(subject);
-                return (
-                  <article className="subject-card" key={subject._id}>
-                    <div className="subject-top"><span>{String(index + 1).padStart(2, "0")}</span><i>{subject.emoji || "âœš"}</i></div>
-                    <h3>{subject.title}</h3>
-                    <p>{subject.shortDescription || `LÃ«ndÃ« e ${selectedGrade.title}.`}</p>
-                    <div className="subject-meta">
-                      <span><b>{stats.chapterCount}</b> kapituj</span>
-                      <span><b>{stats.flashcardCount}</b> kartela</span>
-                    </div>
-                    <button className={classic.subjectOpen} onClick={() => chooseSubject(subject)} type="button">
-                      {contentMode === "lessons" ? "Hape mÃ«simet" : "Hape flashcards"}
-                      <span>â†’</span>
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={styles.emptyGrade}>
-              <strong>{search ? "Nuk u gjet asnjÃ« lÃ«ndÃ«." : "Ende nuk ka lÃ«ndÃ« nÃ« kÃ«tÃ« klasÃ«."}</strong>
-              <span>Klasa mbetet e ndarÃ« plotÃ«sisht nga klasat tjera.</span>
-            </div>
-          )}
-        </section>
-      </main>
-    );
-  }
-
-  return (
-    <main>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="status-pill"><i /> Portali i shkollÃ«s sonÃ«</span>
-          <h1>MÃ«sime dhe flashcards.<br /><em>TÃ« ndara sipas klasÃ«s.</em></h1>
-          <p>Zgjidhe klasÃ«n tÃ«nde. Klasa ruhet dhe pastaj i sheh tÃ« gjitha lÃ«ndÃ«t e saj.</p>
-          <a className="hero-cta" href="#klasat">Zgjidh klasÃ«n <span>â†’</span></a>
-        </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="orbit one" /><div className="orbit two" />
-          <div className="demo-card first"><span>PORTALI MÃ‹SIMOR</span><b>Klasa â†’ TÃ« gjitha lÃ«ndÃ«t</b><small>StrukturÃ« e qartÃ«</small></div>
-          <div className="demo-card second"><span>ZGJIDH MÃ‹NYRÃ‹N</span><b>MÃ«simet ose Flashcards</b><small>VetÃ«m njÃ« buton</small></div>
-          <div className="plus">+</div>
-        </div>
-      </section>
-
-      <section className="stats-strip">
-        <div><strong>3</strong><span>Klasa</span></div>
-        <div><strong>{totalStats.subjects}</strong><span>LÃ«ndÃ«</span></div>
-        <div><strong>{totalStats.lessons}</strong><span>MÃ«sime</span></div>
-        <div><strong>{totalStats.flashcards}</strong><span>Flashcards</span></div>
-      </section>
-
-      <section className={styles.gradeSection} id="klasat">
-        <div className={styles.sectionHeading}>
-          <span className={styles.eyebrow}>Hapi i parÃ«</span>
-          <h2>Zgjidh klasÃ«n</h2>
-          <p>Pasi ta zgjedhÃ«sh, zgjedhja ruhet dhe shfaqen tÃ« gjitha lÃ«ndÃ«t.</p>
-        </div>
-        {error && <div className="error-box">{error}</div>}
-        <div className={styles.gradeGrid}>
-          {grades.map((grade) => {
-            const stats = getGradeStats(grade);
-            return (
-              <article className={styles.gradeCard} key={grade._id}>
-                <span className={styles.gradeNumber}>{grade.gradeNumber}</span>
-                <h3>{grade.title}</h3>
-                <p>{grade.shortDescription}</p>
-                <div className={styles.gradeMeta}>
-                  <span><b>{stats.subjectCount}</b> lÃ«ndÃ«</span>
-                  <span><b>{stats.flashcardCount}</b> flashcards</span>
-                </div>
-                <button className={styles.gradeOpen} onClick={() => chooseGrade(grade)}>Hape {grade.title}</button>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-    </main>
-  );
-}
+            const activeScope = studyScopeRef.current;
+            if (!stopped && studyingRef.current && activeScope) {
+              const refreshedCards = await fetchCardç½º¶‰žËkºwµç}¸¹‰½‘äü¹±•¹Ñ €ü€ (€€€€€€€€€€€€ñA½ÉÑ…‰±•Q•áÐÙ…±Õ”õíÍ•±•Ñ•‘1•ÍÍ½¸¹‰½‘ä…Ì¹•Ù•Éô½µÁ½¹•¹ÑÌõíÁ½ÉÑ…‰±•Q•áÑ½µÁ½¹•¹ÑÍô€¼ø(€€€€€€€€€€¤€è€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹µÁÑåôùQ•­ÍÑ¤¤Á±½Ó¬¤¯­Ñ¥¨·­Í¥µ¤•¹‘”¹Õ¬ƒ­Í¡Ó¬ÁÕ‰±¥­Õ…È¸ð½‘¥Øø(€€€€€€€€€€¥ô(€€€€€€€€ð½…ÉÑ¥±”ø((€€€€€€€€ñ¹…Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…Ù¥…Ñ¥½¹ô…É¥„µ±…‰•°ô‰9…Ù¥¥µ¤¹“­Éµ©•Ð·­Í¥µ•Ù”ˆø(€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…Ù	ÕÑÑ½¹ô(€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€½¹±¥¬õì ¤€ôøÁÉ•Ù¥½ÕÍ1•ÍÍ½¸€˜˜Ù½¥¡½½Í•1•ÍÍ½¸¡ÁÉ•Ù¥½ÕÍ1•ÍÍ½¸¥ô(€€€€€€€€€€€‘¥Í…‰±•õì…ÁÉ•Ù¥½ÕÍ1•ÍÍ½¹ô(€€€€€€€€€€ø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…ÙÉÉ½Ýô…É¥„µ¡¥‘‘•¸ô‰ÑÉÕ”ˆûŠ@ð½ÍÁ…¸ø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…Ù½Áåôø(€€€€€€€€€€€€€€ñÍµ…±°ù7­Í¥µ¤Á…É…ÁÉ…¬ð½Íµ…±°ø(€€€€€€€€€€€€€€ñÍÑÉ½¹œùíÁÉ•Ù¥½ÕÍ1•ÍÍ½¸ü¹Ñ¥Ñ±”ñð€‰-äƒ­Í¡Ó¬·­Í¥µ¤¤Á…Ë¬‰ôð½ÍÑÉ½¹œø(€€€€€€€€€€€€ð½ÍÁ…¸ø(€€€€€€€€€€ð½‰ÕÑÑ½¸ø((€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€±…ÍÍ9…µ”õí€‘íÍÑå±•Ì¹±•ÍÍ½¹9…Ù	ÕÑÑ½¹ô€‘íÍÑå±•Ì¹±•ÍÍ½¹9…Ù9•áÑõô(€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€½¹±¥¬õì ¤€ôø¹•áÑ1•ÍÍ½¸€˜˜Ù½¥¡½½Í•1•ÍÍ½¸¡¹•áÑ1•ÍÍ½¸¥ô(€€€€€€€€€€€‘¥Í…‰±•õì…¹•áÑ1•ÍÍ½¹ô(€€€€€€€€€€ø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…Ù½Áåôø(€€€€€€€€€€€€€€ñÍµ…±°ù7­Í¥µ¤Ñ©•Ó­Èð½Íµ…±°ø(€€€€€€€€€€€€€€ñÍÑÉ½¹œùí¹•áÑ1•ÍÍ½¸ü¹Ñ¥Ñ±”ñð€‰-äƒ­Í¡Ó¬·­Í¥µ¤¤™Õ¹‘¥Ð‰ôð½ÍÑÉ½¹œø(€€€€€€€€€€€€ð½ÍÁ…¸ø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹9…ÙÉÉ½Ýô…É¥„µ¡¥‘‘•¸ô‰ÑÉÕ”ˆûŠHð½ÍÁ…¸ø(€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€ð½¹…Øø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹MÑÕ‘å	…Éôø(€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€ñÍÑÉ½¹œùQ•ÍÑ½©”¯­Ó¬·­Í¥´ð½ÍÑÉ½¹œø(€€€€€€€€€€€€ñÍÁ…¸ùíÍ•±•Ñ•‘1•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ñô­…ÉÑ•±„¹„Ù•Ó­´­ä·­Í¥´ð½ÍÁ…¸ø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€±…ÍÍ9…µ”õíÍÑå±•Ì¹ÍÑ…ÉÑMÑÕ‘åô(€€€€€€€€€€€½¹±¥¬õì ¤€ôøÙ½¥ÍÑ…ÉÑQ•ÍÐ¡ì­¥¹è€‰±•ÍÍ½¸ˆ°Ñ¥Ñ±”èÍ•±•Ñ•‘1•ÍÍ½¸¹Ñ¥Ñ±”°¡…ÁÑ•ÈèÍ•±•Ñ•‘¡…ÁÑ•È°±•ÍÍ½¸èÍ•±•Ñ•‘1•ÍÍ½¸ô¥ô(€€€€€€€€€€€‘¥Í…‰±•õíÍ•±•Ñ•‘1•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ð€ôôô€Áô(€€€€€€€€€€ø(€€€€€€€€€€€íÍ•±•Ñ•‘1•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ð€ü€‰Q•ÍÑ¼·­Í¥µ¥¸ˆ€è€‰¹‘”Á„™±…Í¡…É‘Ì‰ô(€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€ð½µ…¥¸ø(€€€€¤ì(€ô((€¥˜€¡Í•±•Ñ•‘É…‘”€˜˜Í•±•Ñ•‘MÕ‰©•Ð€˜˜Í•±•Ñ•‘¡…ÁÑ•È¤ì(€€€½¹ÍÐ¡…ÁÑ•É…É‘Ì€ô•Ñ¡…ÁÑ•É±…Í¡…É‘½Õ¹Ð¡Í•±•Ñ•‘¡…ÁÑ•È¤ì((€€€É•ÑÕÉ¸€ (€€€€€€ñµ…¥¸±…ÍÍ9…µ”ô‰¥¹¹•ÈµÁ…”ˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹¡¥•É…É¡åôø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí¡…¹•É…‘•ôù-±…Í…Ðð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸ø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí½Q½É…‘•ôùíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸ø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí½Q½MÕ‰©•ÑôùíÍ•±•Ñ•‘MÕ‰©•Ð¹Ñ¥Ñ±•ôð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸ø(€€€€€€€€€€ñÍÁ…¸ùíÍ•±•Ñ•‘¡…ÁÑ•È¹Ñ¥Ñ±•ôð½ÍÁ…¸ø(€€€€€€€€ð½‘¥Øø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ¡•É¼ˆø(€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰±…É”µ¥½¸ˆû
+œð½ÍÁ…¸ø(€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰•å•‰É½Üˆù-…Á¥ÑÕ±±¤ƒ
+ÜíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½ÍÁ…¸ø(€€€€€€€€€€€€ñ ÄùíÍ•±•Ñ•‘¡…ÁÑ•È¹Ñ¥Ñ±•ôð½ Äø(€€€€€€€€€€€€ñÀùíÍ•±•Ñ•‘¡…ÁÑ•È¹ÍÕµµ…Éäñð€‰7­Í¥µ•Ð‘¡”™±…Í¡…É‘Ì”¯­Ñ¥¨­…Á¥ÑÕ±±¤¸‰ôð½Àø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€ñ5½‘•¡½½Í•Èµ½‘”õí½¹Ñ•¹Ñ5½‘•ô½¹¡…¹”õíÍ•Ñ½¹Ñ•¹Ñ5½‘•ô€¼ø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰¡…ÁÑ•ÉÌµÍ•Ñ¥½¸ˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Í•Ñ¥½¸µ¡•…‘¥¹œˆø(€€€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰•å•‰É½Üˆùí½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€‰Q•­ÍÑ¤‘¡”…Õ‘¥¼ˆ€è€‰Q•ÍÑ¼Ù•Ñ•¸‰ôð½ÍÁ…¸ø(€€€€€€€€€€€€€€ñ Èùí½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€‰7­Í¥µ•Ð”­…Á¥ÑÕ±±¥Ðˆ€è€‰±…Í¡…É‘Ì”­…Á¥ÑÕ±±¥Ð‰ôð½ Èø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€í½¹Ñ•¹Ñ5½‘”€ôôô€‰™±…Í¡…É‘Ìˆ€˜˜€ (€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€€€€€±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹¡…ÁÑ•ÉQ•ÍÑô(€€€€€€€€€€€€€€€½¹±¥¬õì ¤€ôøÙ½¥ÍÑ…ÉÑQ•ÍÐ¡ì­¥¹è€‰¡…ÁÑ•Èˆ°Ñ¥Ñ±”èÍ•±•Ñ•‘¡…ÁÑ•È¹Ñ¥Ñ±”°¡…ÁÑ•ÈèÍ•±•Ñ•‘¡…ÁÑ•Èô¥ô(€€€€€€€€€€€€€€€‘¥Í…‰±•õí¡…ÁÑ•É…É‘Ì€ôôô€Áô(€€€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€€€€ø(€€€€€€€€€€€€€€€Q•ÍÑ¼­É•©Ð­…Á¥ÑÕ±±¥¸ƒ
+Üí¡…ÁÑ•É…É‘Íô­…ÉÑ•±„(€€€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€¥ô(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€íÍ•±•Ñ•‘¡…ÁÑ•È¹±•ÍÍ½¹Ì¹±•¹Ñ €ü€ (€€€€€€€€€€€½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€ (€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹1¥ÍÑôø(€€€€€€€€€€€€€€€íÍ•±•Ñ•‘¡…ÁÑ•È¹±•ÍÍ½¹Ì¹µ…À ¡±•ÍÍ½¸°¥¹‘•à¤€ôø€ (€€€€€€€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹I½Ýô­•äõí±•ÍÍ½¸¹}¥‘ôø(€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹%¹‘•áôùíMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤¹Á…‘MÑ…ÉÐ È°€ˆÀˆ¥ôð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹½Áåôø(€€€€€€€€€€€€€€€€€€€€€€ñ Ìùí±•ÍÍ½¸¹Ñ¥Ñ±•ôð½ Ìø(€€€€€€€€€€€€€€€€€€€€€€ñÀùí±•ÍÍ½¸¹ÍÕµµ…Éäñð€‰7­Í¥´µ”Ñ•­ÍÐ°…Õ‘¥¼‘¡”™±…Í¡…É‘Ì¸‰ôð½Àø(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹½Õ¹Ñôø(€€€€€€€€€€€€€€€€€€€€€€€í±•ÍÍ½¸¹É•½É‘¥¹œü¹ÕÉ°€ü€‰Õ‘¥¼ƒ
+Ü€ˆ€è€ˆ‰õí±•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ñô™±…Í¡…É‘Ì(€€€€€€€€€€€€€€€€€€€€€€ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹±•ÍÍ½¹=Á•¹ô½¹±¥¬õì ¤€ôø¡½½Í•1•ÍÍ½¸¡±•ÍÍ½¸¥ôù!…Á”·­Í¥µ¥¸ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€€€ð½…ÉÑ¥±”ø(€€€€€€€€€€€€€€€€¤¥ô(€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€¤€è€ (€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹‘•­É¥‘ôø(€€€€€€€€€€€€€€€íÍ•±•Ñ•‘¡…ÁÑ•È¹±•ÍÍ½¹Ì¹µ…À ¡±•ÍÍ½¸¤€ôø€ (€€€€€€€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹‘•­…É‘ô­•äõí±•ÍÍ½¸¹}¥‘ôø(€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹‘•­%½¹ôøñ5½‘•%½¸µ½‘”ô‰™±…Í¡…É‘Ìˆ€¼øð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ñÍµ…±°ùQ•ÍÐ¤·­Í¥µ¥Ðð½Íµ…±°ø(€€€€€€€€€€€€€€€€€€€€ñ Ìùí±•ÍÍ½¸¹Ñ¥Ñ±•ôð½ Ìø(€€€€€€€€€€€€€€€€€€€€ñÀùí±•ÍÍ½¸¹ÍÕµµ…Éäñð€‰C­ÉÏ­É¥ÐÁ¥­…Ð­Éå•Í½É”Ó¬·­Í¥µ¥Ð¸‰ôð½Àø(€€€€€€€€€€€€€€€€€€€€ñÍÑÉ½¹œùí±•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ñô­…ÉÑ•±„ð½ÍÑÉ½¹œø(€€€€€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€€€€€€€€€€€½¹±¥¬õì ¤€ôøÙ½¥ÍÑ…ÉÑQ•ÍÐ¡ì­¥¹è€‰±•ÍÍ½¸ˆ°Ñ¥Ñ±”è±•ÍÍ½¸¹Ñ¥Ñ±”°¡…ÁÑ•ÈèÍ•±•Ñ•‘¡…ÁÑ•È°±•ÍÍ½¸ô¥ô(€€€€€€€€€€€€€€€€€€€€€‘¥Í…‰±•õí±•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ð€ôôô€Áô(€€€€€€€€€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€€€€€€€€€€ø(€€€€€€€€€€€€€€€€€€€€€í±•ÍÍ½¸¹™±…Í¡…É‘½Õ¹Ð€ü€‰Q•ÍÑ¼·­Í¥µ¥¸ˆ€è€‰¹‘”Á„™±…Í¡…É‘Ì‰ô(€€€€€€€€€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€€€ð½…ÉÑ¥±”ø(€€€€€€€€€€€€€€€€¤¥ô(€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€¤(€€€€€€€€€€¤€è€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹•µÁÑåÉ…‘•ôøñÍÑÉ½¹œù¹‘”¹Õ¬­„·­Í¥µ”¸ð½ÍÑÉ½¹œøñÍÁ…¸ùC­Éµ‰…©Ñ©„‘¼Ó¬Í¡™…Å•ÐÁ…Í¤Ó¬ÁÕ‰±¥­½¡•Ð¸ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€¥ô(€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€ð½µ…¥¸ø(€€€€¤ì(€ô((€¥˜€¡Í•±•Ñ•‘É…‘”€˜˜Í•±•Ñ•‘MÕ‰©•Ð¤ì(€€€½¹ÍÐÍÕ‰©•ÑMÑ…ÑÌ€ô•ÑMÕ‰©•ÑMÑ…ÑÌ¡Í•±•Ñ•‘MÕ‰©•Ð¤ì((€€€É•ÑÕÉ¸€ (€€€€€€ñµ…¥¸±…ÍÍ9…µ”ô‰¥¹¹•ÈµÁ…”ÍÕ‰©•ÐµÁ…”ˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹¡¥•É…É¡åôø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí¡…¹•É…‘•ôù-±…Í…Ðð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸ø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí½Q½É…‘•ôùíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸ø(€€€€€€€€€€ñÍÁ…¸ùíÍ•±•Ñ•‘MÕ‰©•Ð¹Ñ¥Ñ±•ôð½ÍÁ…¸ø(€€€€€€€€ð½‘¥Øø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰ÍÕ‰©•Ðµ¡•É¼ˆø(€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰±…É”µ¥½¸ˆùíÍ•±•Ñ•‘MÕ‰©•Ð¹•µ½©¤ñð€‹Šrh‰ôð½ÍÁ…¸ø(€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰•å•‰É½ÜˆùíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôƒ
+Ü3­¹‘„ð½ÍÁ…¸ø(€€€€€€€€€€€€ñ ÄùíÍ•±•Ñ•‘MÕ‰©•Ð¹Ñ¥Ñ±•ôð½ Äø(€€€€€€€€€€€€ñÀùíÍ•±•Ñ•‘MÕ‰©•Ð¹Í¡½ÉÑ•ÍÉ¥ÁÑ¥½¹ôð½Àø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰ÍÕ‰©•ÐµÍÕµµ…Éäˆø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÍÕ‰©•ÑMÑ…ÑÌ¹¡…ÁÑ•É½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù-…Á¥ÑÕ¨ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÍÕ‰©•ÑMÑ…ÑÌ¹™±…Í¡…É‘½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù±…Í¡…É‘Ìð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€ñ5½‘•¡½½Í•Èµ½‘”õí½¹Ñ•¹Ñ5½‘•ô½¹¡…¹”õíÍ•Ñ½¹Ñ•¹Ñ5½‘•ô€¼ø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰¡…ÁÑ•ÉÌµÍ•Ñ¥½¸ˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Í•Ñ¥½¸µ¡•…‘¥¹œˆø(€€€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰•å•‰É½Üˆù!…Á¤Ñ©•Ó­Èð½ÍÁ…¸ø(€€€€€€€€€€€€€€ñ Èùí½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€‰i©¥‘ ­…Á¥ÑÕ±±¥¸Ã­È·­Í¥µ”ˆ€è€‰i©¥‘ ­…Á¥ÑÕ±±¥¸Ã­È™±…Í¡…É‘Ì‰ôð½ Èø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€íÍ•±•Ñ•‘MÕ‰©•Ð¹¡…ÁÑ•ÉÌ¹±•¹Ñ €ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ±¥ÍÐˆø(€€€€€€€€€€€€€íÍ•±•Ñ•‘MÕ‰©•Ð¹¡…ÁÑ•ÉÌ¹µ…À ¡¡…ÁÑ•È°¥¹‘•à¤€ôøì(€€€€€€€€€€€€€€€½¹ÍÐ™±…Í¡…É‘½Õ¹Ð€ô•Ñ¡…ÁÑ•É±…Í¡…É‘½Õ¹Ð¡¡…ÁÑ•È¤ì(€€€€€€€€€€€€€€€É•ÑÕÉ¸€ (€€€€€€€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÍ9…µ”ô‰¡…ÁÑ•ÈµÉ½Üˆ­•äõí¡…ÁÑ•È¹}¥‘ôø(€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ¹Õµ‰•ÈˆùíMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤¹Á…‘MÑ…ÉÐ È°€ˆÀˆ¥ôð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ½Áäˆø(€€€€€€€€€€€€€€€€€€€€€€ñ Ìùí¡…ÁÑ•È¹Ñ¥Ñ±•ôð½ Ìø(€€€€€€€€€€€€€€€€€€€€€€ñÀùí¡…ÁÑ•È¹ÍÕµµ…Éäñð€‰7­Í¥µ•Ð”­…Á¥ÑÕ±±¥Ð¸‰ôð½Àø(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ½Õ¹Ðµµ½‰¥±”ˆùí¡…ÁÑ•È¹±•ÍÍ½¹Ì¹±•¹Ñ¡ô·­Í¥µ”ƒ
+Üí™±…Í¡…É‘½Õ¹Ñô­…ÉÑ•±„ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰¡…ÁÑ•Èµ½Õ¹Ðˆùí¡…ÁÑ•È¹±•ÍÍ½¹Ì¹±•¹Ñ¡ô·­Í¥µ”ƒ
+Üí™±…Í¡…É‘½Õ¹Ñô­…ÉÑ•±„ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹½Á•¹	ÕÑÑ½¹ô½¹±¥¬õì ¤€ôø¡½½Í•¡…ÁÑ•È¡¡…ÁÑ•È¥ôÑåÁ”ô‰‰ÕÑÑ½¸ˆø(€€€€€€€€€€€€€€€€€€€€€í½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€‰!…Á”­…Á¥ÑÕ±±¥¸ˆ€è€‰!…Á”™±…Í¡…É‘Ì‰ô(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸ûŠHð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€€€ð½…ÉÑ¥±”ø(€€€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€ô¥ô(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€¤€è€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹•µÁÑåÉ…‘•ôøñÍÑÉ½¹œù¹‘”¹Õ¬­„­…Á¥ÑÕ¨¸ð½ÍÑÉ½¹œøñÍÁ…¸ù-©¼³­¹“¬¤Ã­É­•ÐÙ•Ó­´íÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ô¸ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€¥ô(€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€ð½µ…¥¸ø(€€€€¤ì(€ô((€¥˜€¡Í•±•Ñ•‘É…‘”¤ì(€€€½¹ÍÐÉ…‘•MÑ…ÑÌ€ô•ÑÉ…‘•MÑ…ÑÌ¡Í•±•Ñ•‘É…‘”¤ì((€€€É•ÑÕÉ¸€ (€€€€€€ñµ…¥¸±…ÍÍ9…µ”ô‰¥¹¹•ÈµÁ…”ˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹¡¥•É…É¡åôø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí¡…¹•É…‘•ôù-±…Í…Ðð½‰ÕÑÑ½¸øñÍÁ…¸ø¼ð½ÍÁ…¸øñÍÁ…¸ùíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½ÍÁ…¸ø(€€€€€€€€ð½‘¥Øø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹Á½ÉÑ…±!•É½ôø(€€€€€€€€€€ñ‘¥Øø(€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹•å•‰É½Ýôù-±…Í„…­Ñ¥Ù”ð½ÍÁ…¸ø(€€€€€€€€€€€€ñ ÄùíÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½ Äø(€€€€€€€€€€€€ñÀùíÍ•±•Ñ•‘É…‘”¹Í¡½ÉÑ•ÍÉ¥ÁÑ¥½¸ñð€‰A½ÉÑ…±¤·­Í¥µ½È¤¯­Í…¨­±…Í”¸‰ôð½Àø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹Á½ÉÑ…±Ñ¥½¹Íôø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹Í•½¹‘…ÉåÑ¥½¹ô½¹±¥¬õí¡…¹•É…‘•ôù9‘ÉåÍ¡¼­±…Ï­¸ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹ÁÉ¥µ…ÉåÑ¥½¹ô½¹±¥¬õì ¤€ôø‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰±•¹‘•Ðˆ¤ü¹ÍÉ½±±%¹Ñ½Y¥•Ü¡ì‰•¡…Ù¥½Èè€‰Íµ½½Ñ ˆô¥ôùM¡¥­¼³­¹“­Ðð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹Á½ÉÑ…±MÑ…ÑÍôø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÉ…‘•MÑ…ÑÌ¹ÍÕ‰©•Ñ½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù3­¹“¬ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÉ…‘•MÑ…ÑÌ¹¡…ÁÑ•É½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù-…Á¥ÑÕ¨ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÉ…‘•MÑ…ÑÌ¹±•ÍÍ½¹½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù7­Í¥µ”ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÉ…‘•MÑ…ÑÌ¹™±…Í¡…É‘½Õ¹Ñôð½ÍÑÉ½¹œøñÍÁ…¸ù±…Í¡…É‘Ìð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰ÍÕ‰©•ÑÌµÍ•Ñ¥½¸ˆ¥ô‰±•¹‘•Ðˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Í•Ñ¥½¸µ¡•…‘¥¹œˆø(€€€€€€€€€€€€ñ‘¥ØøñÍÁ…¸±…ÍÍ9…µ”ô‰•å•‰É½ÜˆùY•Ó­´íÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ôð½ÍÁ…¸øñ Èùi©¥‘ ³­¹“­¸ð½ Èøð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰±¥‰É…ÉäµÑ½½±Ìˆø(€€€€€€€€€€€€€€ñ±…‰•°±…ÍÍ9…µ”ô‰Í•…É µ‰½àˆøñÍÁ…¸ûŠ2Tð½ÍÁ…¸øñ¥¹ÁÕÐÙ…±Õ”õíÍ•…É¡ô½¹¡…¹”õì¡•Ù•¹Ð¤€ôøÍ•ÑM•…É ¡•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”¥ôÁ±…•¡½±‘•Èô‰/­É­¼³­¹“­¸¸¸¸ˆ€¼øð½±…‰•°ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”ô‰É•™É•Í µ‰ÕÑÑ½¸ˆ½¹±¥¬õì ¤€ôøÙ½¥™•Ñ¡A½ÉÑ…°¡ÑÉÕ”¥ôÑ¥Ñ±”ô‰I¥™É•Í­¼Ó¬‘£­¹…ÐˆûŠìð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ5½‘•¡½½Í•Èµ½‘”õí½¹Ñ•¹Ñ5½‘•ô½¹¡…¹”õíÍ•Ñ½¹Ñ•¹Ñ5½‘•ô€¼ø((€€€€€€€€€í•ÉÉ½È€˜˜€ñ‘¥Ø±…ÍÍ9…µ”ô‰•ÉÉ½Èµ‰½àˆùí•ÉÉ½Éôð½‘¥Øùô(€€€€€€€€€íÙ¥Í¥‰±•MÕ‰©•ÑÌ¹±•¹Ñ €ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰ÍÕ‰©•ÐµÉ¥ˆø(€€€€€€€€€€€€€íÙ¥Í¥‰±•MÕ‰©•ÑÌ¹µ…À ¡ÍÕ‰©•Ð°¥¹‘•à¤€ôøì(€€€€€€€€€€€€€€€½¹ÍÐÍÑ…ÑÌ€ô•ÑMÕ‰©•ÑMÑ…ÑÌ¡ÍÕ‰©•Ð¤ì(€€€€€€€€€€€€€€€É•ÑÕÉ¸€ (€€€€€€€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÍ9…µ”ô‰ÍÕ‰©•Ðµ…Éˆ­•äõíÍÕ‰©•Ð¹}¥‘ôø(€€€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰ÍÕ‰©•ÐµÑ½ÀˆøñÍÁ…¸ùíMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤¹Á…‘MÑ…ÉÐ È°€ˆÀˆ¥ôð½ÍÁ…¸øñ¤ùíÍÕ‰©•Ð¹•µ½©¤ñð€‹Šrh‰ôð½¤øð½‘¥Øø(€€€€€€€€€€€€€€€€€€€€ñ ÌùíÍÕ‰©•Ð¹Ñ¥Ñ±•ôð½ Ìø(€€€€€€€€€€€€€€€€€€€€ñÀùíÍÕ‰©•Ð¹Í¡½ÉÑ•ÍÉ¥ÁÑ¥½¸ñð3­¹“¬”€‘íÍ•±•Ñ•‘É…‘”¹Ñ¥Ñ±•ô¹ôð½Àø(€€€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰ÍÕ‰©•Ðµµ•Ñ„ˆø(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸øñˆùíÍÑ…ÑÌ¹¡…ÁÑ•É½Õ¹Ñôð½ˆø­…Á¥ÑÕ¨ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸øñˆùíÍÑ…ÑÌ¹™±…Í¡…É‘½Õ¹Ñôð½ˆø­…ÉÑ•±„ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õí±…ÍÍ¥Œ¹ÍÕ‰©•Ñ=Á•¹ô½¹±¥¬õì ¤€ôø¡½½Í•MÕ‰©•Ð¡ÍÕ‰©•Ð¥ôÑåÁ”ô‰‰ÕÑÑ½¸ˆø(€€€€€€€€€€€€€€€€€€€€€í½¹Ñ•¹Ñ5½‘”€ôôô€‰±•ÍÍ½¹Ìˆ€ü€‰!…Á”·­Í¥µ•Ðˆ€è€‰!…Á”™±…Í¡…É‘Ì‰ô(€€€€€€€€€€€€€€€€€€€€€€ñÍÁ…¸ûŠHð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€€€ð½…ÉÑ¥±”ø(€€€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€ô¥ô(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€¤€è€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹•µÁÑåÉ…‘•ôø(€€€€€€€€€€€€€€ñÍÑÉ½¹œùíÍ•…É €ü€‰9Õ¬Ô©•Ð…Í¹«¬³­¹“¬¸ˆ€è€‰¹‘”¹Õ¬­„³­¹“¬»¬¯­Ó¬­±…Ï¬¸‰ôð½ÍÑÉ½¹œø(€€€€€€€€€€€€€€ñÍÁ…¸ù-±…Í„µ‰•Ñ•Ð”¹‘…Ë¬Á±½Ó­Í¥Í¡Ð¹„­±…Í…ÐÑ©•É„¸ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€¥ô(€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€ð½µ…¥¸ø(€€€€¤ì(€ô((€É•ÑÕÉ¸€ (€€€€ñµ…¥¸ø(€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰¡•É¼ˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰¡•É¼µ½Áäˆø(€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰ÍÑ…ÑÕÌµÁ¥±°ˆøñ¤€¼øA½ÉÑ…±¤¤Í¡­½±³­ÌÍ½»¬ð½ÍÁ…¸ø(€€€€€€€€€€ñ Äù7­Í¥µ”‘¡”™±…Í¡…É‘Ì¸ñ‰È€¼øñ•´ùS¬¹‘…É„Í¥Á…Ì­±…Ï­Ì¸ð½•´øð½ Äø(€€€€€€€€€€ñÀùi©¥‘¡”­±…Ï­¸Ó­¹‘”¸-±…Í„ÉÕ¡•Ð‘¡”Á…ÍÑ…¨¤Í¡• Ó¬©¥Ñ¡„³­¹“­Ð”Í…¨¸ð½Àø(€€€€€€€€€€ñ„±…ÍÍ9…µ”ô‰¡•É¼µÑ„ˆ¡É•˜ôˆ­±…Í…Ðˆùi©¥‘ ­±…Ï­¸€ñÍÁ…¸ûŠHð½ÍÁ…¸øð½„ø(€€€€€€€€ð½‘¥Øø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰¡•É¼µÙ¥ÍÕ…°ˆ…É¥„µ¡¥‘‘•¸ô‰ÑÉÕ”ˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰½É‰¥Ð½¹”ˆ€¼øñ‘¥Ø±…ÍÍ9…µ”ô‰½É‰¥ÐÑÝ¼ˆ€¼ø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰‘•µ¼µ…É™¥ÉÍÐˆøñÍÁ…¸ùA=IQ1$7-M%5=Hð½ÍÁ…¸øñˆù-±…Í„ƒŠHS¬©¥Ñ¡„³­¹“­Ðð½ˆøñÍµ…±°ùMÑÉÕ­ÑÕË¬”Å…ÉÓ¬ð½Íµ…±°øð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰‘•µ¼µ…ÉÍ•½¹ˆøñÍÁ…¸ùi)% 7-9eK-8ð½ÍÁ…¸øñˆù7­Í¥µ•Ð½Í”±…Í¡…É‘Ìð½ˆøñÍµ…±°ùY•Ó­´¹«¬‰ÕÑ½¸ð½Íµ…±°øð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Á±ÕÌˆø¬ð½‘¥Øø(€€€€€€€€ð½‘¥Øø(€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”ô‰ÍÑ…ÑÌµÍÑÉ¥Àˆø(€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œøÌð½ÍÑÉ½¹œøñÍÁ…¸ù-±…Í„ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÑ½Ñ…±MÑ…ÑÌ¹ÍÕ‰©•ÑÍôð½ÍÑÉ½¹œøñÍÁ…¸ù3­¹“¬ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÑ½Ñ…±MÑ…ÑÌ¹±•ÍÍ½¹Íôð½ÍÑÉ½¹œøñÍÁ…¸ù7­Í¥µ”ð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œùíÑ½Ñ…±MÑ…ÑÌ¹™±…Í¡…É‘Íôð½ÍÑÉ½¹œøñÍÁ…¸ù±…Í¡…É‘Ìð½ÍÁ…¸øð½‘¥Øø(€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€ñÍ•Ñ¥½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•M•Ñ¥½¹ô¥ô‰­±…Í…Ðˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹Í•Ñ¥½¹!•…‘¥¹ôø(€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹•å•‰É½Ýôù!…Á¤¤Á…Ë¬ð½ÍÁ…¸ø(€€€€€€€€€€ñ Èùi©¥‘ ­±…Ï­¸ð½ Èø(€€€€€€€€€€ñÀùA…Í¤Ñ„é©•‘£­Í °é©•‘¡©„ÉÕ¡•Ð‘¡”Í¡™…Å•¸Ó¬©¥Ñ¡„³­¹“­Ð¸ð½Àø(€€€€€€€€ð½‘¥Øø(€€€€€€€í•ÉÉ½È€˜˜€ñ‘¥Ø±…ÍÍ9…µ”ô‰•ÉÉ½Èµ‰½àˆùí•ÉÉ½Éôð½‘¥Øùô(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•É¥‘ôø(€€€€€€€€€íÉ…‘•Ì¹µ…À ¡É…‘”¤€ôøì(€€€€€€€€€€€½¹ÍÐÍÑ…ÑÌ€ô•ÑÉ…‘•MÑ…ÑÌ¡É…‘”¤ì(€€€€€€€€€€€É•ÑÕÉ¸€ (€€€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•…É‘ô­•äõíÉ…‘”¹}¥‘ôø(€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•9Õµ‰•ÉôùíÉ…‘”¹É…‘•9Õµ‰•Éôð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€ñ ÌùíÉ…‘”¹Ñ¥Ñ±•ôð½ Ìø(€€€€€€€€€€€€€€€€ñÀùíÉ…‘”¹Í¡½ÉÑ•ÍÉ¥ÁÑ¥½¹ôð½Àø(€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•5•Ñ…ôø(€€€€€€€€€€€€€€€€€€ñÍÁ…¸øñˆùíÍÑ…ÑÌ¹ÍÕ‰©•Ñ½Õ¹Ñôð½ˆø³­¹“¬ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€€€ñÍÁ…¸øñˆùíÍÑ…ÑÌ¹™±…Í¡…É‘½Õ¹Ñôð½ˆø™±…Í¡…É‘Ìð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸±…ÍÍ9…µ”õíÍÑå±•Ì¹É…‘•=Á•¹ô½¹±¥¬õì ¤€ôø¡½½Í•É…‘”¡É…‘”¥ôù!…Á”íÉ…‘”¹Ñ¥Ñ±•ôð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ð½…ÉÑ¥±”ø(€€€€€€€€€€€€¤ì(€€€€€€€€€ô¥ô(€€€€€€€€ð½‘¥Øø(€€€€€€ð½Í•Ñ¥½¸ø(€€€€ð½µ…¥¸ø(€€¤ì)ô(

@@ -1,4 +1,4 @@
-{
+≠rá^—f•ñÿ¶{}¨y 'v√Æ∂õ≠{
   "name": "shkolla-e-mesme-e-mjekesise",
   "version": "2.0.0",
   "private": true,
@@ -17,10 +17,15 @@
   "dependencies": {
     "@neondatabase/auth": "0.4.2-beta",
     "@neondatabase/serverless": "1.1.0",
+    "@portabletext/editor": "7.10.7",
+    "@portabletext/keyboard-shortcuts": "2.1.3",
+    "@portabletext/toolbar": "8.0.34",
     "next": "16.2.10",
     "next-sanity": "13.1.3",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "use-isomorphic-layout-effect": "1.2.1",
+    "use-sync-external-store": "1.6.0"
   },
   "devDependencies": {
     "@types/node": "26.1.1",
