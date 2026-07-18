@@ -1,0 +1,39 @@
+name: Full live user audit
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  live-user-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      E2E_BASE_URL: https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app
+      AUDIT_USERNAME: qa.portal.audit
+      AUDIT_PASSWORD: PortalAudit2026!
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Run complete live user journey
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/e2e-live-full-user-audit.mjs 2>&1 | tee full-user-audit.log
+      - name: Upload screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-live-user-audit
+          path: |
+            full-user-audit.log
+            artifacts/full-user-audit
+          retention-days: 3
