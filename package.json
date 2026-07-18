@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs",
+    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/stabilize-e2e-navigation.mjs",
     "predev": "npm run prepare:portal",
     "dev": "next dev",
     "prebuild": "npm run prepare:portal",
@@ -13,7 +13,8 @@
     "pretypecheck": "npm run prepare:portal",
     "typecheck": "tsc --noEmit",
     "audit:navigation": "node scripts/audit-navigation.mjs",
-    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation"
+    "audit:smoothness": "node scripts/audit-smoothness.mjs",
+    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness"
   },
   "dependencies": {
     "@neondatabase/auth": "0.4.2-beta",

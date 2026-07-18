@@ -18,6 +18,7 @@ jobs:
       NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
       NEXT_PUBLIC_SANITY_PROJECT_ID: e1tm3f7l
       NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_PUBLIC_SANITY_DATASET_V2: schoolv2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,3 +28,5 @@ jobs:
       - run: npm run build
       - name: Audit routes and navigation
         run: npm run audit:navigation
+      - name: Audit app configuration and smoothness
+        run: npm run audit:smoothness
