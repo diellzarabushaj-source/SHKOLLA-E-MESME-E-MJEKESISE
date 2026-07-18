@@ -164,7 +164,7 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
                 required
               />
               <span
-                className={`${styles.passwordMatch} ${confirmPassword ? (passwordsMatch ? styles.passwordMatchSuccess : styles.passwordMatchError) : ""}`}
+                className={!confirmPassword ? styles.hint : passwordsMatch ? styles.usernamePreview : styles.capsLock}
                 id="password-match"
                 aria-live="polite"
               >
