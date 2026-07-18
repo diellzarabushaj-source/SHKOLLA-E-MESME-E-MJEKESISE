@@ -1,0 +1,193 @@
+[data-adobe-note-popover] {
+  position: absolute;
+  z-index: 38;
+  width: min(340px, calc(100vw - 28px));
+  max-height: min(520px, calc(100vh - 110px));
+  padding: 14px;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel) 98%, transparent);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.32);
+  backdrop-filter: blur(18px);
+  transform: translate(calc(-100% - 18px), -12px);
+  transform-origin: right top;
+  animation: adobe-note-in 140ms ease-out;
+}
+
+[data-adobe-note-popover]::after {
+  position: absolute;
+  top: 20px;
+  right: -9px;
+  width: 16px;
+  height: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  background: var(--panel);
+  content: "";
+  transform: rotate(45deg);
+}
+
+[data-adobe-note-popover][data-color="yellow"] { border-top: 5px solid #facc15; }
+[data-adobe-note-popover][data-color="green"] { border-top: 5px solid #22c55e; }
+[data-adobe-note-popover][data-color="blue"] { border-top: 5px solid #3b82f6; }
+[data-adobe-note-popover][data-color="pink"] { border-top: 5px solid #ec4899; }
+
+[data-adobe-note-popover] > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+[data-adobe-note-popover] > header > div {
+  display: grid;
+  gap: 2px;
+}
+
+[data-adobe-note-popover] > header strong {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+[data-adobe-note-popover] > header span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+[data-adobe-note-popover] > header button {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+[data-adobe-note-popover] blockquote {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  border-radius: 0 10px 10px 0;
+  background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+[data-adobe-note-popover] textarea {
+  width: 100%;
+  min-height: 116px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  outline: none;
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+[data-adobe-note-popover] textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+[data-adobe-note-colors] {
+  margin-top: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-adobe-note-colors] button {
+  width: 28px;
+  height: 28px;
+  border: 2px solid color-mix(in srgb, var(--text) 16%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+[data-adobe-note-colors] button[data-color="yellow"] { background: #fde68a; }
+[data-adobe-note-colors] button[data-color="green"] { background: #86efac; }
+[data-adobe-note-colors] button[data-color="blue"] { background: #93c5fd; }
+[data-adobe-note-colors] button[data-color="pink"] { background: #f9a8d4; }
+
+[data-adobe-note-popover] > footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+[data-adobe-note-popover] > footer button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+[data-adobe-note-popover] > footer button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+[data-adobe-note-save] {
+  border-color: transparent !important;
+  background: var(--primary) !important;
+  color: white !important;
+}
+
+[data-adobe-note-delete] {
+  color: #ef476f !important;
+}
+
+[data-annotation-ui][data-active="true"] {
+  outline: 3px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  outline-offset: 3px;
+  transform: translateY(-2px) rotate(0deg);
+}
+
+@keyframes adobe-note-in {
+  from { opacity: 0; transform: translate(calc(-100% - 10px), -6px) scale(0.97); }
+  to { opacity: 1; transform: translate(calc(-100% - 18px), -12px) scale(1); }
+}
+
+@media (max-width: 700px), (pointer: coarse) {
+  [data-adobe-note-popover] {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left)) !important;
+    right: max(12px, env(safe-area-inset-right));
+    top: auto !important;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    width: auto;
+    max-height: min(66vh, 560px);
+    border-radius: 20px;
+    transform: none;
+    animation: adobe-note-mobile-in 160ms ease-out;
+  }
+
+  [data-adobe-note-popover]::after { display: none; }
+  [data-adobe-note-popover] textarea { min-height: 104px; }
+  [data-adobe-note-popover] > footer button { min-height: 44px; }
+}
+
+@keyframes adobe-note-mobile-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-adobe-note-popover] { animation: none; }
+}
