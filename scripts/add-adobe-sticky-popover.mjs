@@ -20,7 +20,7 @@ function swap(label, find, replacement) {
 swap(
   "popover stylesheet",
   'import "./highlight-removal.css";',
-  'import "./highlight-removal.css";\nimport "./adobe-sticky-popover.css";\n\n// adobe-sticky-popover-v1',
+  'import "./highlight-removal.css";\nimport "./adobe-sticky-popover.css";\nimport "./adobe-sticky-toast.css";\n\n// adobe-sticky-popover-v1',
 );
 
 swap(
