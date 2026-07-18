@@ -133,7 +133,7 @@ try {
   assert(await saveButton.isEnabled(), "Save did not enable after typing");
 
   await selectText(page, marker.trim());
-  await page.getByRole("button", { name: "Bold" }).click();
+  await page.getByTitle("Bold").click();
   const htmlAfterFormat = await editor.evaluate((element) => element.innerHTML);
   assert(/<strong>[^<]*Kontroll administratori\./.test(htmlAfterFormat), `Bold formatting was not applied: ${htmlAfterFormat}`);
 
