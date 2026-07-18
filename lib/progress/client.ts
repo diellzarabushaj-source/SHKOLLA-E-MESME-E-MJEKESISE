@@ -26,36 +26,57 @@ function nestedUser(data: unknown): { id?: string; name?: string } | null {
   return null;
 }
 
-export async function getSignedInUser(): Promise<SignedInUser | null> {
-  if (userCache && userCache.expiresAt > Date.now()) return userCache.value;
+export function clearProgressUserCache(): void {
+  userCache = null;
+}
+
+export async function getSignedInUser(forceRefresh = false): Promise<SignedInUser | null> {
+  if (!forceRefresh && userCache && userCache.expiresAt > Date.now()) return userCache.value;
 
   try {
     const result = await authClient.getSession();
     const user = nestedUser(result.data);
     const value = user?.id ? { id: user.id, name: user.name } : null;
-    userCache = { value, expiresAt: Date.now() + (value ? 5 * 60_000 : 30_000) };
+    userCache = { value, expiresAt: Date.now() + (value ? 5 * 60_000 : 3_000) };
     return value;
   } catch {
-    userCache = { value: null, expiresAt: Date.now() + 10_000 };
+    userCache = { value: null, expiresAt: Date.now() + 2_000 };
     return null;
   }
 }
 
-async function api<T>(body?: Record<string, unknown>): Promise<T> {
+async function sendProgressRequest(body?: Record<string, unknown>, forceUserRefresh = false): Promise<Response> {
   const payload = body
-    ? { ...body, clientUserId: (await getSignedInUser())?.id || null }
+    ? { ...body, clientUserId: (await getSignedInUser(forceUserRefresh))?.id || null }
     : undefined;
-  const response = await fetch("/api/progress", {
+
+  return fetch("/api/progress", {
     method: payload ? "POST" : "GET",
     cache: "no-store",
     credentials: "same-origin",
     headers: payload ? { "Content-Type": "application/json" } : undefined,
     body: payload ? JSON.stringify(payload) : undefined,
   });
-  if (response.status === 401) throw new Error("AUTH_REQUIRED");
+}
+
+async function api<T>(body?: Record<string, unknown>): Promise<T> {
+  let response = await sendProgressRequest(body);
+
+  if (body && response.status === 403) {
+    const denied = await response.clone().json().catch(() => ({})) as { error?: string };
+    if (denied.error === "PROGRESS_USER_MISMATCH") {
+      clearProgressUserCache();
+      response = await sendProgressRequest(body, true);
+    }
+  }
+
+  if (response.status === 401) {
+    clearProgressUserCache();
+    throw new Error("AUTH_REQUIRED");
+  }
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({})) as { error?: string };
-    throw new Error(payload.error || `PROGRESS_${response.status}`);
+    const result = await response.json().catch(() => ({})) as { error?: string };
+    throw new Error(result.error || `PROGRESS_${response.status}`);
   }
   return response.json() as Promise<T>;
 }
