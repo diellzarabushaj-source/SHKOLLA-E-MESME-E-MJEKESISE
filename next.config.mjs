@@ -8,8 +8,10 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-site" },
 ];
 
-const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "u5d5zn7n";
-const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2";
+// The portal has one canonical content source. Do not allow stale Vercel
+// environment variables to point the browser or administrator at another project.
+const sanityProjectId = "u5d5zn7n";
+const sanityDataset = "schoolv2";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
