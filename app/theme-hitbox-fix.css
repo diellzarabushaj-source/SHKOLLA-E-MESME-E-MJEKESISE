@@ -2,6 +2,20 @@
   isolation: isolate;
 }
 
+.header-actions form,
+.header-actions button {
+  position: relative;
+}
+
+.header-actions form {
+  z-index: 2;
+}
+
+.header-actions form button {
+  z-index: 1;
+  touch-action: manipulation;
+}
+
 .theme-switch {
   position: relative;
   z-index: 1;
