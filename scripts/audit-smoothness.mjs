@@ -32,6 +32,7 @@ const nextConfig = read("next.config.mjs");
 const writeClient = read("lib/sanity/write-client.ts");
 const portalBuilder = read("scripts/build-schoolv2-portal-v2.mjs");
 const richMarks = read("scripts/add-rich-text-marks.mjs");
+const adminHardening = read("scripts/harden-admin-editor.mjs");
 const adminIdentity = read("lib/admin/server.ts");
 const adminEditor = read("app/LessonAdminEditor.tsx");
 const adminRoute = read("app/api/admin/lessons/[lessonId]/route.ts");
@@ -95,6 +96,15 @@ requireText("Single rich-text editor", adminEditor, [
 ]);
 if (adminEditor.includes("<textarea")) failures.push("Admin editor është kthyer përsëri në editor me shumë textarea/box-e.");
 
+requireText("Admin editor loss prevention", adminHardening, [
+  "admin-editor-safety-v1",
+  "beforeunload",
+  "confirmLinkNavigation",
+  "usedBlockKeys",
+  "INVALID_EMBEDDED_CONTENT",
+  'target.closest("a[href]")',
+]);
+
 requireText("Safe Portable Text rendering", richMarks, [
   "safePortableHref",
   'href.startsWith("//")',
@@ -139,6 +149,7 @@ for (const publicFile of ["public/sw.js", "public/manifest.webmanifest", "public
 
 const scripts = packageJson.scripts || {};
 if (!String(scripts["prepare:portal"] || "").includes("add-rich-text-marks.mjs")) failures.push("prepare:portal nuk gjeneron rich-text marks.");
+if (!String(scripts["prepare:portal"] || "").includes("harden-admin-editor.mjs")) failures.push("prepare:portal nuk aplikon mbrojtjet e editorit të adminit.");
 if (!String(scripts["audit:app"] || "").includes("audit:smoothness")) failures.push("audit:app nuk e përfshin auditimin e smoothness-it.");
 checks.push("Package scripts");
 
