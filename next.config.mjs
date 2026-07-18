@@ -8,12 +8,15 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-site" },
 ];
 
+const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "e1tm3f7l";
+const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_SANITY_PROJECT_ID: "u5d5zn7n",
-    NEXT_PUBLIC_SANITY_DATASET_V2: "schoolv2",
+    NEXT_PUBLIC_SANITY_PROJECT_ID: sanityProjectId,
+    NEXT_PUBLIC_SANITY_DATASET_V2: sanityDataset,
   },
   poweredByHeader: false,
   compress: true,
