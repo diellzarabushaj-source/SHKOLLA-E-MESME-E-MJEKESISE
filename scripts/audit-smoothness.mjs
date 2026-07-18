@@ -4,6 +4,8 @@ import path from "node:path";
 const root = process.cwd();
 const failures = [];
 const checks = [];
+const EXPECTED_SANITY_PROJECT = "u5d5zn7n";
+const EXPECTED_SANITY_DATASET = "schoolv2";
 
 function read(relativePath) {
   const absolute = path.join(root, relativePath);
@@ -31,6 +33,7 @@ const packageJson = JSON.parse(read("package.json") || "{}");
 const nextConfig = read("next.config.mjs");
 const writeClient = read("lib/sanity/write-client.ts");
 const portalBuilder = read("scripts/build-schoolv2-portal-v2.mjs");
+const sanityAligner = read("scripts/align-sanity-v2.mjs");
 const richMarks = read("scripts/add-rich-text-marks.mjs");
 const adminHardening = read("scripts/harden-admin-editor.mjs");
 const adminIdentity = read("lib/admin/server.ts");
@@ -53,15 +56,22 @@ const datasets = [
   fallbackFor(portalBuilder, "NEXT_PUBLIC_SANITY_DATASET_V2"),
 ].filter(Boolean);
 
-if (projectIds.length !== 3 || new Set(projectIds).size !== 1) {
-  failures.push(`Sanity project ID nuk është unik në konfigurim: ${JSON.stringify(projectIds)}.`);
+if (projectIds.length !== 3 || new Set(projectIds).size !== 1 || projectIds[0] !== EXPECTED_SANITY_PROJECT) {
+  failures.push(`Sanity project ID nuk përputhet me projektin V2: ${JSON.stringify(projectIds)}.`);
 }
-if (datasets.length !== 3 || new Set(datasets).size !== 1) {
+if (datasets.length !== 3 || new Set(datasets).size !== 1 || datasets[0] !== EXPECTED_SANITY_DATASET) {
   failures.push(`Sanity dataset nuk është unik në konfigurim: ${JSON.stringify(datasets)}.`);
 }
 if (!nextConfig.includes("process.env.NEXT_PUBLIC_SANITY_PROJECT_ID")) {
   failures.push("next.config duhet ta respektojë Sanity project ID nga environment-i i deployment-it.");
 }
+requireText("Sanity V2 schema alignment", sanityAligner, [
+  '"gradeNumber": coalesce(gradeNumber, order)',
+  '"shortDescription": coalesce(shortDescription, description)',
+  '"summary": coalesce(summary, description)',
+  "defined(audio.asset)",
+  "freshClient.fetch<Lesson | null>",
+]);
 checks.push("Sanity read/write configuration");
 
 requireText("Admin identity", adminIdentity, [
@@ -148,8 +158,10 @@ for (const requiredFile of ["app/manifest.ts", "public/sw.js", "public/icon.svg"
 }
 
 const scripts = packageJson.scripts || {};
-if (!String(scripts["prepare:portal"] || "").includes("add-rich-text-marks.mjs")) failures.push("prepare:portal nuk gjeneron rich-text marks.");
-if (!String(scripts["prepare:portal"] || "").includes("harden-admin-editor.mjs")) failures.push("prepare:portal nuk aplikon mbrojtjet e editorit të adminit.");
+const preparePortal = String(scripts["prepare:portal"] || "");
+if (!preparePortal.includes("align-sanity-v2.mjs")) failures.push("prepare:portal nuk e harmonizon portalin me schema-n Sanity V2.");
+if (!preparePortal.includes("add-rich-text-marks.mjs")) failures.push("prepare:portal nuk gjeneron rich-text marks.");
+if (!preparePortal.includes("harden-admin-editor.mjs")) failures.push("prepare:portal nuk aplikon mbrojtjet e editorit të adminit.");
 if (!String(scripts["audit:app"] || "").includes("audit:smoothness")) failures.push("audit:app nuk e përfshin auditimin e smoothness-it.");
 checks.push("Package scripts");
 
