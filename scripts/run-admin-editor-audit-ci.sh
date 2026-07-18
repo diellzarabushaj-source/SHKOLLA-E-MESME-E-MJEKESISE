@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+node scripts/prepare-admin-audit-clipboard.mjs
 npm run build
 npm run start > full-audit-server.log 2>&1 &
 APP_PID=$!
