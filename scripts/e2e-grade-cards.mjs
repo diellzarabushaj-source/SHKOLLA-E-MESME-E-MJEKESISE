@@ -10,7 +10,32 @@ const fixturePortal = expectedGrades.map((gradeNumber) => ({
   slug: `klasa-${gradeNumber}`,
   shortDescription: `Përmbajtja e klasës ${gradeNumber}.`,
   icon: String(gradeNumber),
-  subjects: [],
+  subjects: [
+    {
+      _id: `subject-${gradeNumber}`,
+      title: `Lënda provuese ${gradeNumber}`,
+      slug: `lenda-${gradeNumber}`,
+      shortDescription: `Lënda provuese për klasën ${gradeNumber}.`,
+      emoji: "📘",
+      chapters: [
+        {
+          _id: `chapter-${gradeNumber}`,
+          title: `Kapitulli provues ${gradeNumber}`,
+          slug: `kapitulli-${gradeNumber}`,
+          summary: "Kapitull provues.",
+          lessons: [
+            {
+              _id: `lesson-${gradeNumber}`,
+              title: `Mësimi provues ${gradeNumber}`,
+              slug: `mesimi-${gradeNumber}`,
+              summary: "Mësim provues.",
+              flashcardCount: 0,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }));
 
 function assert(condition, message) {
@@ -105,13 +130,9 @@ async function verifyViewport(browser, options, label) {
 const browser = await chromium.launch({ headless: true });
 try {
   await verifyViewport(browser, { viewport: { width: 1440, height: 1000 } }, "desktop");
-  await verifyViewport(
-    browser,
-    { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
-    "mobile",
-  );
+  await verifyViewport(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, "mobile");
 } finally {
   await browser.close();
 }
 
-console.log("Class 10, 11 and 12 cards are visible on desktop, mobile and direct #klasat navigation.");
+console.log("Class 10, 11 and 12 cards are visible with a complete subject/chapter/lesson hierarchy on desktop, mobile and direct #klasat navigation.");
