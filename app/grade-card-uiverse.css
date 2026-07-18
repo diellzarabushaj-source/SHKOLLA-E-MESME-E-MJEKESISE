@@ -1,230 +1,22 @@
-/* Uiverse-inspired UI, adapted to the portal palette and existing markup. */
+/* Uiverse-inspired interactions approved for chapter and subject cards only. */
 
 /* -------------------------------------------------------------------------- */
-/* Class 10 / 11 / 12 cards                                                    */
-/* -------------------------------------------------------------------------- */
-
-#klasat [class*="gradeGrid"] {
-  gap: clamp(20px, 2.8vw, 32px);
-  perspective: 1200px;
-}
-
-#klasat [class*="gradeCard"] {
-  position: relative;
-  isolation: isolate;
-  min-height: 315px;
-  padding: 0;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--primary) 27%, var(--line));
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 78% 14%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 34%),
-    radial-gradient(circle at 18% 86%, color-mix(in srgb, var(--primary) 15%, transparent), transparent 38%),
-    linear-gradient(145deg, color-mix(in srgb, var(--panel) 91%, var(--primary) 9%), var(--panel));
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--primary) 5%, transparent),
-    0 22px 54px color-mix(in srgb, var(--text) 11%, transparent);
-  transform-origin: center;
-  transition:
-    transform 0.42s cubic-bezier(.2,.8,.2,1),
-    border-radius 0.42s ease,
-    border-color 0.42s ease,
-    box-shadow 0.42s ease,
-    background 0.42s ease;
-}
-
-#klasat [class*="gradeCard"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 18%, color-mix(in srgb, white 20%, transparent), transparent 32%),
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 90%, var(--panel)), color-mix(in srgb, var(--accent) 68%, var(--primary)));
-  opacity: 0;
-  transition: opacity 0.42s ease;
-}
-
-/* Front: intentionally show only “Klasa e 10/11/12”. */
-#klasat [class*="gradeCard"] > h3,
-#klasat [class*="gradeCard"] > p,
-#klasat [class*="gradeCard"] > [class*="gradeMeta"] {
-  display: none;
-}
-
-#klasat [class*="gradeCard"]::after {
-  content: "Klasa e";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  color: var(--text);
-  font-size: clamp(1.65rem, 3vw, 2.35rem);
-  font-weight: 950;
-  letter-spacing: -0.045em;
-  transform: translate(-72%, -50%);
-  transition: opacity 0.36s ease, transform 0.42s cubic-bezier(.2,.8,.2,1);
-}
-
-#klasat [class*="gradeNumber"] {
-  position: absolute;
-  left: calc(50% + 58px);
-  top: 50%;
-  z-index: 3;
-  width: auto;
-  height: auto;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--accent);
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 950;
-  line-height: 1;
-  box-shadow: none;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition:
-    left 0.42s cubic-bezier(.2,.8,.2,1),
-    top 0.42s cubic-bezier(.2,.8,.2,1),
-    color 0.36s ease,
-    font-size 0.42s ease,
-    transform 0.42s cubic-bezier(.2,.8,.2,1);
-}
-
-#klasat [class*="gradeOpen"] {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: inherit;
-  background: transparent;
-  color: white;
-  font-size: 0;
-  font-weight: 950;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-  text-align: center;
-  opacity: 0;
-  pointer-events: auto;
-  cursor: pointer;
-  transform: rotate(90deg) scale(-1);
-  transition:
-    opacity 0.4s ease,
-    transform 0.42s cubic-bezier(.2,.8,.2,1),
-    font-size 0.42s ease;
-}
-
-#klasat [class*="gradeOpen"]::before {
-  content: "Mëso tani lëndët e klasës";
-}
-
-@media (hover: hover) and (pointer: fine) {
-  #klasat [class*="gradeCard"]:hover,
-  #klasat [class*="gradeCard"]:focus-within {
-    z-index: 6;
-    border-radius: 30px;
-    border-color: color-mix(in srgb, var(--accent) 60%, var(--primary));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
-      0 26px 66px color-mix(in srgb, var(--primary) 34%, transparent);
-    transform: translateY(-8px) scale(1.075);
-  }
-
-  #klasat [class*="gradeCard"]:hover::before,
-  #klasat [class*="gradeCard"]:focus-within::before {
-    opacity: 1;
-  }
-
-  #klasat [class*="gradeCard"]:hover::after,
-  #klasat [class*="gradeCard"]:focus-within::after {
-    opacity: 0;
-    transform: translate(-72%, -72%) scale(.82);
-  }
-
-  #klasat [class*="gradeCard"]:hover [class*="gradeNumber"],
-  #klasat [class*="gradeCard"]:focus-within [class*="gradeNumber"] {
-    left: 50%;
-    top: calc(50% + 54px);
-    color: white;
-    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
-    transform: translate(-50%, -50%);
-  }
-
-  #klasat [class*="gradeCard"]:hover [class*="gradeOpen"],
-  #klasat [class*="gradeCard"]:focus-within [class*="gradeOpen"] {
-    padding-bottom: 72px;
-    font-size: clamp(1.35rem, 2.25vw, 1.85rem);
-    opacity: 1;
-    transform: rotate(0deg) scale(1);
-  }
-}
-
-@media (max-width: 900px) {
-  #klasat [class*="gradeGrid"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px), (hover: none), (pointer: coarse) {
-  #klasat [class*="gradeGrid"] {
-    grid-template-columns: 1fr;
-  }
-
-  #klasat [class*="gradeCard"] {
-    min-height: 220px;
-    transform: none;
-  }
-
-  #klasat [class*="gradeCard"]::after {
-    top: 42%;
-  }
-
-  #klasat [class*="gradeNumber"] {
-    top: 42%;
-  }
-
-  #klasat [class*="gradeOpen"] {
-    inset: auto 18px 18px;
-    width: auto;
-    height: 52px;
-    padding: 0 18px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 62%, var(--accent)));
-    font-size: 0;
-    opacity: 1;
-    transform: none;
-    box-shadow: 0 14px 30px color-mix(in srgb, var(--primary) 25%, transparent);
-  }
-
-  #klasat [class*="gradeOpen"]::before {
-    content: "Mëso tani";
-    font-size: 15px;
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-/* Chapter action buttons — keep current dimensions/text, animate only action. */
+/* Chapter action buttons — preserve the current size, text and layout.        */
 /* -------------------------------------------------------------------------- */
 
 [class*="openButton"] {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 72%, var(--primary)), var(--primary));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 72%, var(--primary)),
+    var(--primary)
+  );
   color: white;
   border-color: transparent;
   box-shadow: 0 14px 28px color-mix(in srgb, var(--primary) 25%, transparent);
-  transition: transform .3s ease, box-shadow .3s ease, color .3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 [class*="openButton"] > span {
@@ -233,13 +25,17 @@
   top: 50%;
   color: white;
   transform: translateY(-50%);
-  transition: right .3s ease, transform .3s ease, font-size .3s ease;
+  transition: right 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   [class*="openButton"]:hover {
     color: transparent;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 72%, var(--primary)), var(--primary));
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 72%, var(--primary)),
+      var(--primary)
+    );
     box-shadow: 0 18px 34px color-mix(in srgb, var(--primary) 32%, transparent);
     transform: translateY(-2px);
   }
@@ -256,7 +52,7 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Subject cards — keep the existing card intact, add a subtle heart motion.   */
+/* Subject cards — preserve the existing card and add a subtle heart motion.  */
 /* -------------------------------------------------------------------------- */
 
 .subject-card h3::after {
@@ -264,11 +60,11 @@
   display: inline-block;
   margin-left: 9px;
   color: var(--card-accent, var(--accent));
-  font-size: .72em;
+  font-size: 0.72em;
   opacity: 0;
-  transform: translateY(4px) scale(.45) rotate(-14deg);
+  transform: translateY(4px) scale(0.45) rotate(-14deg);
   transform-origin: center;
-  transition: opacity .3s ease, transform .45s cubic-bezier(.2,.8,.2,1);
+  transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -281,18 +77,25 @@
 }
 
 @keyframes subject-heartbeat {
-  0%, 100% { transform: translateY(-1px) scale(1); }
-  28% { transform: translateY(-1px) scale(1.18); }
-  52% { transform: translateY(-1px) scale(.96); }
-  72% { transform: translateY(-1px) scale(1.1); }
+  0%,
+  100% {
+    transform: translateY(-1px) scale(1);
+  }
+
+  28% {
+    transform: translateY(-1px) scale(1.18);
+  }
+
+  52% {
+    transform: translateY(-1px) scale(0.96);
+  }
+
+  72% {
+    transform: translateY(-1px) scale(1.1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #klasat [class*="gradeCard"],
-  #klasat [class*="gradeCard"]::before,
-  #klasat [class*="gradeCard"]::after,
-  #klasat [class*="gradeCard"] > *,
-  #klasat [class*="gradeOpen"],
   [class*="openButton"],
   [class*="openButton"] > span,
   .subject-card h3::after {
