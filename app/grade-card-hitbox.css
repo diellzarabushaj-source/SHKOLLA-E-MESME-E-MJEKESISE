@@ -1,8 +1,37 @@
 #klasat [class*="gradeCard"] {
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 #klasat [class*="gradeOpen"] {
+  opacity: 1;
   pointer-events: auto;
   touch-action: manipulation;
+  transform: none;
+}
+
+#klasat [class*="gradeOpen"]::before {
+  display: block;
+  opacity: 0;
+  transform: rotate(90deg) scale(-1);
+  transition: opacity .4s ease, transform .42s cubic-bezier(.2,.8,.2,1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #klasat [class*="gradeCard"]:hover [class*="gradeOpen"],
+  #klasat [class*="gradeCard"]:focus-within [class*="gradeOpen"] {
+    transform: none;
+  }
+
+  #klasat [class*="gradeCard"]:hover [class*="gradeOpen"]::before,
+  #klasat [class*="gradeCard"]:focus-within [class*="gradeOpen"]::before {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@media (max-width: 640px), (hover: none), (pointer: coarse) {
+  #klasat [class*="gradeOpen"]::before {
+    opacity: 1;
+    transform: none;
+  }
 }
