@@ -24,6 +24,8 @@ const signUpPage = read("app/auth/sign-up/page.tsx");
 const signUpForm = read("app/auth/sign-up/SignUpForm.tsx");
 const signUpAction = read("app/auth/sign-up/actions.ts");
 const authStyles = read("app/auth/auth.module.css");
+const authBrowserAudit = read("scripts/e2e-auth.mjs");
+const authBrowserIntegration = read("scripts/integrate-auth-e2e.mjs");
 const serviceWorker = read("public/sw.js");
 const packageJson = JSON.parse(read("package.json") || "{}");
 
@@ -101,11 +103,24 @@ requireText("Auth responsive styles", authStyles, [
   ":focus-visible",
   "prefers-reduced-motion",
 ]);
+requireText("Auth browser audit", authBrowserAudit, [
+  "auditSignIn(browser)",
+  "auditSignUp(browser)",
+  "auditMobile(browser)",
+  "external returnTo was not rejected",
+  "administrator email leaked",
+]);
+requireText("Auth browser integration", authBrowserIntegration, [
+  'await import("./e2e-auth.mjs");',
+  "Browser smoothness audit passed.",
+]);
 requireText("Private auth PWA handling", serviceWorker, ['const PRIVATE_PATHS = ["/api/", "/auth/", "/progress"]']);
 
+const preparePortal = String(packageJson.scripts?.["prepare:portal"] || "");
 const authAudit = String(packageJson.scripts?.["audit:auth"] || "");
 const smoothnessAudit = String(packageJson.scripts?.["audit:smoothness"] || "");
 const appAudit = String(packageJson.scripts?.["audit:app"] || "");
+if (!preparePortal.includes("integrate-auth-e2e.mjs")) failures.push("prepare:portal nuk e integron auth browser audit.");
 if (!authAudit.includes("scripts/audit-auth.mjs")) failures.push("package.json nuk ka audit:auth.");
 if (!smoothnessAudit.includes("scripts/audit-auth.mjs")) failures.push("CI smoothness audit nuk e ekzekuton audit-auth.mjs.");
 if (!appAudit.includes("audit:smoothness")) failures.push("audit:app nuk e ekzekuton audit:smoothness.");
