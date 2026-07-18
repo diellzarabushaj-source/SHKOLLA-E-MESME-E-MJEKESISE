@@ -6,6 +6,7 @@ import EnhancedTestResults from "./EnhancedTestResults";
 import InteractionEnhancements from "./InteractionEnhancements";
 import LearningActivityTracker from "./LearningActivityTracker";
 import MobileNavigation from "./MobileNavigation";
+import NavigationSafety from "./NavigationSafety";
 import ProgressTracker from "./ProgressTracker";
 import PwaRegistrar from "./PwaRegistrar";
 import StethoscopeLogo from "./StethoscopeLogo";
@@ -125,6 +126,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </div>
         </header>
         <MobileNavigation />
+        <NavigationSafety />
         <ProgressTracker />
         <EnhancedTestResults />
         <InteractionEnhancements />
