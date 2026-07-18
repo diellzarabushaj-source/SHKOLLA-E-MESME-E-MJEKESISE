@@ -1,0 +1,67 @@
+name: Administrator browser audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  admin-editor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      E2E_ADMIN_AUDIT: 1
+      E2E_BASE_URL: http://127.0.0.1:3000
+      NEON_AUTH_BASE_URL: https://ep-long-wind-at258oxo.neonauth.c-9.us-east-1.aws.neon.tech/neondb/auth
+      NEON_AUTH_COOKIE_SECRET: ci-only-cookie-secret-with-more-than-32-characters
+      NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
+      NEXT_PUBLIC_SANITY_PROJECT_ID: u5d5zn7n
+      NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_PUBLIC_SANITY_DATASET_V2: schoolv2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies and Chromium
+        run: |
+          npm install
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Build audited application
+        run: npm run build
+      - name: Start audited application
+        shell: bash
+        run: |
+          npm run start > admin-audit-server.log 2>&1 &
+          echo $! > admin-audit-server.pid
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3000/admin-audit > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat admin-audit-server.log
+          exit 1
+      - name: Test administrator editor
+        run: node scripts/e2e-admin-editor.mjs 2>&1 | tee admin-editor-e2e.log
+      - name: Stop audited application
+        if: always()
+        shell: bash
+        run: |
+          if [ -f admin-audit-server.pid ]; then
+            kill "$(cat admin-audit-server.pid)" 2>/dev/null || true
+          fi
+      - name: Upload administrator audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: administrator-browser-audit
+          path: |
+            admin-audit-server.log
+            admin-editor-e2e.log
+            artifacts/admin-editor-audit
+          retention-days: 7
