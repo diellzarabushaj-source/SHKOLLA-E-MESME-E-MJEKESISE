@@ -81,6 +81,14 @@ try {
   await page.evaluate(() => {
     const target = document.querySelector('[contenteditable="true"]');
     if (!(target instanceof HTMLElement)) throw new Error("Editor missing");
+
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
     const transfer = new DataTransfer();
     transfer.setData("text/html", '<h1>Paste i sigurt</h1><p>Tekst <strong>trashë</strong> <em>italik</em>.</p><script>window.__unsafe=1</script><iframe src="https://example.com"></iframe><a href="javascript:alert(1)">Lidhje e keqe</a>');
     transfer.setData("text/plain", "Paste i sigurt Tekst trashë italik. Lidhje e keqe");
