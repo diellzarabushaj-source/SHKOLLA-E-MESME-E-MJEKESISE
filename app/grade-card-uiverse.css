@@ -1,0 +1,168 @@
+/* Uiverse-inspired class cards, adapted to the portal palette and existing markup. */
+
+#klasat [class*="gradeGrid"] {
+  gap: clamp(18px, 2.5vw, 30px);
+  perspective: 1200px;
+}
+
+#klasat [class*="gradeCard"] {
+  position: relative;
+  isolation: isolate;
+  min-height: 330px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 36%),
+    linear-gradient(145deg, color-mix(in srgb, var(--panel) 88%, var(--primary) 12%), var(--panel));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--primary) 5%, transparent),
+    0 20px 48px color-mix(in srgb, var(--text) 12%, transparent);
+  transition:
+    transform 0.42s cubic-bezier(.2,.8,.2,1),
+    border-radius 0.42s ease,
+    border-color 0.42s ease,
+    box-shadow 0.42s ease,
+    background 0.42s ease;
+  transform-origin: center;
+}
+
+#klasat [class*="gradeCard"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, var(--panel)), color-mix(in srgb, var(--accent) 72%, var(--primary)));
+  opacity: 0;
+  transition: opacity 0.42s ease;
+}
+
+#klasat [class*="gradeCard"] > :not([class*="gradeOpen"]) {
+  transition:
+    opacity 0.38s ease,
+    transform 0.42s cubic-bezier(.2,.8,.2,1),
+    max-height 0.42s ease,
+    margin 0.42s ease,
+    padding 0.42s ease;
+}
+
+#klasat [class*="gradeNumber"] {
+  background: linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--accent) 56%, var(--primary)));
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--primary) 34%, transparent);
+}
+
+#klasat [class*="gradeOpen"] {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: white;
+  font-size: 0;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+  opacity: 0;
+  cursor: pointer;
+  transform: rotate(90deg) scale(-1);
+  transition:
+    opacity 0.4s ease,
+    transform 0.42s cubic-bezier(.2,.8,.2,1),
+    font-size 0.42s ease;
+}
+
+#klasat [class*="gradeOpen"]::after {
+  content: "Hape klasën";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #klasat [class*="gradeCard"]:hover,
+  #klasat [class*="gradeCard"]:focus-within {
+    z-index: 4;
+    border-radius: 28px;
+    border-color: color-mix(in srgb, var(--accent) 58%, var(--primary));
+    background: var(--panel);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+      0 24px 62px color-mix(in srgb, var(--primary) 32%, transparent);
+    transform: translateY(-8px) scale(1.08);
+  }
+
+  #klasat [class*="gradeCard"]:hover::before,
+  #klasat [class*="gradeCard"]:focus-within::before {
+    opacity: 1;
+  }
+
+  #klasat [class*="gradeCard"]:hover > :not([class*="gradeOpen"]),
+  #klasat [class*="gradeCard"]:focus-within > :not([class*="gradeOpen"]) {
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    transform: translateY(-20px) scale(.86);
+  }
+
+  #klasat [class*="gradeCard"]:hover [class*="gradeOpen"],
+  #klasat [class*="gradeCard"]:focus-within [class*="gradeOpen"] {
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  #klasat [class*="gradeGrid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px), (hover: none), (pointer: coarse) {
+  #klasat [class*="gradeGrid"] {
+    grid-template-columns: 1fr;
+  }
+
+  #klasat [class*="gradeCard"] {
+    min-height: 300px;
+    transform: none;
+  }
+
+  #klasat [class*="gradeOpen"] {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    min-height: 54px;
+    margin-top: 18px;
+    padding: 0 18px;
+    border-radius: 15px;
+    background: var(--primary);
+    font-size: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  #klasat [class*="gradeOpen"]::after {
+    content: "Hape klasën";
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #klasat [class*="gradeCard"],
+  #klasat [class*="gradeCard"]::before,
+  #klasat [class*="gradeCard"] > *,
+  #klasat [class*="gradeOpen"] {
+    transition: none !important;
+  }
+}
