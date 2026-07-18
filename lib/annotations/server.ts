@@ -40,12 +40,15 @@ function database() {
   return sqlClient;
 }
 
+function recordRows(result: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(result)) return [];
+  return (result as unknown[]).filter(
+    (row): row is Record<string, unknown> => Boolean(row) && typeof row === "object" && !Array.isArray(row),
+  );
+}
+
 function firstRow(result: unknown): Record<string, unknown> | undefined {
-  if (!Array.isArray(result)) return undefined;
-  const row = result[0];
-  return row && typeof row === "object" && !Array.isArray(row)
-    ? row as Record<string, unknown>
-    : undefined;
+  return recordRows(result)[0];
 }
 
 function iso(value: unknown): string {
@@ -94,9 +97,7 @@ export async function listLessonAnnotations(userId: string, lessonId: string): P
     ORDER BY created_at ASC, id ASC
     LIMIT 500
   `;
-  return Array.isArray(rows)
-    ? rows.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === "object" && !Array.isArray(row)).map(annotationFromRow)
-    : [];
+  return recordRows(rows).map(annotationFromRow);
 }
 
 export async function createLessonAnnotation(
@@ -105,12 +106,21 @@ export async function createLessonAnnotation(
 ): Promise<LessonAnnotation> {
   const sql = database();
   const countRows = await sql`
-    SELECT count(*)::int AS count
+    SELECT
+      count(*)::int AS count,
+      bool_or(
+        annotation_type=${input.kind}
+        AND block_key=${input.blockKey}
+        AND start_offset=${input.startOffset}
+        AND end_offset=${input.endOffset}
+      ) AS anchor_exists
     FROM public.lesson_annotations
     WHERE user_id=${userId} AND lesson_id=${input.lessonId}
   `;
-  const count = Number(firstRow(countRows)?.count || 0);
-  if (count >= 500) throw new Error("ANNOTATION_LIMIT_REACHED");
+  const countRow = firstRow(countRows);
+  const count = Number(countRow?.count || 0);
+  const anchorExists = countRow?.anchor_exists === true;
+  if (count >= 500 && !anchorExists) throw new Error("ANNOTATION_LIMIT_REACHED");
 
   const rows = await sql`
     INSERT INTO public.lesson_annotations (
@@ -144,13 +154,14 @@ export async function updateLessonAnnotation(
   input: UpdateLessonAnnotation,
 ): Promise<LessonAnnotation> {
   const sql = database();
+  const hasNoteUpdate = input.noteText !== undefined;
   const rows = await sql`
     UPDATE public.lesson_annotations
     SET
       color=COALESCE(${input.color || null}, color),
       note_text=CASE
-        WHEN annotation_type='note' AND ${input.noteText === undefined ? false : true}
-          THEN ${input.noteText === undefined ? null : input.noteText}
+        WHEN annotation_type='note' AND ${hasNoteUpdate}
+          THEN ${hasNoteUpdate ? input.noteText : null}
         ELSE note_text
       END,
       updated_at=now()
