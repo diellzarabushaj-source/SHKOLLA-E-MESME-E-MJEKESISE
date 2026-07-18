@@ -39,8 +39,8 @@ const adminRoute = read("app/api/admin/lessons/[lessonId]/route.ts");
 const themeToggle = read("app/ThemeToggle.tsx");
 const authControls = read("app/AuthControls.tsx");
 const layout = read("app/layout.tsx");
+const manifestSource = read("app/manifest.ts");
 const serviceWorker = read("public/sw.js");
-const manifestText = read("public/manifest.webmanifest");
 
 const projectIds = [
   fallbackFor(nextConfig, "NEXT_PUBLIC_SANITY_PROJECT_ID"),
@@ -132,19 +132,17 @@ requireText("Private PWA handling", serviceWorker, [
   'url.hostname.endsWith("api.sanity.io")',
   'credentials: "omit"',
 ]);
+requireText("PWA manifest", manifestSource, [
+  'start_url: "/"',
+  'scope: "/"',
+  'display: "standalone"',
+  'src: "/icon.svg"',
+  'url: "/#klasat"',
+  'url: "/progress"',
+]);
 
-try {
-  const manifest = JSON.parse(manifestText);
-  if (manifest.start_url !== "/") failures.push("PWA manifest start_url duhet të jetë /.");
-  if (!["standalone", "fullscreen", "minimal-ui"].includes(manifest.display)) failures.push("PWA manifest nuk ka display të instalueshëm.");
-  if (!Array.isArray(manifest.icons) || manifest.icons.length === 0) failures.push("PWA manifest nuk ka icon.");
-  checks.push("PWA manifest");
-} catch {
-  failures.push("public/manifest.webmanifest nuk është JSON valid.");
-}
-
-for (const publicFile of ["public/sw.js", "public/manifest.webmanifest", "public/icon.svg"]) {
-  if (!existsSync(path.join(root, publicFile))) failures.push(`${publicFile} mungon.`);
+for (const requiredFile of ["app/manifest.ts", "public/sw.js", "public/icon.svg"]) {
+  if (!existsSync(path.join(root, requiredFile))) failures.push(`${requiredFile} mungon.`);
 }
 
 const scripts = packageJson.scripts || {};
