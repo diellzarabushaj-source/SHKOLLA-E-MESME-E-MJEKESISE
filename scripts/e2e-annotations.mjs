@@ -3,100 +3,77 @@ import { chromium } from "playwright";
 
 const baseURL = process.env.E2E_BASE_URL || "http://127.0.0.1:3000";
 let records = [];
-
-function assert(value, message) {
-  if (!value) throw new Error(message);
-}
+const assert = (value, message) => { if (!value) throw new Error(message); };
 
 async function installApi(context) {
   await context.route("**/api/annotations**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const now = new Date().toISOString();
-
     if (request.method() === "GET") {
       const lessonId = url.searchParams.get("lessonId");
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ annotations: records.filter((item) => item.lessonId === lessonId) }) });
-      return;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ annotations: records.filter((x) => x.lessonId === lessonId) }) });
     }
-
     if (request.method() === "POST") {
       const body = request.postDataJSON();
-      const existing = records.find((item) => item.lessonId === body.lessonId && item.kind === body.kind && item.blockKey === body.blockKey && item.startOffset === body.startOffset && item.endOffset === body.endOffset);
-      const annotation = { ...body, id: existing?.id || randomUUID(), createdAt: existing?.createdAt || now, updatedAt: now };
-      records = [...records.filter((item) => item.id !== annotation.id), annotation];
-      await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ annotation }) });
-      return;
+      const old = records.find((x) => x.lessonId === body.lessonId && x.kind === body.kind && x.blockKey === body.blockKey && x.startOffset === body.startOffset && x.endOffset === body.endOffset);
+      const annotation = { ...body, id: old?.id || randomUUID(), createdAt: old?.createdAt || now, updatedAt: now };
+      records = [...records.filter((x) => x.id !== annotation.id), annotation];
+      return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ annotation }) });
     }
-
     if (request.method() === "PATCH") {
       const body = request.postDataJSON();
-      const current = records.find((item) => item.id === body.id);
-      if (!current) {
-        await route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ error: "ANNOTATION_NOT_FOUND" }) });
-        return;
-      }
-      const annotation = { ...current, ...(body.color ? { color: body.color } : {}), ...(body.noteText !== undefined ? { noteText: body.noteText } : {}), updatedAt: now };
-      records = records.map((item) => item.id === annotation.id ? annotation : item);
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ annotation }) });
-      return;
+      const old = records.find((x) => x.id === body.id);
+      if (!old) return route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ error: "ANNOTATION_NOT_FOUND" }) });
+      const annotation = { ...old, ...(body.color ? { color: body.color } : {}), ...(body.noteText !== undefined ? { noteText: body.noteText } : {}), updatedAt: now };
+      records = records.map((x) => x.id === annotation.id ? annotation : x);
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ annotation }) });
     }
-
     if (request.method() === "DELETE") {
-      const id = url.searchParams.get("id");
-      records = records.filter((item) => item.id !== id);
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
-      return;
+      records = records.filter((x) => x.id !== url.searchParams.get("id"));
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     }
-
-    await route.abort();
+    return route.abort();
   });
 }
 
 async function selectPhrase(page, phrase) {
   await page.locator("[data-audit-paragraph][data-annotation-block-key]").waitFor({ state: "visible", timeout: 5000 });
-  await page.evaluate((selectedText) => {
+  await page.evaluate((text) => {
     const paragraph = document.querySelector("[data-audit-paragraph]");
     const node = paragraph?.firstChild;
-    if (!(node instanceof Text)) throw new Error("Audit paragraph text node missing");
-    const start = node.data.indexOf(selectedText);
+    if (!(node instanceof Text)) throw new Error("Audit text node missing");
+    const start = node.data.indexOf(text);
     if (start < 0) throw new Error("Audit phrase missing");
     const range = document.createRange();
     range.setStart(node, start);
-    range.setEnd(node, start + selectedText.length);
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
+    range.setEnd(node, start + text.length);
+    window.getSelection()?.removeAllRanges();
+    window.getSelection()?.addRange(range);
     document.dispatchEvent(new Event("selectionchange"));
     document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerType: "touch" }));
   }, phrase);
   await page.locator("[data-annotation-selection-toolbar]").waitFor({ state: "visible", timeout: 5000 });
 }
 
-async function openLibrary(page) {
-  const button = page.getByRole("button", { name: /Shënimet e mia/ });
-  if (await page.locator("#lesson-annotation-library").count() === 0) await button.click();
-  await page.locator("#lesson-annotation-library").waitFor({ state: "visible" });
-}
-
 const browser = await chromium.launch({ headless: true });
 try {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
+  const mobile = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" };
+  const context = await browser.newContext(mobile);
   await installApi(context);
   const page = await context.newPage();
   await page.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
-  await page.locator("[data-audit-paragraph]").waitFor({ state: "visible" });
 
   await selectPhrase(page, "Qeliza është njësia themelore");
   const toolbar = page.locator("[data-annotation-selection-toolbar]");
-  const toolbarBox = await toolbar.boundingBox();
+  const box = await toolbar.boundingBox();
   const viewport = page.viewportSize();
-  assert(toolbarBox && viewport, "Mobile selection toolbar geometry missing");
-  assert(viewport.height - toolbarBox.y - toolbarBox.height >= 70, "Mobile toolbar is not docked above iPhone navigation and safe area");
-  const mobileStyle = await toolbar.evaluate((element) => ({ top: getComputedStyle(element).top, bottom: getComputedStyle(element).bottom, transform: getComputedStyle(element).transform }));
-  assert(mobileStyle.top === "auto" && mobileStyle.bottom !== "auto" && mobileStyle.transform === "none", "Mobile toolbar still follows the native iPhone selection popup");
+  assert(box && viewport, "Mobile toolbar geometry missing");
+  assert(viewport.height - box.y - box.height >= 70, "Toolbar is not above the iPhone safe area");
+  const style = await toolbar.evaluate((el) => ({ bottom: getComputedStyle(el).bottom, transform: getComputedStyle(el).transform }));
+  assert(style.bottom !== "auto" && style.transform === "none", "Toolbar still follows the native selection popup");
   await page.getByRole("button", { name: "Thekso e verdhë" }).click();
-  await page.getByText("Teksti u theksua dhe u ruajt privatisht.").waitFor({ state: "visible" });
+  await page.getByText("Teksti u theksua dhe u ruajt privatisht.").waitFor();
 
   await selectPhrase(page, "Membrana kontrollon shkëmbimin");
   await page.getByRole("button", { name: "+ Sticky note" }).click();
@@ -105,32 +82,33 @@ try {
   await dialog.getByRole("button", { name: "E gjelbër" }).click();
   await dialog.getByRole("button", { name: "Ruaj sticky note" }).click();
 
-  await openLibrary(page);
-  assert(await page.locator("#lesson-annotation-library article").count() === 2, "Highlight and sticky note were not both listed");
-  const noteCard = page.locator("#lesson-annotation-library article").filter({ hasText: "Sticky note" });
-  await noteCard.getByRole("button", { name: "Ndrysho" }).click();
-  await noteCard.getByRole("textbox").fill("Shënim i ndryshuar dhe i sinkronizuar.");
-  await noteCard.getByRole("button", { name: "Ruaj" }).click();
-  await noteCard.getByTitle("E kaltër").click();
-  await noteCard.getByText("Shënim i ndryshuar dhe i sinkronizuar.").waitFor({ state: "visible" });
+  await page.getByRole("button", { name: /Shënimet e mia/ }).click();
+  const library = page.locator("#lesson-annotation-library");
+  await library.waitFor();
+  assert(await library.locator("article").count() === 2, "Highlight and sticky note are not both listed");
+  const note = library.locator("article").filter({ hasText: "Sticky note" });
+  await note.getByRole("button", { name: "Ndrysho" }).click();
+  await note.getByRole("textbox").fill("Shënim i ndryshuar dhe i sinkronizuar.");
+  await note.getByRole("button", { name: "Ruaj" }).click();
+  await note.getByTitle("E kaltër").click();
+  await note.getByText("Shënim i ndryshuar dhe i sinkronizuar.").waitFor();
 
-  const highlightCard = page.locator("#lesson-annotation-library article").filter({ hasText: "Highlight" });
+  const highlight = library.locator("article").filter({ hasText: "Highlight" });
   page.once("dialog", (popup) => popup.accept());
-  await highlightCard.getByRole("button", { name: "Fshi" }).click();
-  assert(await page.locator("#lesson-annotation-library article").count() === 1, "Highlight deletion did not update the private library");
+  await highlight.getByRole("button", { name: "Fshi" }).click();
+  assert(await library.locator("article").count() === 1, "Highlight deletion failed");
 
-  const secondContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
+  const secondContext = await browser.newContext(mobile);
   await installApi(secondContext);
   const secondPage = await secondContext.newPage();
   await secondPage.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
   await secondPage.getByRole("button", { name: /Shënimet e mia/ }).click();
-  await secondPage.getByText("Shënim i ndryshuar dhe i sinkronizuar.").waitFor({ state: "visible" });
-  assert(await secondPage.locator("#lesson-annotation-library article").count() === 1, "Account annotations did not load on a second device context");
-
+  await secondPage.getByText("Shënim i ndryshuar dhe i sinkronizuar.").waitFor();
+  assert(await secondPage.locator("#lesson-annotation-library article").count() === 1, "Second-device account sync failed");
   await secondContext.close();
   await context.close();
 } finally {
   await browser.close();
 }
 
-console.log("Private highlights and sticky notes passed mobile, editing, deletion and cross-device browser audits.");
+console.log("Private highlights and sticky notes passed mobile, editing, deletion and cross-device audits.");
