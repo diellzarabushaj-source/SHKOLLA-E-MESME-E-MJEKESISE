@@ -13,7 +13,8 @@
     "pretypecheck": "npm run prepare:portal",
     "typecheck": "tsc --noEmit",
     "audit:navigation": "node scripts/audit-navigation.mjs",
-    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation"
+    "audit:smoothness": "node scripts/audit-smoothness.mjs",
+    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness"
   },
   "dependencies": {
     "@neondatabase/auth": "0.4.2-beta",
