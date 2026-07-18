@@ -74,7 +74,9 @@ requireText("Admin identity", adminIdentity, [
 
 requireText("Admin route protection", adminRoute, [
   "await requireAdminUser()",
-  "requestOrigin !== new URL(request.url).origin",
+  "isSameOriginRequest(request)",
+  'request.headers.get("x-forwarded-host")',
+  'request.headers.get("x-forwarded-proto")',
   "current._rev !== revision",
   "requiredImmutableKeys",
   "preservedImmutableKeys",
