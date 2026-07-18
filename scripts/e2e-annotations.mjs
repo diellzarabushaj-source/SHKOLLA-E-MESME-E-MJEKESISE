@@ -105,6 +105,7 @@ try {
   const highlight = library.locator("article").filter({ hasText: "Highlight" });
   page.once("dialog", (popup) => popup.accept());
   await highlight.getByRole("button", { name: "Fshi" }).click();
+  await highlight.waitFor({ state: "detached", timeout: 10000 });
   assert(await library.locator("article").count() === 1, "Highlight deletion failed");
 
   const secondContext = await browser.newContext(mobile);
