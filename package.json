@@ -17,7 +17,8 @@
     "audit:annotations": "node scripts/audit-annotations.mjs",
     "audit:admin-sanity": "node scripts/audit-admin-sanity.mjs",
     "audit:sanity-runtime": "node scripts/audit-sanity-runtime.mjs",
-    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime"
+    "audit:auth": "node scripts/audit-auth.mjs",
+    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime && npm run audit:auth"
   },
   "dependencies": {
     "@neondatabase/auth": "0.4.2-beta",
