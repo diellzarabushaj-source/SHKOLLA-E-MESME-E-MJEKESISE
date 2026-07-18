@@ -62,13 +62,19 @@ swap(
 swap(
   "pin opens contextual popover",
   `            setPanelOpen(true);\n            setEditingId(annotation.id);\n            setEditingText(annotation.noteText || "");`,
-  `            setPanelOpen(false);\n            setEditingId(null);\n            setEditingText("");\n            setPopoverText(annotation.noteText || "");\n            setOpenNoteId((current) => current === annotation.id ? null : annotation.id);`,
+  `            setPanelOpen(false);\n            setEditingId(null);\n            setEditingText("");\n            setNotice("");\n            setError("");\n            setPopoverText(annotation.noteText || "");\n            setOpenNoteId((current) => current === annotation.id ? null : annotation.id);`,
 );
 
 swap(
   "contextual popover markup",
   `      {selection && !composerOpen && (`,
   `      {openNotePin && (\n        <aside\n          data-annotation-ui\n          data-adobe-note-popover\n          data-color={openNotePin.annotation.color}\n          role="dialog"\n          aria-label="Sticky note"\n          style={{ left: openNotePin.left, top: openNotePin.top }}\n        >\n          <header>\n            <div>\n              <strong>Sticky note</strong>\n              <span>Vetëm për llogarinë tënde</span>\n            </div>\n            <button\n              type="button"\n              aria-label="Mbyll sticky note"\n              onClick={() => { setOpenNoteId(null); setPopoverText(""); }}\n            >×</button>\n          </header>\n          <blockquote>“{openNotePin.annotation.quote}”</blockquote>\n          <textarea\n            autoFocus\n            maxLength={4_000}\n            value={popoverText}\n            onChange={(event) => setPopoverText(event.target.value)}\n            placeholder="Shkruaj shënimin tënd…"\n          />\n          <div data-adobe-note-colors aria-label="Ndrysho ngjyrën e sticky note">\n            {COLORS.map((color) => (\n              <button\n                className={openNotePin.annotation.color === color ? styles.selectedColor : ""}\n                data-color={color}\n                key={color}\n                type="button"\n                title={COLOR_LABELS[color]}\n                aria-label={COLOR_LABELS[color]}\n                disabled={busy}\n                onClick={() => void updateAnnotation(openNotePin.annotation, { color })}\n              />\n            ))}\n          </div>\n          <footer>\n            <button\n              type="button"\n              data-adobe-note-delete\n              disabled={busy}\n              onClick={() => void removeAnnotation(openNotePin.annotation)}\n            >Fshi</button>\n            <button\n              type="button"\n              data-adobe-note-save\n              disabled={busy || !popoverText.trim()}\n              onClick={() => void updateAnnotation(openNotePin.annotation, { noteText: popoverText.trim() })}\n            >{busy ? "Duke ruajtur…" : "Ruaj"}</button>\n          </footer>\n        </aside>\n      )}\n\n      {selection && !composerOpen && (`,
+);
+
+swap(
+  "annotation toast boundary",
+  `<div className={error ? styles.errorToast : styles.noticeToast} data-annotation-ui role=`,
+  `<div className={error ? styles.errorToast : styles.noticeToast} data-annotation-ui data-annotation-toast role=`,
 );
 
 writeFileSync(file, source);
