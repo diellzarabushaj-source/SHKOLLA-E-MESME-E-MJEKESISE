@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth/server";
 import { safeReturnTo } from "@/lib/auth/redirect";
 import { normalizeUsername, USERNAME_PATTERN, usernameToEmail } from "@/lib/auth/username";
 
-export type SignUpField = "username" | "password" | "form";
+export type SignUpField = "username" | "password" | "confirmPassword" | "form";
 export type SignUpState = {
   error: string;
   username?: string;
@@ -19,65 +19,40 @@ export async function signUpWithUsername(
   const rawUsername = String(formData.get("username") || "").slice(0, 80);
   const username = normalizeUsername(rawUsername);
   const password = String(formData.get("password") || "");
+  const confirmPassword = String(formData.get("confirmPassword") || "");
   const returnTo = safeReturnTo(String(formData.get("returnTo") || "/"));
 
   if (!USERNAME_PATTERN.test(username)) {
-    return {
-      error: "Zgjidh një username me 2–30 karaktere. Lejohen shkronja, numra, pikë, _ dhe -.",
-      username,
-      field: "username",
-    };
+    return { error: "Zgjidh një username me 2–30 karaktere. Lejohen shkronja, numra, pikë, _ dhe -.", username, field: "username" };
   }
 
   if (password.length < 8 || password.length > 128) {
-    return {
-      error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.",
-      username,
-      field: "password",
-    };
+    return { error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.", username, field: "password" };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Password-at nuk përputhen. Shkruaje të njëjtin password në të dy fushat.", username, field: "confirmPassword" };
   }
 
   try {
-    const { error } = await auth.signUp.email({
-      email: usernameToEmail(username),
-      name: username,
-      password,
-    });
+    const { error } = await auth.signUp.email({ email: usernameToEmail(username), name: username, password });
 
     if (error) {
       const message = `${error.code || ""} ${error.message || ""}`.toLowerCase();
-
       if (message.includes("already") || message.includes("exist") || message.includes("unique") || message.includes("user_already_exists")) {
-        return {
-          error: "Ky username ekziston. Kyçu me të ose zgjidh një username tjetër.",
-          username,
-          field: "username",
-        };
+        return { error: "Ky username ekziston. Kyçu me të ose zgjidh një username tjetër.", username, field: "username" };
       }
-
+      if (message.includes("rate") || message.includes("too many")) {
+        return { error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.", username, field: "form" };
+      }
       if (message.includes("password")) {
-        return {
-          error: "Ky password nuk u pranua. Përdor 8–128 karaktere dhe provo përsëri.",
-          username,
-          field: "password",
-        };
+        return { error: "Ky password nuk u pranua. Përdor 8–128 karaktere dhe provo përsëri.", username, field: "password" };
       }
-
-      return {
-        error: "Regjistrimi nuk u krye. Provo përsëri pas pak.",
-        username,
-        field: "form",
-      };
+      return { error: "Regjistrimi nuk u krye. Provo përsëri pas pak.", username, field: "form" };
     }
   } catch {
-    return {
-      error: "Shërbimi i regjistrimit nuk është i arritshëm për momentin. Provo përsëri pas pak.",
-      username,
-      field: "form",
-    };
+    return { error: "Shërbimi i regjistrimit nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", username, field: "form" };
   }
 
-  // Neon Auth krijon sesionin gjatë sign-up. Mos bëj një sign-in të dytë,
-  // sepse dy shkrime konkurruese të cookie-t mund ta lënë sesionin pa token.
   redirect(returnTo);
 }
