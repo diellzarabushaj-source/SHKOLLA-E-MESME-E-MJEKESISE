@@ -22,40 +22,24 @@ export async function signInWithUsername(
   const returnTo = safeReturnTo(String(formData.get("returnTo") || "/"));
 
   if (!USERNAME_PATTERN.test(username)) {
-    return {
-      error: "Shkruaj username-in që ke përdorur gjatë regjistrimit.",
-      username,
-      field: "username",
-    };
+    return { error: "Shkruaj username-in që ke përdorur gjatë regjistrimit.", username, field: "username" };
   }
 
   if (password.length < 8 || password.length > 128) {
-    return {
-      error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.",
-      username,
-      field: "password",
-    };
+    return { error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.", username, field: "password" };
   }
 
   try {
-    const { error } = await auth.signIn.email({
-      email: usernameToEmail(username),
-      password,
-    });
-
+    const { error } = await auth.signIn.email({ email: usernameToEmail(username), password });
     if (error) {
-      return {
-        error: "Username ose password gabim. Kontrolloji dhe provo përsëri.",
-        username,
-        field: "form",
-      };
+      const message = `${error.code || ""} ${error.message || ""}`.toLowerCase();
+      if (message.includes("rate") || message.includes("too many")) {
+        return { error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.", username, field: "form" };
+      }
+      return { error: "Username ose password gabim. Kontrolloji dhe provo përsëri.", username, field: "form" };
     }
   } catch {
-    return {
-      error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Provo përsëri pas pak.",
-      username,
-      field: "form",
-    };
+    return { error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", username, field: "form" };
   }
 
   redirect(returnTo);
