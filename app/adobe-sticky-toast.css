@@ -1,0 +1,14 @@
+[data-lesson-annotations]:has(> [data-adobe-note-popover]) > [data-annotation-toast] {
+  top: 96px;
+  bottom: auto !important;
+}
+
+@media (max-width: 700px), (pointer: coarse) {
+  [data-lesson-annotations]:has(> [data-adobe-note-popover]) > [data-annotation-toast] {
+    top: calc(72px + env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    left: max(12px, env(safe-area-inset-left));
+    width: auto;
+    max-width: none;
+  }
+}
