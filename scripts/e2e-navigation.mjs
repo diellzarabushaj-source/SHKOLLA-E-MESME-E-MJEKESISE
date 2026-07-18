@@ -6,6 +6,88 @@ const baseURL = process.env.E2E_BASE_URL || "http://127.0.0.1:3000";
 const root = process.cwd();
 const failures = [];
 
+const fixtureLessonSummary = {
+  _id: "lesson-cells",
+  _rev: "fixture-revision-1",
+  title: "Qeliza",
+  slug: "qeliza",
+  summary: "Hyrje logjike në strukturën dhe funksionin e qelizës.",
+  flashcardCount: 1,
+};
+
+const fixtureLessonDetails = {
+  ...fixtureLessonSummary,
+  body: [
+    {
+      _key: "block-cells",
+      _type: "block",
+      style: "normal",
+      markDefs: [],
+      children: [
+        {
+          _key: "span-cells",
+          _type: "span",
+          text: "Qeliza është njësia themelore strukturore dhe funksionale e organizmit.",
+          marks: [],
+        },
+      ],
+    },
+  ],
+  recording: {
+    title: "Audio e mësimit Qeliza",
+    url: "data:audio/mpeg;base64,",
+    originalFilename: "qeliza.mp3",
+  },
+};
+
+const fixtureDecks = [
+  {
+    _id: fixtureLessonSummary._id,
+    title: fixtureLessonSummary.title,
+    cards: [
+      {
+        _key: "card-cell-1",
+        title: "Njësia themelore",
+        front: "Cila është njësia themelore e organizmit?",
+        back: "Qeliza.",
+        explanation: "Indet dhe organet ndërtohen nga qelizat.",
+        difficulty: "easy",
+        tags: ["qeliza"],
+        imageSide: "front",
+      },
+    ],
+  },
+];
+
+const fixturePortal = [
+  {
+    _id: "grade-10",
+    title: "Klasa 10",
+    gradeNumber: 10,
+    slug: "klasa-10",
+    shortDescription: "Bazat e mjekësisë.",
+    icon: "10",
+    subjects: [
+      {
+        _id: "subject-anatomy",
+        title: "Anatomi dhe Fiziologji",
+        slug: "anatomi-dhe-fiziologji",
+        shortDescription: "Struktura dhe funksioni i organizmit.",
+        emoji: "🫀",
+        chapters: [
+          {
+            _id: "chapter-cell",
+            title: "Qeliza dhe organizimi",
+            slug: "qeliza-dhe-organizimi",
+            summary: "Nga qeliza te organizmi.",
+            lessons: [fixtureLessonSummary],
+          },
+        ],
+      },
+    ],
+  },
+];
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -32,6 +114,49 @@ const staticRoutes = [...new Set(
     .map(routeForPage)
     .filter(Boolean),
 )].sort();
+
+async function installSanityFixture(context) {
+  await context.route(/https:\/\/[^/]*sanity\.io\/.*/, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+
+    if (request.method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*" } });
+      return;
+    }
+
+    if (url.pathname.includes("/data/listen/")) {
+      await route.fulfill({
+        status: 200,
+        contentType: "text/event-stream",
+        headers: { "access-control-allow-origin": "*" },
+        body: "event: welcome\ndata: {}\n\n",
+      });
+      return;
+    }
+
+    const query = url.searchParams.get("query") || "";
+    let result = [];
+
+    if (query.includes('_type == "grade"')) {
+      result = fixturePortal;
+    } else if (query.includes('"cards": flashcards')) {
+      result = fixtureDecks;
+    } else if (query.includes("body[]") && query.includes("$lessonId")) {
+      result = fixtureLessonDetails;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-store",
+      },
+      body: JSON.stringify({ ms: 1, query, result }),
+    });
+  });
+}
 
 async function waitForPortal(page) {
   await page.locator("main").first().waitFor({ state: "visible", timeout: 20_000 });
@@ -91,11 +216,14 @@ async function clickFirstNestedPath(page) {
   const lessonTitle = (await page.locator('main[data-progress-page="lesson"] h1').innerText()).trim();
   const lessonBody = (await page.locator('main[data-progress-page="lesson"] article').first().innerText()).trim();
   const hasAudio = await page.locator('main[data-progress-page="lesson"] audio').count();
+  assert(lessonBody.includes("Qeliza është njësia themelore"), "full lesson body was not loaded before history testing");
+  assert(hasAudio === 1, "lesson audio was not loaded before history testing");
   return { gradeId, lessonTitle, lessonBody, hasAudio };
 }
 
 async function auditStaticRoutes(browser) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await installSanityFixture(context);
   for (const route of staticRoutes) {
     const page = await context.newPage();
     try {
@@ -118,6 +246,7 @@ async function auditStaticRoutes(browser) {
 
 async function auditDesktopFlow(browser) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  await installSanityFixture(context);
   const page = await context.newPage();
   try {
     const baselineHistory = await page.evaluate(() => history.length).catch(() => 0);
@@ -138,17 +267,17 @@ async function auditDesktopFlow(browser) {
     assert(restoredAudio === nested.hasAudio, "Forward did not restore the lesson audio state");
 
     const studyButton = page.getByRole("button", { name: "Testo mësimin", exact: true });
-    if (await studyButton.count() && await studyButton.isEnabled()) {
-      await studyButton.click();
-      await page.locator("main.study-page").waitFor({ state: "visible", timeout: 20_000 });
-      assert(new URL(page.url()).searchParams.get("study") === "lesson", "study mode missing from browser history URL");
-      await page.goBack({ waitUntil: "domcontentloaded" });
-      await page.locator('main[data-progress-page="lesson"]').waitFor({ state: "visible", timeout: 20_000 });
-      await page.goForward({ waitUntil: "domcontentloaded" });
-      await page.locator("main.study-page").waitFor({ state: "visible", timeout: 20_000 });
-      await page.goBack({ waitUntil: "domcontentloaded" });
-      await page.locator('main[data-progress-page="lesson"]').waitFor({ state: "visible", timeout: 20_000 });
-    }
+    assert(await studyButton.count(), "lesson study button is missing");
+    assert(await studyButton.isEnabled(), "lesson study button is unexpectedly disabled");
+    await studyButton.click();
+    await page.locator("main.study-page").waitFor({ state: "visible", timeout: 20_000 });
+    assert(new URL(page.url()).searchParams.get("study") === "lesson", "study mode missing from browser history URL");
+    await page.goBack({ waitUntil: "domcontentloaded" });
+    await page.locator('main[data-progress-page="lesson"]').waitFor({ state: "visible", timeout: 20_000 });
+    await page.goForward({ waitUntil: "domcontentloaded" });
+    await page.locator("main.study-page").waitFor({ state: "visible", timeout: 20_000 });
+    await page.goBack({ waitUntil: "domcontentloaded" });
+    await page.locator('main[data-progress-page="lesson"]').waitFor({ state: "visible", timeout: 20_000 });
 
     await page.locator('a.brand[href="/"]').click();
     await expectHome(page, "brand Home from lesson");
@@ -181,6 +310,7 @@ async function auditDesktopFlow(browser) {
 
 async function auditMobileFlow(browser) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await installSanityFixture(context);
   const page = await context.newPage();
   try {
     const nested = await clickFirstNestedPath(page);
@@ -192,9 +322,9 @@ async function auditMobileFlow(browser) {
     await mobileNav.locator('a[href="/#klasat"]').click();
     await expectClasses(page, "mobile Classes from /progress");
 
-    await mobileNav.locator('a[href="/progress"]').click();
+    await page.locator("nav.mobile-navigation").locator('a[href="/progress"]').click();
     await page.waitForURL((url) => url.pathname === "/progress", { timeout: 15_000 });
-    await mobileNav.locator('a[href="/"]').click();
+    await page.locator("nav.mobile-navigation").locator('a[href="/"]').click();
     await expectHome(page, "mobile Home from /progress");
     console.log("✓ mobile navigation and saved-state escape");
   } finally {
@@ -204,6 +334,7 @@ async function auditMobileFlow(browser) {
 
 async function auditNotFound(browser) {
   const context = await browser.newContext({ viewport: { width: 1200, height: 800 } });
+  await installSanityFixture(context);
   const page = await context.newPage();
   try {
     const response = await page.goto(`${baseURL}/navigation-audit-missing-page`, { waitUntil: "domcontentloaded" });
