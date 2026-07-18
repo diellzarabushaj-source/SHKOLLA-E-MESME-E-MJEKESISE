@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth/server";
 
 export const ADMIN_EMAIL = "diellorrabushaj4@gmail.com";
@@ -43,10 +44,10 @@ async function hasGoogleOnlyAccount(userId: string): Promise<boolean> {
   return providers.length === 1 && providers[0] === ADMIN_PROVIDER;
 }
 
-export async function currentSessionUser(): Promise<SessionUser | null> {
+export const currentSessionUser = cache(async (): Promise<SessionUser | null> => {
   const { data } = await auth.getSession();
   return sessionUser(data);
-}
+});
 
 export async function isCurrentUserAdmin(userOverride?: SessionUser | null): Promise<boolean> {
   try {
