@@ -14,3 +14,30 @@ p[class*="switchText"] > a:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
   outline-offset: 2px;
 }
+
+#password-match {
+  width: max-content;
+  max-width: 100%;
+  min-height: 32px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+#confirmPassword:valid:not(:placeholder-shown) + #password-match {
+  border-color: color-mix(in srgb, var(--success) 35%, var(--line));
+  background: color-mix(in srgb, var(--success) 8%, var(--bg-soft));
+  color: color-mix(in srgb, var(--success) 78%, var(--text));
+}
+
+#confirmPassword:invalid:not(:placeholder-shown) + #password-match {
+  border-color: color-mix(in srgb, var(--danger) 38%, var(--line));
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg-soft));
+  color: var(--danger);
+}
