@@ -15,9 +15,10 @@ type LessonDocument = {
 const LESSON_ID_PATTERN = /^[A-Za-z0-9_.-]{1,128}$/;
 const TEXT_STYLES = new Set(["normal", "h2", "h3", "h4", "blockquote"]);
 const INLINE_MARKS = new Set(["strong", "em", "underline", "code", "highlight"]);
+const noStoreHeaders = { "Cache-Control": "no-store" };
 
 function jsonError(error: string, status: number) {
-  return NextResponse.json({ error }, { status, headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({ error }, { status, headers: noStoreHeaders });
 }
 
 function isRecord(value: unknown): value is PortableNode {
@@ -31,8 +32,9 @@ function safeText(value: unknown, maxLength: number): string {
 
 function safeLink(value: unknown): string {
   const href = safeText(value, 2048).trim();
-  if (!href) throw new Error("INVALID_LESSON_BODY");
-  if (href.startsWith("/") || href.startsWith("#")) return href;
+  if (!href || /[\u0000-\u001F\u007F]/.test(href)) throw new Error("INVALID_LESSON_BODY");
+  if (href.startsWith("#")) return href;
+  if (href.startsWith("/") && !href.startsWith("//")) return href;
 
   try {
     const parsed = new URL(href);
@@ -127,22 +129,42 @@ function sanitizeBody(proposed: unknown, currentBody: PortableNode[]): PortableN
     .filter(isRecord)
     .map((node) => [typeof node._key === "string" ? node._key : "", node] as const)
     .filter(([key]) => Boolean(key)));
-  const usedKeys = new Set<string>();
+  const requiredImmutableKeys = currentBody
+    .filter((node) => isRecord(node) && node._type !== "block")
+    .map((node) => typeof node._key === "string" ? node._key : "");
 
-  return proposed.map((value) => {
+  if (requiredImmutableKeys.some((key) => !key)) throw new Error("INVALID_EMBEDDED_CONTENT");
+
+  const usedKeys = new Set<string>();
+  const preservedImmutableKeys = new Set<string>();
+
+  const cleanBody = proposed.map((value) => {
     if (!isRecord(value)) throw new Error("INVALID_LESSON_BODY");
     const key = safeText(value._key, 80);
     if (usedKeys.has(key)) throw new Error("DUPLICATE_BLOCK_KEY");
     usedKeys.add(key);
 
     const current = currentByKey.get(key);
-    if (value._type === "block") return sanitizeBlock(value, current);
+    if (value._type === "block") {
+      if (current && current._type !== "block") throw new Error("INVALID_EMBEDDED_CONTENT");
+      return sanitizeBlock(value, current);
+    }
 
     // Images and future custom blocks are immutable in the web editor. The API
-    // restores the trusted version already stored in Sanity.
-    if (!current || current._type !== value._type) throw new Error("INVALID_EMBEDDED_CONTENT");
+    // restores the trusted version already stored in Sanity and requires every
+    // protected element to remain present exactly once.
+    if (!current || current._type !== value._type || current._type === "block") {
+      throw new Error("INVALID_EMBEDDED_CONTENT");
+    }
+    preservedImmutableKeys.add(key);
     return current;
   });
+
+  if (requiredImmutableKeys.some((key) => !preservedImmutableKeys.has(key))) {
+    throw new Error("INVALID_EMBEDDED_CONTENT");
+  }
+
+  return cleanBody;
 }
 
 async function readLesson(lessonId: string) {
@@ -179,7 +201,7 @@ export async function GET(
     const lesson = await readLesson(lessonId);
     if (!lesson) return jsonError("LESSON_NOT_FOUND", 404);
 
-    return NextResponse.json({ lesson }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ lesson }, { headers: noStoreHeaders });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "AUTH_REQUIRED") return jsonError("AUTH_REQUIRED", 401);
@@ -225,7 +247,8 @@ export async function PATCH(
     await client.patch(lessonId).ifRevisionId(revision).set({ body }).commit({ autoGenerateArrayKeys: true });
 
     const lesson = await readLesson(lessonId);
-    return NextResponse.json({ lesson }, { headers: { "Cache-Control": "no-store" } });
+    if (!lesson) return jsonError("LESSON_NOT_FOUND", 404);
+    return NextResponse.json({ lesson }, { headers: noStoreHeaders });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "AUTH_REQUIRED") return jsonError("AUTH_REQUIRED", 401);
