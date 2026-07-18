@@ -266,8 +266,13 @@ async function auditDesktopFlow(browser) {
     assert(restoredBody === nested.lessonBody, "Forward restored the lesson without the same full body content");
     assert(restoredAudio === nested.hasAudio, "Forward did not restore the lesson audio state");
 
-    const studyButton = page.getByRole("button", { name: "Testo mësimin", exact: true });
-    assert(await studyButton.count(), "lesson study button is missing");
+    const studyButton = page.locator('main[data-progress-page="lesson"] button').filter({ hasText: "Testo mësimin" }).last();
+    try {
+      await studyButton.waitFor({ state: "visible", timeout: 15_000 });
+    } catch {
+      const buttonTexts = await page.locator('main[data-progress-page="lesson"] button').allTextContents();
+      throw new Error(`lesson study button is missing after Forward; visible lesson buttons: ${JSON.stringify(buttonTexts)}`);
+    }
     assert(await studyButton.isEnabled(), "lesson study button is unexpectedly disabled");
     await studyButton.click();
     await page.locator("main.study-page").waitFor({ state: "visible", timeout: 20_000 });
