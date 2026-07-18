@@ -75,12 +75,15 @@ jobs:
           NAVIGATION_STATUS=$?
           node scripts/e2e-smoothness.mjs > smoothness-e2e.log 2>&1
           SMOOTHNESS_STATUS=$?
+          node scripts/e2e-grade-cards.mjs > grade-cards-e2e.log 2>&1
+          GRADE_CARDS_STATUS=$?
           set -e
 
           cat navigation-e2e.log
           cat smoothness-e2e.log
+          cat grade-cards-e2e.log
 
-          if [ "$NAVIGATION_STATUS" -ne 0 ] || [ "$SMOOTHNESS_STATUS" -ne 0 ]; then
+          if [ "$NAVIGATION_STATUS" -ne 0 ] || [ "$SMOOTHNESS_STATUS" -ne 0 ] || [ "$GRADE_CARDS_STATUS" -ne 0 ]; then
             exit 1
           fi
       - name: Upload browser diagnostics
@@ -91,5 +94,6 @@ jobs:
           path: |
             navigation-e2e.log
             smoothness-e2e.log
+            grade-cards-e2e.log
             navigation-server.log
           retention-days: 1
