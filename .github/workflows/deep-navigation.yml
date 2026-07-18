@@ -1,0 +1,85 @@
+name: Deep navigation browser audit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  navigation-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEON_AUTH_BASE_URL: https://ep-long-wind-at258oxo.neonauth.c-9.us-east-1.aws.neon.tech/neondb/auth
+      NEON_AUTH_COOKIE_SECRET: ci-only-cookie-secret-with-more-than-32-characters
+      NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
+      NEXT_PUBLIC_SANITY_PROJECT_ID: e1tm3f7l
+      NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_PUBLIC_SANITY_DATASET_V2: schoolv2
+      E2E_BASE_URL: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install application dependencies
+        run: npm install
+      - name: Install Playwright for the audit
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Build application
+        shell: bash
+        run: |
+          set +e
+          npm run build > navigation-build.log 2>&1
+          STATUS=$?
+          cat navigation-build.log
+          exit "$STATUS"
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-build-log
+          path: navigation-build.log
+          retention-days: 1
+      - name: Run deep navigation audit
+        shell: bash
+        run: |
+          set -uo pipefail
+          npm run start > navigation-server.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/ > /dev/null; then
+              break
+            fi
+            if ! kill -0 "$APP_PID" 2>/dev/null; then
+              cat navigation-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if ! curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+            cat navigation-server.log
+            exit 1
+          fi
+
+          node scripts/e2e-navigation.mjs > navigation-e2e.log 2>&1
+          STATUS=$?
+          cat navigation-e2e.log
+          exit "$STATUS"
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-browser-logs
+          path: |
+            navigation-e2e.log
+            navigation-server.log
+          retention-days: 1

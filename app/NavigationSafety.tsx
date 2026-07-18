@@ -28,12 +28,21 @@ export default function NavigationSafety() {
       if (!anchor || anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
 
       const url = new URL(anchor.href, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname !== "/" || window.location.pathname !== "/") return;
+      if (url.origin !== window.location.origin || url.pathname !== "/") return;
       if (url.hash && url.hash !== "#klasat") return;
-      if (!portalIsOpen()) return;
 
-      event.preventDefault();
+      // Home and Classes must always mean a real escape from the saved learning flow,
+      // including when the user clicks them from /progress or an authentication page.
       window.localStorage.removeItem(SELECTED_GRADE_KEY);
+
+      // On another route, let Next.js perform the normal route transition. Once the
+      // homepage mounts it will no longer reopen the previously saved grade.
+      if (window.location.pathname !== "/") return;
+
+      // On the homepage the portal is an in-page state machine, so update it without
+      // a reload while preserving browser Back/Forward history.
+      if (!portalIsOpen()) return;
+      event.preventDefault();
       dispatchPortalNavigation(url.hash === "#klasat" ? CLASSES_EVENT : HOME_EVENT);
     };
 
