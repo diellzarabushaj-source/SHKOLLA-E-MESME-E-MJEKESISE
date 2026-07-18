@@ -1,0 +1,1 @@
+Final verification target for the canonical Sanity portal and authentication flow.
