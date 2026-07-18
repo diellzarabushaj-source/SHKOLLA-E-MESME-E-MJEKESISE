@@ -18,26 +18,43 @@ function requireText(label, source, values) {
 
 const portal = read("app/SchoolLearningPortal.tsx");
 const nextConfig = read("next.config.mjs");
+const sanityConfig = read("lib/sanity/config.ts");
+const writeClient = read("lib/sanity/write-client.ts");
 const serviceWorker = read("public/sw.js");
 const registrar = read("app/PwaRegistrar.tsx");
 const hardener = read("scripts/harden-sanity-runtime.mjs");
+const pinner = read("scripts/pin-live-sanity.mjs");
 const packageJson = JSON.parse(read("package.json") || "{}");
 
 requireText("Generated portal", portal, [
   'projectId: "u5d5zn7n"',
   'dataset: "schoolv2"',
+  'apiVersion: "2026-07-17"',
   "useCdn: false",
+  "SANITY_PORTAL_DATA_INCOMPLETE",
+  "canonical-sanity-schoolv2",
 ]);
 if (portal.includes("projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID")) {
-  failures.push("Portali i gjeneruar nuk duhet të mbështetet në project ID të vjetër nga Vercel environment.");
+  failures.push("Portali i gjeneruar nuk duhet të mbështetet në project ID nga Vercel environment.");
 }
 if (portal.includes("dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2")) {
-  failures.push("Portali i gjeneruar nuk duhet të mbështetet në dataset të vjetër nga Vercel environment.");
+  failures.push("Portali i gjeneruar nuk duhet të mbështetet në dataset nga Vercel environment.");
 }
 
+requireText("Canonical Sanity constants", sanityConfig, [
+  'SANITY_PROJECT_ID = "u5d5zn7n"',
+  'SANITY_DATASET = "schoolv2"',
+  'SANITY_API_VERSION = "2026-07-17"',
+]);
+requireText("Canonical write client", writeClient, [
+  "SANITY_PROJECT_ID",
+  "SANITY_DATASET",
+  "SANITY_API_VERSION",
+  "useCdn: false",
+]);
 requireText("Next configuration", nextConfig, [
-  'process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "u5d5zn7n"',
-  'process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2"',
+  'const sanityProjectId = "u5d5zn7n"',
+  'const sanityDataset = "schoolv2"',
 ]);
 
 requireText("Service worker", serviceWorker, [
@@ -56,9 +73,15 @@ requireText("Runtime hardener", hardener, [
   "fresh portal reads",
   "non-stale Sanity query handling",
 ]);
+requireText("Final runtime pinner", pinner, [
+  "Canonical Sanity project",
+  "Portal data contract",
+  "SANITY_PORTAL_DATA_INCOMPLETE",
+]);
 
 const prepare = String(packageJson.scripts?.["prepare:portal"] || "");
 if (!prepare.includes("harden-sanity-runtime.mjs")) failures.push("prepare:portal nuk ekzekuton Sanity runtime hardening.");
+if (!prepare.includes("pin-live-sanity.mjs")) failures.push("prepare:portal nuk ekzekuton kontrollin final të Sanity kanonik.");
 
 if (failures.length) {
   console.error("\nSanity runtime audit failed:");
@@ -66,4 +89,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Sanity runtime audit passed: correct project, schoolv2 dataset, fresh queries and cache v9.");
+console.log("Sanity runtime audit passed: canonical project, schoolv2 dataset, complete portal data, fresh queries and cache v9.");
