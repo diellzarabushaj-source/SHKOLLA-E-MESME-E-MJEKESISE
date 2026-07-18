@@ -1,0 +1,105 @@
+/* Uiverse-inspired interactions approved for chapter and subject cards only. */
+
+/* -------------------------------------------------------------------------- */
+/* Chapter action buttons — preserve the current size, text and layout.        */
+/* -------------------------------------------------------------------------- */
+
+[class*="openButton"] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 72%, var(--primary)),
+    var(--primary)
+  );
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--primary) 25%, transparent);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+[class*="openButton"] > span {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  color: white;
+  transform: translateY(-50%);
+  transition: right 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [class*="openButton"]:hover {
+    color: transparent;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 72%, var(--primary)),
+      var(--primary)
+    );
+    box-shadow: 0 18px 34px color-mix(in srgb, var(--primary) 32%, transparent);
+    transform: translateY(-2px);
+  }
+
+  [class*="openButton"]:hover > span {
+    right: 50%;
+    font-size: 24px;
+    transform: translate(50%, -50%);
+  }
+
+  [class*="openButton"]:active {
+    transform: translate(3px, 3px);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Subject cards — preserve the existing card and add a subtle heart motion.  */
+/* -------------------------------------------------------------------------- */
+
+.subject-card h3::after {
+  content: "♥";
+  display: inline-block;
+  margin-left: 9px;
+  color: var(--card-accent, var(--accent));
+  font-size: 0.72em;
+  opacity: 0;
+  transform: translateY(4px) scale(0.45) rotate(-14deg);
+  transform-origin: center;
+  transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .subject-card:hover h3::after,
+  .subject-card:focus-within h3::after {
+    opacity: 1;
+    transform: translateY(-1px) scale(1) rotate(0deg);
+    animation: subject-heartbeat 1.15s ease-in-out infinite;
+  }
+}
+
+@keyframes subject-heartbeat {
+  0%,
+  100% {
+    transform: translateY(-1px) scale(1);
+  }
+
+  28% {
+    transform: translateY(-1px) scale(1.18);
+  }
+
+  52% {
+    transform: translateY(-1px) scale(0.96);
+  }
+
+  72% {
+    transform: translateY(-1px) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="openButton"],
+  [class*="openButton"] > span,
+  .subject-card h3::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
