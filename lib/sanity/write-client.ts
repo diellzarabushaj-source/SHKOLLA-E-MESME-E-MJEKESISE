@@ -11,7 +11,7 @@ export function getSanityWriteClient(): ReturnType<typeof createClient> {
   if (!token) throw new Error("SANITY_WRITE_TOKEN_MISSING");
 
   writeClient = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "e1tm3f7l",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "u5d5zn7n",
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_V2 || "schoolv2",
     apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-07-17",
     useCdn: false,

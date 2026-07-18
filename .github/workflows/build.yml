@@ -16,7 +16,7 @@ jobs:
       NEON_AUTH_BASE_URL: https://ep-long-wind-at258oxo.neonauth.c-9.us-east-1.aws.neon.tech/neondb/auth
       NEON_AUTH_COOKIE_SECRET: ci-only-cookie-secret-with-more-than-32-characters
       NEXT_PUBLIC_NEON_DATA_API_URL: https://ep-long-wind-at258oxo.apirest.c-9.us-east-1.aws.neon.tech/neondb/rest/v1
-      NEXT_PUBLIC_SANITY_PROJECT_ID: e1tm3f7l
+      NEXT_PUBLIC_SANITY_PROJECT_ID: u5d5zn7n
       NEXT_PUBLIC_SANITY_DATASET: production
       NEXT_PUBLIC_SANITY_DATASET_V2: schoolv2
     steps:
@@ -32,3 +32,5 @@ jobs:
         run: npm run audit:smoothness
       - name: Audit private lesson annotations
         run: npm run audit:annotations
+      - name: Audit administrator and Sanity synchronization
+        run: npm run audit:admin-sanity
