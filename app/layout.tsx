@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { auth } from "@/lib/auth/server";
+import { currentSessionUser } from "@/lib/admin/server";
 import AuthControls from "./AuthControls";
 import EnhancedTestResults from "./EnhancedTestResults";
 import InteractionEnhancements from "./InteractionEnhancements";
@@ -100,28 +100,9 @@ function NavigationLinks({ className, label }: { className: string; label: strin
   );
 }
 
-type LayoutSessionUser = {
-  name?: string;
-};
-
-function sessionUser(data: unknown): LayoutSessionUser | null {
-  if (!data || typeof data !== "object") return null;
-  const value = data as { user?: LayoutSessionUser; session?: { user?: LayoutSessionUser } };
-  return value.user || value.session?.user || null;
-}
-
-async function getCurrentUsername(): Promise<string | null> {
-  try {
-    const { data: session } = await auth.getSession();
-    const name = sessionUser(session)?.name;
-    return typeof name === "string" && name.trim() ? name.trim() : null;
-  } catch {
-    return null;
-  }
-}
-
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const username = await getCurrentUsername();
+  const user = await currentSessionUser();
+  const username = typeof user?.name === "string" && user.name.trim() ? user.name.trim() : null;
 
   return (
     <html lang="sq" suppressHydrationWarning>
