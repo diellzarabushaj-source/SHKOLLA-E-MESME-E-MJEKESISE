@@ -18,8 +18,19 @@ type SearchParams = Promise<{
   created?: string | string[];
 }>;
 
+type SessionPayload = {
+  user?: { id?: string };
+  session?: { user?: { id?: string } };
+};
+
 function first(value: string | string[] | undefined): string {
   return Array.isArray(value) ? value[0] || "" : value || "";
+}
+
+function hasSignedInUser(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const session = value as SessionPayload;
+  return Boolean(session.user?.id || session.session?.user?.id);
 }
 
 export default async function SignInPage({ searchParams }: { searchParams: SearchParams }) {
@@ -29,7 +40,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
   let signedIn = false;
   try {
     const { data: session } = await auth.getSession();
-    signedIn = Boolean(session?.user?.id);
+    signedIn = hasSignedInUser(session);
   } catch {
     signedIn = false;
   }
