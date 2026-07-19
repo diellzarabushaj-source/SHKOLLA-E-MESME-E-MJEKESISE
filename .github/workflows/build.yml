@@ -44,4 +44,14 @@ jobs:
       - name: Audit private lesson annotations
         run: npm run audit:annotations
       - name: Audit administrator and Sanity synchronization
-        run: npm run audit:admin-sanity
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run audit:admin-sanity 2>&1 | tee admin-sanity-audit.log
+      - name: Upload administrator audit diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: administrator-audit-diagnostics
+          path: admin-sanity-audit.log
+          retention-days: 3
