@@ -78,7 +78,7 @@ requireAll("Lesson image validation", lessonRoute, [
   "sanitizeNewImage",
   "SANITY_IMAGE_ASSET_PATTERN",
   "verifyImageAssets",
-  '_type == "sanity.imageAsset"',
+  "sanity.imageAsset",
   "INVALID_IMAGE_ASSET",
   "await verifyImageAssets(client, body)",
 ]);
