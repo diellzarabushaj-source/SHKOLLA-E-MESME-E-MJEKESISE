@@ -20,6 +20,7 @@ const redirectHelper = read("lib/auth/redirect.ts");
 const serverAuth = read("lib/auth/server.ts");
 const accountLookup = read("lib/auth/accounts.ts");
 const authControls = read("app/AuthControls.tsx");
+const authControlsStyles = read("app/AuthControls.module.css");
 const authLayout = read("app/auth/layout.tsx");
 const authTouchStyles = read("app/auth/auth-touch.css");
 const signInPage = read("app/auth/sign-in/page.tsx");
@@ -66,8 +67,24 @@ requireText("Credential account lookup", accountLookup, [
 requireText("Live header session", authControls, [
   '"use client"',
   "authClient.useSession()",
-  "isPending ? initialUsername : liveUsername",
+  "signedOut ? null : isPending ? initialUsername : liveUsername",
   "signOutAction",
+]);
+
+requireText("Immediate logout", authControls, [
+  "onSubmit={handleSignOut}",
+  "await authClient.signOut()",
+  "setSignedOut(true)",
+  'window.location.replace("/")',
+  'window.dispatchEvent(new Event("medical-portal:auth-changed"))',
+  "Po del…",
+]);
+
+requireText("Logout interaction states", authControlsStyles, [
+  ".logout:disabled",
+  "cursor: wait",
+  ".logoutError",
+  "prefers-reduced-motion",
 ]);
 
 for (const [label, page] of [["Sign-in page", signInPage], ["Sign-up page", signUpPage]]) {
@@ -169,7 +186,10 @@ requireText("Auth browser audit", authBrowserAudit, [
   "auditSignIn(browser)",
   "auditSignUp(browser)",
   "auditRecovery(browser)",
+  "auditInstantSignOut(browser)",
   "auditMobile(browser)",
+  '"**/api/auth/sign-out*"',
+  "logout updates the header and session immediately without manual refresh",
   "external returnTo was not rejected",
   "administrator email leaked",
 ]);
@@ -194,4 +214,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: fresh sessions, username/email login, optional recovery email, Google for everyone and server-only admin authorization.");
+console.log("Authentication audit passed: fresh sessions, instant logout, username/email login, optional recovery email, Google for everyone and server-only admin authorization.");
