@@ -236,7 +236,7 @@ const MAX_TABLE_CELL_TEXT = 6000;`,
     if (!isRecord(rowValue) || rowValue._type !== "lessonTableRow") throw new Error("INVALID_TABLE");
     const rowKey = typeof rowValue._key === "string" && rowValue._key.length <= 80
       ? rowValue._key
-      : `${key}-row-${rowIndex}`;
+      : key + "-row-" + rowIndex;
     if (usedRowKeys.has(rowKey)) throw new Error("INVALID_TABLE");
     usedRowKeys.add(rowKey);
 
@@ -248,7 +248,7 @@ const MAX_TABLE_CELL_TEXT = 6000;`,
       if (!isRecord(cellValue) || cellValue._type !== "lessonTableCell") throw new Error("INVALID_TABLE");
       const cellKey = typeof cellValue._key === "string" && cellValue._key.length <= 80
         ? cellValue._key
-        : `${rowKey}-cell-${cellIndex}`;
+        : rowKey + "-cell-" + cellIndex;
       if (usedCellKeys.has(cellKey)) throw new Error("INVALID_TABLE");
       usedCellKeys.add(cellKey);
 
