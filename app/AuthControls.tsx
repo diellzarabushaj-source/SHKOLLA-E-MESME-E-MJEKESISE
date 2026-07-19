@@ -1,8 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { authClient } from "@/lib/auth/client";
 import { signOutAction } from "./auth/actions";
 import styles from "./AuthControls.module.css";
 
-export default function AuthControls({ username }: { username: string | null }) {
+export default function AuthControls({ username: initialUsername }: { username: string | null }) {
+  const { data: session, isPending } = authClient.useSession();
+  const liveUsername = session?.user?.name || null;
+  const username = isPending ? initialUsername : liveUsername;
+
   if (!username) {
     return (
       <div className={styles.controls} aria-label="Llogaria">
@@ -16,9 +23,9 @@ export default function AuthControls({ username }: { username: string | null }) 
 
   return (
     <div className={`${styles.controls} ${styles.account}`} aria-label="Llogaria e kyçur">
-      <span className={styles.user} title={`@${username}`}>
+      <span className={styles.user} title={username}>
         <span className={styles.dot} aria-hidden="true" />
-        @{username}
+        {username.startsWith("@")} ? username : `@${username}`}
       </span>
       <form action={signOutAction} className={styles.logoutForm}>
         <button className={styles.logout} type="submit" aria-label="Dil nga llogaria">Dil</button>
