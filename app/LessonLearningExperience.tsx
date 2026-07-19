@@ -66,6 +66,7 @@ export default function LessonLearningExperience({
   const [visited, setVisited] = useState<Set<string>>(new Set());
   const [readingProgress, setReadingProgress] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [loadedStorageKey, setLoadedStorageKey] = useState("");
   const storageKey = `${STORAGE_PREFIX}:${lessonId}`;
 
   const discoverHeadings = useCallback(() => {
@@ -105,6 +106,7 @@ export default function LessonLearningExperience({
     setCompleted(saved.completed === true);
     setReadingProgress(0);
     setActiveHeading("");
+    setLoadedStorageKey(storageKey);
   }, [storageKey]);
 
   useEffect(() => {
@@ -171,18 +173,20 @@ export default function LessonLearningExperience({
   }, [headings]);
 
   useEffect(() => {
+    if (loadedStorageKey !== storageKey) return;
     try {
       window.localStorage.setItem(storageKey, JSON.stringify({ visited: [...visited], completed }));
     } catch {
       // Learning progress remains available for the active page even when storage is blocked.
     }
-  }, [completed, storageKey, visited]);
+  }, [completed, loadedStorageKey, storageKey, visited]);
 
   const visitedCount = headings.filter((heading) => visited.has(heading.id)).length;
   const sectionProgress = headings.length ? Math.round((visitedCount / headings.length) * 100) : readingProgress;
   const xp = visitedCount * 5 + (completed ? 25 : 0);
   const level = Math.max(1, Math.floor(xp / 50) + 1);
   const status = completed ? "Mësimi u përfundua" : readingProgress > 5 ? "Mësimi është në vazhdim" : "Fillo mësimin";
+  const displayProgress = completed ? 100 : Math.max(readingProgress, sectionProgress);
 
   const outline = useMemo(() => headings.slice(0, 30), [headings]);
 
@@ -207,9 +211,9 @@ export default function LessonLearningExperience({
           </div>
 
           <div className={styles.scoreboard} aria-label="Progresi i mësimit">
-            <span><b>{Math.max(readingProgress, sectionProgress)}%</b><small>progres</small></span>
+            <span><b>{displayProgress}%</b><small>progres</small></span>
             <span><b>{xp} XP</b><small>niveli {level}</small></span>
-            <span><b>{visitedCount}/{headings.length || 1}</b><small>seksione</small></span>
+            <span><b>{headings.length ? `${visitedCount}/${headings.length}` : "—"}</b><small>seksione</small></span>
           </div>
         </div>
 
@@ -219,9 +223,9 @@ export default function LessonLearningExperience({
           aria-label="Progresi i leximit"
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={Math.max(readingProgress, sectionProgress)}
+          aria-valuenow={displayProgress}
         >
-          <span style={{ width: `${Math.max(readingProgress, sectionProgress)}%` }} />
+          <span style={{ width: `${displayProgress}%` }} />
         </div>
 
         <div className={styles.actionsRow}>
