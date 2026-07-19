@@ -1,6 +1,6 @@
 import type {ComponentType} from 'react'
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {PortableTextImagePasteInput} from '../components/portable-text-image-paste-input'
+import {PortableTextClipboardPasteInput} from '../components/portable-text-image-paste-input'
 
 export const lesson = defineType({
   name: 'lesson',
@@ -37,12 +37,12 @@ export const lesson = defineType({
     defineField({
       name: 'body',
       title: 'Përmbajtja',
-      description: 'Shkruaj tekstin dhe ngjit fotografi direkt me Ctrl/⌘+V. Butoni normal për Insert image mbetet i disponueshëm.',
+      description: 'Shkruaj tekstin dhe ngjit fotografi ose tabela direkt me Ctrl/⌘+V. Butonat normalë për Insert image dhe Tabelë mbeten të disponueshëm.',
       type: 'array',
       components: {
-        // Sanity's mixed block+image array inference currently resolves the form input
+        // Sanity's mixed Portable Text array inference currently resolves the form input
         // as a primitive-array component. The runtime component is PortableTextInputProps.
-        input: PortableTextImagePasteInput as unknown as ComponentType<any>,
+        input: PortableTextClipboardPasteInput as unknown as ComponentType<any>,
       },
       of: [
         defineArrayMember({
@@ -84,6 +84,10 @@ export const lesson = defineType({
               validation: (rule) => rule.max(1000),
             }),
           ],
+        }),
+        defineArrayMember({
+          type: 'lessonTable',
+          title: 'Tabelë',
         }),
       ],
       validation: (rule) => rule.max(800),
