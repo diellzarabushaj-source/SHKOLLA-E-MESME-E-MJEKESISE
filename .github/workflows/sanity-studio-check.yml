@@ -31,13 +31,17 @@ jobs:
       - name: Install Studio dependencies
         run: npm install
       - name: Typecheck, audit and build Studio
-        run: npm run check
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee sanity-studio-check.log
       - name: Upload Studio build diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: sanity-studio-build-diagnostics
           path: |
+            studio/sanity-studio-check.log
             studio/dist
             studio/package-lock.json
           retention-days: 3
