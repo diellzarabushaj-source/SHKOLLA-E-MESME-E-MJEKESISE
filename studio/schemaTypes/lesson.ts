@@ -1,3 +1,4 @@
+import type {ComponentType} from 'react'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {PortableTextImagePasteInput} from '../components/portable-text-image-paste-input'
 
@@ -39,7 +40,9 @@ export const lesson = defineType({
       description: 'Shkruaj tekstin dhe ngjit fotografi direkt me Ctrl/⌘+V. Butoni normal për Insert image mbetet i disponueshëm.',
       type: 'array',
       components: {
-        input: PortableTextImagePasteInput,
+        // Sanity's mixed block+image array inference currently resolves the form input
+        // as a primitive-array component. The runtime component is PortableTextInputProps.
+        input: PortableTextImagePasteInput as unknown as ComponentType<any>,
       },
       of: [
         defineArrayMember({
