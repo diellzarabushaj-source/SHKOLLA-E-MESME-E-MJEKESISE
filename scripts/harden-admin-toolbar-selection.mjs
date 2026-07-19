@@ -15,9 +15,21 @@ function replaceRequired(label, before, after) {
 }
 
 replaceRequired(
+  "layout effect import",
+  `  useEffect,\n  useMemo,`,
+  `  useEffect,\n  useLayoutEffect,\n  useMemo,`,
+);
+
+replaceRequired(
   "selection ref",
   `  const editorRef = useRef<HTMLDivElement>(null);\n  const [currentLesson, setCurrentLesson]`,
   `  const editorRef = useRef<HTMLDivElement>(null);\n  const savedSelectionRef = useRef<Range | null>(null);\n  const [currentLesson, setCurrentLesson]`,
+);
+
+replaceRequired(
+  "imperative editor initialization",
+  `  const initialHtml = useMemo(() => portableToHtml(sourceBody), [sourceBody, editorVersion]);\n\n  async function readLatestFromSanity`,
+  `  const initialHtml = useMemo(() => portableToHtml(sourceBody), [sourceBody, editorVersion]);\n\n  // Initialize the editable document only when it opens or receives a fresh Sanity version.\n  // React must not rewrite innerHTML after every keystroke because that moves the caret.\n  useLayoutEffect(() => {\n    if (!editing || !editorRef.current) return;\n    editorRef.current.innerHTML = initialHtml;\n    savedSelectionRef.current = null;\n  }, [editing, editorVersion, initialHtml]);\n\n  async function readLatestFromSanity`,
 );
 
 replaceRequired(
@@ -28,9 +40,9 @@ replaceRequired(
 
 replaceRequired(
   "selection event capture",
-  `          onInput={() => {\n            setDirty(true);\n            setNotice(\"\");\n            setError(\"\");\n          }}\n          onPaste={onPaste}`,
+  `          dangerouslySetInnerHTML={{ __html: initialHtml }}\n          onInput={() => {\n            setDirty(true);\n            setNotice(\"\");\n            setError(\"\");\n          }}\n          onPaste={onPaste}`,
   `          onInput={() => {\n            rememberEditorSelection();\n            setDirty(true);\n            setNotice(\"\");\n            setError(\"\");\n          }}\n          onKeyUp={rememberEditorSelection}\n          onMouseUp={rememberEditorSelection}\n          onSelect={rememberEditorSelection}\n          onPaste={onPaste}`,
 );
 
 writeFileSync(editorPath, source);
-console.log("Installed selection-safe administrator toolbar formatting.");
+console.log("Installed caret-stable, selection-safe administrator toolbar formatting.");
