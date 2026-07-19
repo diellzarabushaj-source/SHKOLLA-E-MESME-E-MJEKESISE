@@ -1,0 +1,26 @@
+{
+  "name": "shkolla-mjekesise-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "typecheck": "tsc --noEmit",
+    "audit": "node scripts/audit-image-paste.mjs",
+    "check": "npm run typecheck && npm run audit && npm run build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/ui": "3.3.5",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "sanity": "6.5.0",
+    "styled-components": "^6.1.19"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}
