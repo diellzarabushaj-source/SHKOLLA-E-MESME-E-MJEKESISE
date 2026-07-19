@@ -15,9 +15,9 @@ export const auth = createNeonAuth({
   baseUrl,
   cookies: {
     secret: cookieSecret,
-    // Authentication controls in the shared header must reflect sign-in,
-    // sign-up, Google OAuth and sign-out on the very next request.
-    sessionDataTtl: 0,
+    // Neon Auth requires a positive TTL. One second avoids stale header state,
+    // while AuthControls also follows the live client session immediately.
+    sessionDataTtl: 1,
   },
   logLevel: "warn",
 });
