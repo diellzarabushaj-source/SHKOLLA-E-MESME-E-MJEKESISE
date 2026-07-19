@@ -32,7 +32,7 @@ requireAll("Caret-stable editor installer", installer, [
   "savedSelectionRef",
   "getEditorSelectionRange",
   "rememberEditorSelection",
-  'document.execCommand("styleWithCSS", false, "false")',
+  "styleWithCSS",
   "onMouseUp={rememberEditorSelection}",
 ]);
 requireAll("Browser formatting audit", browserAudit, [
