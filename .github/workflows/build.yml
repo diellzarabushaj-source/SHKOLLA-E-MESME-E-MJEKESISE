@@ -25,7 +25,18 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npm run build
+      - name: Build application
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-check.log
+      - name: Upload build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-check-diagnostics
+          path: build-check.log
+          retention-days: 3
       - name: Audit routes and navigation
         run: npm run audit:navigation
       - name: Audit app configuration and smoothness
