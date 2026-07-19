@@ -1,66 +1,33 @@
 import {notFound} from "next/navigation";
-import LessonLearningExperience from "../LessonLearningExperience";
-import MarkdownLessonBlock from "../MarkdownLessonContent";
+import {type PortableTextComponents} from "next-sanity";
+import LessonContentRenderer from "../LessonContentRenderer";
+import PerfectLessonLearningExperience from "../PerfectLessonLearningExperience";
 
 export const dynamic = "force-dynamic";
 
-const blocks = [
-  {
-    _key: "audit-section",
-    style: "normal",
-    text: "SISTEMI I ENËVE",
-  },
-  {
-    _key: "audit-subsection",
-    style: "normal",
-    text: "3.6. Arteriet",
-  },
-  {
-    _key: "audit-letter-heading",
-    style: "normal",
-    text: "A. Qarkullimi arterial",
-  },
-  {
-    _key: "audit-parenthesized-heading",
-    style: "normal",
-    text: "(a) Shtresa e brendshme",
-  },
-  {
-    _key: "audit-detail",
-    style: "normal",
-    text: "3.6.1. Ndërtimi i murit arterial",
-  },
-  {
-    _key: "audit-paragraph",
-    style: "normal",
-    text: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
-  },
-  {
-    _key: "audit-false-heading",
-    style: "normal",
-    text: "Arteriet dhe venat lidhen përmes kapilarëve",
-  },
-  {
-    _key: "audit-numbered-sentence",
-    style: "normal",
-    text: "1. Arteriet përçojnë gjakun nga zemra kah periferia",
-  },
-  {
-    _key: "audit-callout",
-    style: "normal",
-    text: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
-  },
-  {
-    _key: "audit-label-heading",
-    style: "normal",
-    text: "Metodat e studimit anatomik",
-  },
-  {
-    _key: "audit-sanity-heading",
-    style: "h3",
-    text: "Nëntitull i caktuar drejtpërdrejt në Sanity",
-  },
+const sourceBlocks = [
+  ["audit-section", "normal", "SISTEMI I ENËVE"],
+  ["audit-letter-heading", "normal", "A. Qarkullimi arterial"],
+  ["audit-parenthesized-heading", "normal", "(a) Shtresa e Brendshme"],
+  ["audit-subsection", "normal", "3.6. Arteriet"],
+  ["audit-detail", "normal", "3.6.1. Ndërtimi i murit arterial"],
+  ["audit-paragraph", "normal", "Arteriet përçojnë gjakun nga zemra kah periferia e trupit."],
+  ["audit-false-heading", "normal", "Arteriet dhe venat lidhen përmes kapilarëve"],
+  ["audit-numbered-sentence", "normal", "1. Arteriet përçojnë gjakun nga zemra kah periferia"],
+  ["audit-callout", "normal", "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar."],
+  ["audit-label-heading", "normal", "Metodat e studimit anatomik"],
+  ["audit-sanity-heading", "h3", "Nëntitull i caktuar drejtpërdrejt në Sanity"],
 ] as const;
+
+const body = sourceBlocks.map(([key, style, text]) => ({
+  _key: key,
+  _type: "block",
+  style,
+  markDefs: [],
+  children: [{_key: `${key}-span`, _type: "span", marks: [], text}],
+}));
+
+const components: PortableTextComponents = {};
 
 export default function LearningExperienceAuditPage() {
   if (process.env.E2E_LEARNING_EXPERIENCE_AUDIT !== "1") notFound();
@@ -72,27 +39,16 @@ export default function LearningExperienceAuditPage() {
         <h1 data-audit-lesson-title>1.1. Hierarkia automatike e mësimit</h1>
       </header>
 
-      <LessonLearningExperience
+      <PerfectLessonLearningExperience
         lessonId="learning-experience-audit-lesson"
         lessonTitle="1.1. Hierarkia automatike e mësimit"
         flashcardCount={6}
+        contentRevision="audit-revision-current"
       >
-        <article data-learning-audit-article>
-          {blocks.map((block, index) => (
-            <div key={block._key} data-audit-source-key={block._key} style={{minHeight: index < blocks.length - 1 ? 118 : undefined}}>
-              <MarkdownLessonBlock
-                value={{
-                  _key: block._key,
-                  style: block.style,
-                  children: [{text: block.text}],
-                }}
-              >
-                {block.text}
-              </MarkdownLessonBlock>
-            </div>
-          ))}
+        <article data-learning-audit-article style={{display: "grid", gap: 96}}>
+          <LessonContentRenderer body={body} components={components} />
         </article>
-      </LessonLearningExperience>
+      </PerfectLessonLearningExperience>
     </main>
   );
 }
