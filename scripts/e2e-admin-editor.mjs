@@ -118,7 +118,11 @@ try {
   auditPage = page;
   page.on("pageerror", (error) => consoleErrors.push(error.message));
   page.on("console", (message) => {
-    if (message.type() === "error") consoleErrors.push(message.text());
+    if (message.type() !== "error") return;
+    const text = message.text();
+    // The second PATCH intentionally returns 409 to verify revision-conflict recovery.
+    if (/Failed to load resource:.*status of 409/i.test(text)) return;
+    consoleErrors.push(text);
   });
 
   const boundaryResponse = await page.request.get(`${baseURL}/api/admin/lessons/admin-boundary-check`);
