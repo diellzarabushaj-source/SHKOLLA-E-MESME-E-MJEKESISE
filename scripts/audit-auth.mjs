@@ -51,7 +51,7 @@ requireText("Safe return paths", redirectHelper, [
 
 requireText("Fresh server sessions", serverAuth, [
   "createNeonAuth",
-  "sessionDataTtl: 0",
+  "sessionDataTtl: 1",
   "NEON_AUTH_COOKIE_SECRET",
 ]);
 
@@ -134,7 +134,7 @@ requireText("Password reset completion", resetForm, [
   "authClient.resetPassword",
   "newPassword: password",
   "token",
-  'reset=1',
+  "reset=1",
 ]);
 requireText("Password recovery pages", forgotPage + resetPage, [
   'robots: { index: false, follow: false }',
