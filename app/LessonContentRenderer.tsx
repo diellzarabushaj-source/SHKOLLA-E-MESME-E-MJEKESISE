@@ -39,14 +39,22 @@ type PlannedNode = PortableNode & {
   _learningHeading?: PlannedHeading;
 };
 
+type RenderableBlock = {
+  _key?: string;
+  _type?: string;
+  style?: string;
+  children?: PortableSpan[];
+  _learningHeading?: PlannedHeading;
+};
+
 type Props = {
   body?: PortableNode[];
   components: PortableTextComponents;
 };
 
 type BlockRendererProps = {
-  children: ReactNode;
-  value: PlannedNode;
+  children?: ReactNode;
+  value: RenderableBlock;
 };
 
 const NUMBERED_HEADING = /^(\d+(?:\s*\.\s*\d+){0,5})\s*[.)]?\s+(.+?)\s*$/;
@@ -76,7 +84,7 @@ const LOWERCASE_TITLE_WORDS = new Set([
   "si",
 ]);
 
-function sourceText(value: PortableNode): string {
+function sourceText(value: {children?: PortableSpan[]}): string {
   return (value.children || []).map((child) => typeof child.text === "string" ? child.text : "").join("").replace(/\r\n?/g, "\n");
 }
 
