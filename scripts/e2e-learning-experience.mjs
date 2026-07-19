@@ -84,7 +84,7 @@ try {
   await exactText(page.locator('h4[data-learning-source-key="audit-letter-heading"][data-heading-source="letter"]'), expected.letterHeading, "Letter H4");
   await exactText(page.locator('h4[data-learning-source-key="audit-parenthesized-heading"][data-heading-source="parenthesized"]'), expected.parenthesizedHeading, "Parenthesized H4");
   await exactText(page.locator('h4[data-learning-source-key="audit-detail"][data-heading-source="numbered"]'), expected.detail, "Automatic detail H4");
-  await exactText(page.locator('h4[data-learning-source-key="audit-label-heading"][data-heading-source="label"]'), expected.labelHeading, "Learning-label H4");
+  await exactText(page.locator('h4[data-learning-source-key="audit-label-heading"]'), expected.labelHeading, "Inferred medical H4");
   await exactText(page.locator('h3[data-learning-source-key="audit-sanity-heading"][data-heading-source="sanity"]'), expected.sanityHeading, "Explicit Sanity H3");
   await exactText(page.locator('h2[data-learning-source-key="audit-sanity-h1"][data-heading-source="sanity"]'), expected.sanityH1, "Demoted Sanity body H1");
   await exactText(page.locator('h2[data-learning-source-key="audit-top-letter"][data-heading-source="letter"]'), expected.topLetter, "Top-level letter H2");
