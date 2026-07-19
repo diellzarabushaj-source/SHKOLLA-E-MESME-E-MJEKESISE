@@ -51,6 +51,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/e2e-admin-editor.mjs 2>&1 | tee admin-editor-e2e.log
+      - name: Test direct image paste
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/e2e-admin-image-paste.mjs 2>&1 | tee admin-image-paste-e2e.log
       - name: Stop audited application
         if: always()
         shell: bash
@@ -66,5 +71,7 @@ jobs:
           path: |
             admin-audit-server.log
             admin-editor-e2e.log
+            admin-image-paste-e2e.log
             artifacts/admin-editor-audit
+            artifacts/admin-image-paste-audit
           retention-days: 7
