@@ -21,11 +21,13 @@ export default function AuthControls({ username: initialUsername }: { username: 
     );
   }
 
+  const label = username.startsWith("@") ? username : `@${username}`;
+
   return (
     <div className={`${styles.controls} ${styles.account}`} aria-label="Llogaria e kyçur">
       <span className={styles.user} title={username}>
         <span className={styles.dot} aria-hidden="true" />
-        {username.startsWith("@")} ? username : `@${username}`}
+        {label}
       </span>
       <form action={signOutAction} className={styles.logoutForm}>
         <button className={styles.logout} type="submit" aria-label="Dil nga llogaria">Dil</button>
