@@ -43,6 +43,7 @@ type RenderableBlock = {
   _key?: string;
   _type?: string;
   style?: string;
+  listItem?: string;
   children?: PortableSpan[];
   _learningHeading?: PlannedHeading;
 };
