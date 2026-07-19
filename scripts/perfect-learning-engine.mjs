@@ -143,7 +143,7 @@ if (!renderer.includes(rendererMarker)) {
 }
 
 function LearningBlock({children, value}: BlockRendererProps) {
-  if (value.listItem) return <>{children}</>;
+  if ((value as PlannedNode & {listItem?: string}).listItem) return <>{children}</>;
   const planned = value._learningHeading;
   if (planned) {
     const Tag = planned.level === 2 ? "h2" : planned.level === 3 ? "h3" : "h4";
