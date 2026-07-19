@@ -4,10 +4,14 @@ import { chromium } from "playwright";
 const baseURL = (process.env.E2E_BASE_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
 const outputDir = "artifacts/admin-editor-audit";
 const marker = " Kontroll administratori.";
+const pastedImageUrl = "https://cdn.sanity.io/images/u5d5zn7n/schoolv2/audit-pasted-image.png";
+const pastedImageId = "image-auditasset-1x1-png";
+const onePixelPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 mkdirSync(outputDir, { recursive: true });
 
 let revision = "audit-revision-1";
 let patchCount = 0;
+let imageUploadCount = 0;
 let savedPayload = null;
 let currentBody = [
   {
@@ -32,7 +36,9 @@ function lesson() {
     _id: "admin-audit-lesson",
     _rev: revision,
     title: "Mësimi provues i administratorit",
-    body: currentBody,
+    body: currentBody.map((node) => node._type === "image"
+      ? { ...node, assetUrl: pastedImageUrl }
+      : node),
   };
 }
 
@@ -82,6 +88,18 @@ async function selectText(page, text) {
   }, text);
 }
 
+async function pasteTestImage(editor) {
+  await editor.evaluate((element, pngBase64) => {
+    const bytes = Uint8Array.from(atob(pngBase64), (character) => character.charCodeAt(0));
+    const file = new File([bytes], "paste-test.png", { type: "image/png", lastModified: Date.now() });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    const event = new Event("paste", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "clipboardData", { value: dataTransfer });
+    element.dispatchEvent(event);
+  }, onePixelPng);
+}
+
 const browser = await chromium.launch({ headless: true });
 let auditPage = null;
 try {
@@ -127,6 +145,33 @@ try {
 
   const boundaryResponse = await page.request.get(`${baseURL}/api/admin/lessons/admin-boundary-check`);
   assert([401, 403].includes(boundaryResponse.status()), `Unauthenticated admin API returned ${boundaryResponse.status()}`);
+  const imageBoundaryResponse = await page.request.post(`${baseURL}/api/admin/assets/images`);
+  assert([401, 403].includes(imageBoundaryResponse.status()), `Unauthenticated image upload returned ${imageBoundaryResponse.status()}`);
+
+  await context.route("**/api/admin/assets/images", async (route) => {
+    const request = route.request();
+    assert(request.method() === "POST", `Image upload used ${request.method()} instead of POST`);
+    assert((request.headers()["content-type"] || "").includes("multipart/form-data"), "Image upload was not multipart/form-data");
+    imageUploadCount += 1;
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        asset: {
+          _id: pastedImageId,
+          url: pastedImageUrl,
+          originalFilename: "paste-test.png",
+          mimeType: "image/png",
+          size: 68,
+          metadata: { dimensions: { width: 1, height: 1, aspectRatio: 1 } },
+        },
+      }),
+    });
+  });
+  await context.route(pastedImageUrl, async (route) => {
+    await route.fulfill({ status: 200, contentType: "image/png", body: Buffer.from(onePixelPng, "base64") });
+  });
 
   await page.goto(`${baseURL}/admin-audit`, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await page.getByRole("heading", { name: "Auditimi i editorit të administratorit" }).waitFor();
@@ -159,6 +204,15 @@ try {
   }, marker.trim());
   assert(formatState.bold, `Bold formatting was not applied: ${formatState.html}`);
 
+  await placeCaretAtEnd(page);
+  await pasteTestImage(editor);
+  await editor.locator("[data-image-upload-key]").waitFor({ state: "visible", timeout: 5_000 });
+  assert(await saveButton.isDisabled(), "Save stayed enabled while a pasted image was uploading");
+  await editor.locator('[data-pasted-sanity-image="true"]').waitFor({ state: "visible", timeout: 10_000 });
+  await page.getByText("Fotoja u ngarkua. Ruaje mësimin për ta publikuar.").waitFor({ state: "visible", timeout: 5_000 });
+  assert(imageUploadCount === 1, `Expected one pasted image upload, received ${imageUploadCount}`);
+  assert(await saveButton.isEnabled(), "Save did not enable after pasted image upload");
+
   await saveButton.click();
   await page.getByText("Teksti u ruajt dhe u publikua në Sanity.").waitFor({ state: "visible", timeout: 10_000 });
   assert(savedPayload?.revision === "audit-revision-1", "Editor did not send the loaded revision");
@@ -166,6 +220,8 @@ try {
   const serialized = JSON.stringify(savedPayload?.body || []);
   assert(serialized.includes("Kontroll administratori."), "Portable Text payload lost typed content");
   assert(serialized.includes('"strong"'), "Portable Text payload lost bold formatting");
+  assert(serialized.includes('"_type":"image"'), "Portable Text payload lost pasted image block");
+  assert(serialized.includes('"_ref":"image-auditasset-1x1-png"'), "Portable Text payload lost pasted Sanity asset reference");
   assert((await page.locator("[data-admin-audit-revision]").textContent()) === "audit-revision-2", "Parent view did not receive the saved revision");
 
   await placeCaretAtEnd(page);
@@ -177,13 +233,22 @@ try {
   await page.getByRole("button", { name: "Rifresko nga Sanity" }).click();
   await page.getByText("U ngarkua versioni më i ri nga Sanity.").waitFor({ state: "visible", timeout: 10_000 });
   assert(await saveButton.isDisabled(), "Refresh did not clear the dirty state");
+  assert(await editor.locator("img").count() === 1, "Saved pasted image did not survive the Sanity refresh");
 
   await page.screenshot({ path: `${outputDir}/admin-editor-audit.png`, fullPage: true });
   assert(consoleErrors.length === 0, `Admin editor emitted browser errors: ${consoleErrors.join(" | ")}`);
 
   writeFileSync(
     `${outputDir}/report.json`,
-    JSON.stringify({ boundaryStatus: boundaryResponse.status(), patchCount, revision, savedPayload, consoleErrors }, null, 2),
+    JSON.stringify({
+      boundaryStatus: boundaryResponse.status(),
+      imageBoundaryStatus: imageBoundaryResponse.status(),
+      patchCount,
+      imageUploadCount,
+      revision,
+      savedPayload,
+      consoleErrors,
+    }, null, 2),
   );
 
   await context.close();
@@ -196,4 +261,4 @@ try {
   await browser.close();
 }
 
-console.log("Administrator browser audit passed access control, editing, formatting, Portable Text save, revision conflict and refresh checks.");
+console.log("Administrator browser audit passed access control, rich-text formatting, direct clipboard image upload, Portable Text image save, revision conflict and refresh checks.");
