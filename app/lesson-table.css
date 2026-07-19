@@ -1,0 +1,130 @@
+[data-lesson-table] {
+  margin: 30px 0;
+}
+
+[data-lesson-table-scroll] {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--text) 7%, transparent);
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-lesson-table-scroll]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  outline-offset: 3px;
+}
+
+[data-lesson-table] table {
+  width: 100%;
+  min-width: max(100%, 520px);
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+[data-lesson-table] caption {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--primary) 7%, var(--panel));
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 900;
+  text-align: left;
+}
+
+[data-lesson-table] th,
+[data-lesson-table] td {
+  min-width: 145px;
+  padding: 13px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+[data-lesson-table] th:last-child,
+[data-lesson-table] td:last-child {
+  border-right: 0;
+}
+
+[data-lesson-table] tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+[data-lesson-table] thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: color-mix(in srgb, var(--primary) 13%, var(--panel));
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+[data-lesson-table] tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--bg-soft) 62%, transparent);
+}
+
+[data-admin-table-preview] {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg-soft);
+}
+
+[data-admin-table-preview] > figcaption {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+[data-admin-table-preview] > figcaption span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+[data-admin-table-preview] [data-lesson-table] {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  [data-lesson-table] {
+    margin: 24px -4px;
+  }
+
+  [data-lesson-table-scroll] {
+    border-radius: 15px;
+  }
+
+  [data-lesson-table] table {
+    font-size: 14px;
+  }
+
+  [data-lesson-table] th,
+  [data-lesson-table] td {
+    min-width: 132px;
+    padding: 11px 13px;
+  }
+
+  [data-lesson-table] caption {
+    padding: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-lesson-table-scroll] {
+    scroll-behavior: auto;
+  }
+}
