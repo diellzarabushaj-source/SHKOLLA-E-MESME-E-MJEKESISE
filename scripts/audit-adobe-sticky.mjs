@@ -13,11 +13,12 @@ const packageJson = JSON.parse(read("package.json") || "{}");
 
 requireAll("Sticky note component", component, [
   "adobe-sticky-popover-v1",
+  "pdf-comment-popover-v2",
   "data-adobe-note-popover",
   "data-adobe-note-colors",
   "openNoteId",
   "popoverText",
-  'aria-label="Mbyll sticky note"',
+  'aria-label="Mbyll komentin"',
 ]);
 requireAll("Sticky note installer", installer, [
   "adobe-sticky-popover-v1",
@@ -38,6 +39,9 @@ const prepare = String(packageJson.scripts?.["prepare:portal"] || "");
 if (!prepare.includes("add-adobe-sticky-popover.mjs")) failures.push("prepare:portal nuk e instalon sticky popover-in.");
 if (prepare.indexOf("add-adobe-sticky-popover.mjs") <= prepare.indexOf("add-remove-highlight-option.mjs")) {
   failures.push("Sticky popover duhet të instalohet pas opsionit None.");
+}
+if (prepare.indexOf("polish-pdf-comment-popover.mjs") <= prepare.indexOf("add-adobe-sticky-popover.mjs")) {
+  failures.push("PDF comment polish duhet të ekzekutohet pas sticky popover-it bazë.");
 }
 
 if (failures.length) {

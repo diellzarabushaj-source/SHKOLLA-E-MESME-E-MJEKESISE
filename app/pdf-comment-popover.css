@@ -1,0 +1,335 @@
+[data-pdf-comment-pin] {
+  isolation: isolate;
+  width: 34px !important;
+  height: 34px !important;
+  border: 2px solid color-mix(in srgb, white 75%, transparent) !important;
+  border-radius: 10px 10px 10px 3px !important;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.28), 0 0 0 1px rgb(0 0 0 / 0.1) !important;
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+[data-pdf-comment-pin]::after {
+  position: absolute;
+  right: 3px;
+  bottom: -5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 0 0 2px 0;
+  background: inherit;
+  content: "";
+  transform: skewY(-35deg) rotate(15deg);
+  z-index: -1;
+}
+
+[data-pdf-comment-pin] > span {
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  transform: rotate(-2deg);
+}
+
+[data-pdf-comment-pin]:hover,
+[data-pdf-comment-pin]:focus-visible,
+[data-pdf-comment-pin][data-active="true"] {
+  filter: saturate(1.08) brightness(1.04);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 0.34), 0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+[data-pdf-comment-popover] {
+  z-index: 44;
+  width: min(370px, calc(100vw - 28px));
+  max-height: min(600px, calc(100vh - 100px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+  border-top-width: 5px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--panel) 98%, transparent);
+  box-shadow: 0 28px 80px rgb(0 0 0 / 0.38), 0 2px 8px rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(22px);
+}
+
+[data-pdf-comment-popover]::after {
+  top: 25px;
+}
+
+[data-pdf-comment-header] {
+  min-height: 68px;
+  padding: 14px 14px 12px;
+  align-items: center !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+  background: color-mix(in srgb, var(--bg-soft) 72%, transparent);
+}
+
+[data-pdf-comment-author] {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-pdf-comment-avatar] {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: 11px 11px 11px 4px;
+  background: color-mix(in srgb, var(--primary) 16%, var(--panel));
+  color: var(--primary);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  font-size: 15px;
+}
+
+[data-pdf-comment-author] > div {
+  display: grid;
+  gap: 2px;
+}
+
+[data-pdf-comment-author] strong {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+[data-pdf-comment-author] time {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+[data-pdf-comment-header] > button {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 11px !important;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+[data-pdf-comment-header] > button:hover {
+  background: color-mix(in srgb, #ef476f 12%, var(--bg-soft));
+  color: #ef476f;
+  transform: scale(1.04);
+}
+
+[data-pdf-comment-popover] > blockquote {
+  max-height: 92px;
+  margin: 14px 14px 10px;
+  padding: 10px 12px;
+  overflow: auto;
+  border-left-width: 3px;
+  border-radius: 0 11px 11px 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+[data-pdf-comment-body] {
+  width: calc(100% - 28px);
+  min-height: 92px;
+  margin: 0 14px;
+  padding: 13px 14px;
+  display: block;
+  overflow: auto;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--bg-soft) 78%, transparent);
+  color: var(--text);
+  cursor: text;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+  transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+[data-pdf-comment-body]:hover,
+[data-pdf-comment-body]:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--line));
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-soft));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+  outline: none;
+}
+
+[data-pdf-comment-body] em {
+  color: var(--muted);
+  font-style: normal;
+}
+
+[data-pdf-comment-editor] {
+  margin: 0 14px;
+}
+
+[data-pdf-comment-editor] textarea {
+  min-height: 130px !important;
+  margin: 0;
+  resize: vertical;
+}
+
+[data-pdf-comment-editor-meta] {
+  min-height: 26px;
+  padding: 5px 2px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+[data-pdf-comment-editor-meta] span:first-child {
+  color: #f59e0b;
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors] {
+  margin: 12px 14px 0;
+  padding-top: 11px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors]::before {
+  margin-right: 3px;
+  color: var(--muted);
+  content: "Ngjyra";
+  font-size: 10px;
+  font-weight: 800;
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors] button {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors] button:hover,
+[data-pdf-comment-popover] [data-adobe-note-colors] button:focus-visible {
+  transform: scale(1.08);
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors] button[class] {
+  box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--primary);
+}
+
+[data-pdf-comment-popover] [data-adobe-note-colors] button[class]::after {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #0b1726;
+  content: "✓";
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+[data-pdf-comment-popover] > footer {
+  min-height: 66px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+  background: color-mix(in srgb, var(--bg-soft) 58%, transparent);
+}
+
+[data-pdf-comment-actions] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-pdf-comment-popover] > footer button {
+  min-width: 74px;
+  min-height: 42px;
+}
+
+[data-pdf-comment-edit] {
+  border-color: transparent !important;
+  background: var(--primary) !important;
+  color: white !important;
+}
+
+[data-pdf-comment-popover] [data-adobe-note-delete] {
+  min-width: 58px;
+  padding-inline: 10px;
+  border-color: transparent;
+  background: transparent;
+}
+
+@media (max-width: 700px), (pointer: coarse) {
+  [data-pdf-comment-pin] {
+    width: 36px !important;
+    height: 36px !important;
+    touch-action: manipulation;
+  }
+
+  [data-pdf-comment-popover] {
+    right: max(10px, env(safe-area-inset-right));
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    left: max(10px, env(safe-area-inset-left)) !important;
+    width: auto;
+    max-height: min(72dvh, 620px);
+    border-radius: 22px;
+    box-shadow: 0 22px 70px rgb(0 0 0 / 0.45), 0 0 0 9999px rgb(0 0 0 / 0.16);
+  }
+
+  [data-pdf-comment-header] {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-height: 70px;
+  }
+
+  [data-pdf-comment-popover] > blockquote {
+    max-height: 76px;
+  }
+
+  [data-pdf-comment-body] {
+    min-height: 118px;
+    font-size: 15px;
+  }
+
+  [data-pdf-comment-editor] textarea {
+    min-height: 156px !important;
+    font-size: 16px;
+  }
+
+  [data-pdf-comment-popover] [data-adobe-note-colors] button {
+    width: 34px;
+    height: 34px;
+  }
+
+  [data-pdf-comment-popover] > footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    min-height: 72px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  [data-pdf-comment-popover] > footer button {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 380px) {
+  [data-pdf-comment-popover] > footer {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  [data-pdf-comment-actions],
+  [data-pdf-comment-actions] button,
+  [data-pdf-comment-popover] > footer > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pdf-comment-pin],
+  [data-pdf-comment-popover] button {
+    transition: none;
+  }
+}

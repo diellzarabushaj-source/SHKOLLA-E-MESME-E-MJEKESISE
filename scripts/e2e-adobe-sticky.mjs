@@ -57,9 +57,9 @@ async function selectPhrase(page, phrase) {
 
 const browser = await chromium.launch({ headless: true });
 try {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
-  await installApi(context);
-  const page = await context.newPage();
+  const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
+  await installApi(mobileContext);
+  const page = await mobileContext.newPage();
   await page.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
 
   await selectPhrase(page, "Membrana kontrollon shkëmbimin");
@@ -69,40 +69,75 @@ try {
   await composer.getByRole("button", { name: "Ruaj sticky note" }).click();
   await page.getByText("Sticky note u ruajt privatisht.").waitFor();
 
-  const pin = page.getByRole("button", { name: /Hape sticky note:/ });
-  await pin.click();
-  const popover = page.locator("[data-adobe-note-popover]");
+  const popover = page.locator("[data-pdf-comment-popover]");
   await popover.waitFor({ state: "visible", timeout: 10_000 });
-  assert(await pin.getAttribute("aria-expanded") === "true", "Sticky note pin did not expose expanded state");
+  const pin = page.locator("[data-pdf-comment-pin]");
+  assert(await pin.getAttribute("aria-expanded") === "true", "PDF comment pin did not expose expanded state");
 
-  const box = await popover.boundingBox();
-  const viewport = page.viewportSize();
-  assert(box && viewport, "Sticky note popover geometry missing");
-  assert(box.x >= 0 && box.x + box.width <= viewport.width, "Sticky note popover overflows mobile width");
-  assert(box.y >= 0 && box.y + box.height <= viewport.height, "Sticky note popover overflows mobile height");
+  const mobileBox = await popover.boundingBox();
+  const mobileViewport = page.viewportSize();
+  assert(mobileBox && mobileViewport, "PDF comment mobile geometry missing");
+  assert(mobileBox.x >= 0 && mobileBox.x + mobileBox.width <= mobileViewport.width, "PDF comment overflows mobile width");
+  assert(mobileBox.y >= 0 && mobileBox.y + mobileBox.height <= mobileViewport.height, "PDF comment overflows mobile height");
 
-  const editor = popover.getByRole("textbox");
+  assert(await popover.getByRole("textbox").count() === 0, "PDF comment must be read-only before editing");
+  await popover.getByText("Shënimi fillestar për këtë pjesë.").waitFor();
+  await popover.getByRole("button", { name: "Ndrysho komentin" }).click();
+  const editor = popover.getByRole("textbox", { name: "Teksti i komentit" });
+  await editor.waitFor({ state: "visible" });
+  assert(await editor.inputValue() === "Shënimi fillestar për këtë pjesë.", "Editor did not load the saved comment");
   await editor.fill("Shënim i ndryshuar direkt pranë tekstit.");
   await popover.getByRole("button", { name: "E kaltër" }).click();
   await popover.getByRole("button", { name: "Ruaj" }).click();
   await page.getByText("Shënimi u përditësua.").waitFor();
-  assert(records[0]?.noteText === "Shënim i ndryshuar direkt pranë tekstit.", "Popover did not persist edited note text");
-  assert(records[0]?.color === "blue", "Popover did not persist selected note color");
+  await editor.waitFor({ state: "detached", timeout: 10_000 });
+  await popover.getByText("Shënim i ndryshuar direkt pranë tekstit.").waitFor();
+  assert(records[0]?.noteText === "Shënim i ndryshuar direkt pranë tekstit.", "PDF comment did not persist edited text");
+  assert(records[0]?.color === "blue", "PDF comment did not persist selected color");
 
-  await popover.getByRole("button", { name: "Mbyll sticky note" }).click();
-  await popover.waitFor({ state: "detached" });
+  await page.locator("[data-audit-paragraph]").click({ position: { x: 8, y: 8 } });
+  await popover.waitFor({ state: "detached", timeout: 10_000 });
   await pin.click();
   await popover.waitFor({ state: "visible" });
-  assert(await popover.getByRole("textbox").inputValue() === "Shënim i ndryshuar direkt pranë tekstit.", "Reopened popover did not show saved text");
+  await popover.getByRole("button", { name: "Ndrysho komentin" }).click();
+  await popover.getByRole("textbox", { name: "Teksti i komentit" }).fill("Ndryshim që nuk duhet humbur nga prekja jashtë.");
+  await page.locator("[data-audit-paragraph]").click({ position: { x: 8, y: 8 } });
+  await popover.waitFor({ state: "visible" });
+  await popover.getByRole("button", { name: "Anulo" }).click();
+  await popover.getByText("Shënim i ndryshuar direkt pranë tekstit.").waitFor();
 
+  await popover.getByRole("button", { name: "Mbyll komentin" }).click();
+  await popover.waitFor({ state: "detached" });
+
+  const desktopContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "block" });
+  await installApi(desktopContext);
+  const desktopPage = await desktopContext.newPage();
+  await desktopPage.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
+  const desktopPin = desktopPage.locator("[data-pdf-comment-pin]");
+  await desktopPin.waitFor({ state: "visible", timeout: 10_000 });
+  await desktopPin.click();
+  const desktopPopover = desktopPage.locator("[data-pdf-comment-popover]");
+  await desktopPopover.waitFor({ state: "visible", timeout: 10_000 });
+  const desktopBox = await desktopPopover.boundingBox();
+  const desktopPinBox = await desktopPin.boundingBox();
+  const desktopViewport = desktopPage.viewportSize();
+  assert(desktopBox && desktopPinBox && desktopViewport, "PDF comment desktop geometry missing");
+  assert(desktopBox.x >= 0 && desktopBox.x + desktopBox.width <= desktopViewport.width, "PDF comment overflows desktop width");
+  assert(desktopBox.y >= 0 && desktopBox.y + desktopBox.height <= desktopViewport.height, "PDF comment overflows desktop height");
+  assert(desktopBox.x < desktopPinBox.x, "Desktop PDF comment is not anchored beside its pin");
+  await desktopPage.getByText("Shënim i ndryshuar direkt pranë tekstit.").waitFor();
+  await desktopContext.close();
+
+  await pin.click();
+  await popover.waitFor({ state: "visible" });
   page.once("dialog", (dialog) => dialog.accept());
   await popover.getByRole("button", { name: "Fshi" }).click();
   await popover.waitFor({ state: "detached", timeout: 10_000 });
-  assert(records.length === 0, "Sticky note deletion from contextual popover failed");
+  assert(records.length === 0, "PDF comment deletion from contextual card failed");
 
-  await context.close();
+  await mobileContext.close();
 } finally {
   await browser.close();
 }
 
-console.log("Adobe-style sticky note popover passed mobile open, edit, recolor, reopen and delete tests.");
+console.log("PDF-style comment card passed auto-open, read-only, edit, cancel, recolor, desktop anchoring, reopen and delete tests.");
