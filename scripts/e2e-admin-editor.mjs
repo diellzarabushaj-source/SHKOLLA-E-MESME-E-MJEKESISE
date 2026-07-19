@@ -45,8 +45,11 @@ async function placeCaretAtEnd(page) {
     const target = document.querySelector('[contenteditable="true"]');
     if (!(target instanceof HTMLElement)) throw new Error("Editor missing");
     target.focus();
+
+    const editableBlocks = target.querySelectorAll("p,h2,h3,h4,blockquote,li");
+    const endTarget = editableBlocks.length ? editableBlocks.item(editableBlocks.length - 1) : target;
     const range = document.createRange();
-    range.selectNodeContents(target);
+    range.selectNodeContents(endTarget);
     range.collapse(false);
     const selection = window.getSelection();
     selection?.removeAllRanges();
@@ -80,6 +83,7 @@ async function selectText(page, text) {
 }
 
 const browser = await chromium.launch({ headless: true });
+let auditPage = null;
 try {
   const context = await browser.newContext({
     viewport: { width: 1365, height: 960 },
@@ -111,6 +115,7 @@ try {
   });
 
   const page = await context.newPage();
+  auditPage = page;
   page.on("pageerror", (error) => consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -134,8 +139,21 @@ try {
 
   await selectText(page, marker.trim());
   await page.getByTitle("Bold").click();
-  const htmlAfterFormat = await editor.evaluate((element) => element.innerHTML);
-  assert(/<strong>[^<]*Kontroll administratori\./.test(htmlAfterFormat), `Bold formatting was not applied: ${htmlAfterFormat}`);
+  const formatState = await editor.evaluate((element, needle) => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!(node.textContent || "").includes(needle)) continue;
+      const parent = node.parentElement;
+      const weight = parent ? window.getComputedStyle(parent).fontWeight : "0";
+      return {
+        html: element.innerHTML,
+        bold: weight === "bold" || weight === "bolder" || Number.parseInt(weight, 10) >= 600,
+      };
+    }
+    return { html: element.innerHTML, bold: false };
+  }, marker.trim());
+  assert(formatState.bold, `Bold formatting was not applied: ${formatState.html}`);
 
   await saveButton.click();
   await page.getByText("Teksti u ruajt dhe u publikua në Sanity.").waitFor({ state: "visible", timeout: 10_000 });
@@ -165,6 +183,11 @@ try {
   );
 
   await context.close();
+} catch (error) {
+  if (auditPage) {
+    await auditPage.screenshot({ path: `${outputDir}/admin-editor-failure.png`, fullPage: true }).catch(() => undefined);
+  }
+  throw error;
 } finally {
   await browser.close();
 }
