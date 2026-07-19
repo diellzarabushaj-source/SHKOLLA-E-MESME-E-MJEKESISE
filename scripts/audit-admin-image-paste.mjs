@@ -68,7 +68,7 @@ requireAll("Generated administrator editor", editor, [
   "replaceImageUploadPlaceholder",
   "pastedImagePortableNode",
   "uploadingImages > 0",
-  "Paste fotografinë direkt",
+  "Paste foto ose tabelë direkt",
   "data-remove-pasted-image",
   `closest('figure[data-pasted-sanity-image="true"]')`,
 ]);
