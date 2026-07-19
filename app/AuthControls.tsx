@@ -23,7 +23,7 @@ export default function AuthControls({ username: initialUsername }: { username: 
 
     try {
       const result = await authClient.signOut();
-      if (result.error) throw new Error(result.error.message || "SIGN_OUT_FAILED");
+      if (result.error) throw new Error("SIGN_OUT_FAILED");
 
       // Update the header immediately, then perform one clean navigation so
       // all server components, protected routes and session cookies agree.
