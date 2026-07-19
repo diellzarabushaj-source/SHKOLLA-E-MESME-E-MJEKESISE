@@ -32,7 +32,7 @@ import MarkdownLessonBlock from "./MarkdownLessonContent";
     `const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children, value }) => (
-      <MarkdownLessonBlock value={value}>{children}</MarkdownLessonBlock>
+      <MarkdownLessonBlock value={value as never}>{children}</MarkdownLessonBlock>
     ),
   },
   types: {`,
