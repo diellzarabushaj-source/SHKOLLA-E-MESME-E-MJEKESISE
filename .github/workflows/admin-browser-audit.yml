@@ -47,7 +47,10 @@ jobs:
           cat admin-audit-server.log
           exit 1
       - name: Test administrator editor
-        run: node scripts/e2e-admin-editor.mjs 2>&1 | tee admin-editor-e2e.log
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/e2e-admin-editor.mjs 2>&1 | tee admin-editor-e2e.log
       - name: Stop audited application
         if: always()
         shell: bash
