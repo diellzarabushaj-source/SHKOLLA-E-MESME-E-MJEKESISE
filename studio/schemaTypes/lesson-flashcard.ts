@@ -79,6 +79,7 @@ export const lessonFlashcard = defineType({
       name: 'imageSide',
       title: 'Ana e fotografisë',
       type: 'string',
+      description: 'Në flashcards e vjetra pa këtë fushë, fotografia trajtohet automatikisht si pjesë e pyetjes.',
       options: {
         list: [
           {title: 'Pyetja', value: 'front'},
@@ -88,7 +89,6 @@ export const lessonFlashcard = defineType({
         layout: 'radio',
       },
       initialValue: 'front',
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'order',
