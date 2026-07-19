@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/add-user-annotations.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs",
+    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/finalize-admin-image-paste.mjs && node scripts/add-user-annotations.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs",
     "predev": "npm run prepare:portal",
     "dev": "next dev",
     "prebuild": "npm run prepare:portal",
