@@ -15,6 +15,9 @@ export const auth = createNeonAuth({
   baseUrl,
   cookies: {
     secret: cookieSecret,
+    // Neon Auth requires a positive TTL. One second avoids stale header state,
+    // while AuthControls also follows the live client session immediately.
+    sessionDataTtl: 1,
   },
   logLevel: "warn",
 });

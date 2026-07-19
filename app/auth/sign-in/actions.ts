@@ -1,49 +1,53 @@
 "use server";
 
 import { auth } from "@/lib/auth/server";
+import { resolveCredentialEmail } from "@/lib/auth/accounts";
 import { safeReturnTo } from "@/lib/auth/redirect";
-import { normalizeUsername, USERNAME_PATTERN, usernameToEmail } from "@/lib/auth/username";
 
-export type SignInField = "username" | "password" | "form";
+export type SignInField = "identifier" | "password" | "form";
 export type SignInState = {
   error?: string;
-  username?: string;
+  identifier?: string;
   field?: SignInField;
   success?: boolean;
   returnTo?: string;
 } | null;
 
-export async function signInWithUsername(
+export async function signInWithIdentifier(
   _previousState: SignInState,
   formData: FormData,
 ): Promise<SignInState> {
-  const rawUsername = String(formData.get("username") || "").slice(0, 80);
-  const username = normalizeUsername(rawUsername);
+  const identifier = String(formData.get("identifier") || "").trim().slice(0, 254);
   const password = String(formData.get("password") || "");
   const returnTo = safeReturnTo(String(formData.get("returnTo") || "/"));
 
-  if (!USERNAME_PATTERN.test(username)) {
-    return { error: "Shkruaj username-in që ke përdorur gjatë regjistrimit.", username, field: "username" };
+  let resolved: Awaited<ReturnType<typeof resolveCredentialEmail>>;
+  try {
+    resolved = await resolveCredentialEmail(identifier);
+  } catch {
+    return { error: "Kyçja nuk është e arritshme për momentin. Provo përsëri pas pak.", identifier, field: "form" };
+  }
+
+  if (!resolved) {
+    return { error: "Shkruaj username-in ose emailin e vlefshëm.", identifier, field: "identifier" };
   }
 
   if (password.length < 8 || password.length > 128) {
-    return { error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.", username, field: "password" };
+    return { error: "Password-i duhet t’i ketë 8 deri në 128 karaktere.", identifier, field: "password" };
   }
 
   try {
-    const { error } = await auth.signIn.email({ email: usernameToEmail(username), password });
+    const { error } = await auth.signIn.email({ email: resolved.email, password });
     if (error) {
       const message = `${error.code || ""} ${error.message || ""}`.toLowerCase();
       if (message.includes("rate") || message.includes("too many")) {
-        return { error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.", username, field: "form" };
+        return { error: "Janë bërë shumë tentativa. Prit pak dhe provo përsëri.", identifier, field: "form" };
       }
-      return { error: "Username ose password gabim. Kontrolloji dhe provo përsëri.", username, field: "form" };
+      return { error: "Username/email ose password gabim. Kontrolloji dhe provo përsëri.", identifier, field: "form" };
     }
   } catch {
-    return { error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", username, field: "form" };
+    return { error: "Shërbimi i kyçjes nuk është i arritshëm për momentin. Kontrollo internetin dhe provo përsëri.", identifier, field: "form" };
   }
 
-  // Kthejmë suksesin te forma dhe bëjmë një navigim të plotë në browser.
-  // Kjo e detyron portalin ta lexojë cookie-n e re pa përdorur RSC cache të vjetër.
-  return { success: true, returnTo, username };
+  return { success: true, returnTo, identifier: resolved.normalizedIdentifier };
 }

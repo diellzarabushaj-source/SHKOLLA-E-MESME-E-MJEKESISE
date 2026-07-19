@@ -1,7 +1,12 @@
 export type ReturnToValue = string | string[] | null | undefined;
 
 const FALLBACK_PATH = "/";
-const AUTH_PATHS = ["/auth/sign-in", "/auth/sign-up"];
+const AUTH_PATHS = [
+  "/auth/sign-in",
+  "/auth/sign-up",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+];
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
 
 export function safeReturnTo(value: ReturnToValue, fallback = FALLBACK_PATH): string {
@@ -32,7 +37,9 @@ export function safeReturnTo(value: ReturnToValue, fallback = FALLBACK_PATH): st
   }
 }
 
-export function authPageHref(path: "/auth/sign-in" | "/auth/sign-up", returnTo: string): string {
+export type AuthPagePath = "/auth/sign-in" | "/auth/sign-up" | "/auth/forgot-password" | "/auth/reset-password";
+
+export function authPageHref(path: AuthPagePath, returnTo: string): string {
   const safePath = safeReturnTo(returnTo);
   return `${path}?returnTo=${encodeURIComponent(safePath)}`;
 }

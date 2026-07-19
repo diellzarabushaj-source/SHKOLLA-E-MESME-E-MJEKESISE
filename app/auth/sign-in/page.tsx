@@ -16,6 +16,7 @@ type SearchParams = Promise<{
   returnTo?: string | string[];
   reason?: string | string[];
   created?: string | string[];
+  reset?: string | string[];
 }>;
 
 type SessionPayload = {
@@ -49,17 +50,21 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
 
   const reason = first(params.reason);
   const created = first(params.created);
+  const reset = first(params.reset);
   let notice: string | null = null;
   let noticeTone: "info" | "success" | "warning" = "info";
 
-  if (created === "1") {
+  if (reset === "1") {
+    notice = "Password-i u ndryshua. Tani mund të kyçesh me password-in e ri.";
+    noticeTone = "success";
+  } else if (created === "1") {
     notice = "Llogaria u krijua. Kyçu për të vazhduar.";
     noticeTone = "success";
   } else if (reason === "session-expired") {
     notice = "Sesioni yt ka përfunduar. Kyçu përsëri për ta vazhduar progresin.";
     noticeTone = "warning";
   } else if (reason === "google") {
-    notice = "Kyçja me Google nuk u përfundua. Provo përsëri ose vazhdo si nxënës.";
+    notice = "Lidhja me Google nuk u përfundua. Provo përsëri ose përdor username/email dhe password.";
     noticeTone = "warning";
   }
 

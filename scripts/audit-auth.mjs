@@ -17,7 +17,9 @@ function requireText(label, source, values) {
 }
 
 const redirectHelper = read("lib/auth/redirect.ts");
-const rootLayout = read("app/layout.tsx");
+const serverAuth = read("lib/auth/server.ts");
+const accountLookup = read("lib/auth/accounts.ts");
+const authControls = read("app/AuthControls.tsx");
 const authLayout = read("app/auth/layout.tsx");
 const authTouchStyles = read("app/auth/auth-touch.css");
 const signInPage = read("app/auth/sign-in/page.tsx");
@@ -26,6 +28,11 @@ const signInAction = read("app/auth/sign-in/actions.ts");
 const signUpPage = read("app/auth/sign-up/page.tsx");
 const signUpForm = read("app/auth/sign-up/SignUpForm.tsx");
 const signUpAction = read("app/auth/sign-up/actions.ts");
+const googleButton = read("app/auth/GoogleAuthButton.tsx");
+const forgotPage = read("app/auth/forgot-password/page.tsx");
+const forgotForm = read("app/auth/forgot-password/ForgotPasswordForm.tsx");
+const resetPage = read("app/auth/reset-password/page.tsx");
+const resetForm = read("app/auth/reset-password/ResetPasswordForm.tsx");
 const authStyles = read("app/auth/auth.module.css");
 const authBrowserAudit = read("scripts/e2e-auth.mjs");
 const authBrowserIntegration = read("scripts/integrate-auth-e2e.mjs");
@@ -37,20 +44,35 @@ requireText("Safe return paths", redirectHelper, [
   'candidate.includes("\\\\")',
   "decodeURIComponent(candidate)",
   'normalized.startsWith("/api/")',
-  "AUTH_PATHS.some",
+  '"/auth/forgot-password"',
+  '"/auth/reset-password"',
   "encodeURIComponent(safePath)",
 ]);
 
-requireText("Header session recognition", rootLayout, [
-  "currentSessionUser",
-  "const user = await currentSessionUser()",
-  "AuthControls username={username}",
+requireText("Fresh server sessions", serverAuth, [
+  "createNeonAuth",
+  "sessionDataTtl: 1",
+  "NEON_AUTH_COOKIE_SECRET",
+]);
+
+requireText("Credential account lookup", accountLookup, [
+  'import "server-only"',
+  "credentialUsernameExists",
+  "resolveCredentialEmail",
+  'a."providerId" = \'credential\'',
+  "usernameToEmail(username)",
+]);
+
+requireText("Live header session", authControls, [
+  '"use client"',
+  "authClient.useSession()",
+  "isPending ? initialUsername : liveUsername",
+  "signOutAction",
 ]);
 
 for (const [label, page] of [["Sign-in page", signInPage], ["Sign-up page", signUpPage]]) {
   requireText(label, page, [
     "await auth.getSession()",
-    "session.session?.user?.id",
     "safeReturnTo(params.returnTo)",
     "if (signedIn) redirect(returnTo)",
     'robots: { index: false, follow: false }',
@@ -58,57 +80,71 @@ for (const [label, page] of [["Sign-in page", signInPage], ["Sign-up page", sign
 }
 
 requireText("Sign-in action", signInAction, [
-  'slice(0, 80)',
-  "USERNAME_PATTERN.test(username)",
+  "resolveCredentialEmail(identifier)",
   "password.length < 8",
   "password.length > 128",
-  "safeReturnTo",
+  "auth.signIn.email",
   "success: true",
   "returnTo",
 ]);
+
 requireText("Sign-up action", signUpAction, [
-  'slice(0, 80)',
-  "USERNAME_PATTERN.test(username)",
-  "password.length < 8",
-  "password.length > 128",
-  "user_already_exists",
-  "safeReturnTo",
+  "credentialUsernameExists(username)",
+  "isValidEmail(email)",
+  "email || usernameToEmail(username)",
+  "password !== confirmPassword",
+  "auth.signUp.email",
   "success: true",
-  "returnTo",
+]);
+
+requireText("Shared Google authentication", googleButton, [
+  'provider: "google"',
+  "callbackURL: returnTo",
+  'mode === "sign-up"',
+  "Regjistrohu me Google",
+  "Vazhdo me Google",
 ]);
 
 requireText("Sign-in form", signInForm, [
-  'name="returnTo"',
+  'name="identifier"',
   'autoComplete="username"',
   'autoComplete="current-password"',
-  'aria-live="assertive"',
-  'aria-pressed={showPassword}',
-  'provider: "google"',
-  "callbackURL: returnTo",
-  "Admini — Kyçu me Google",
+  "GoogleAuthButton",
+  '"/auth/forgot-password"',
   "window.location.replace(state.returnTo)",
-  "Duke hapur portalin...",
-  'href={returnTo}',
 ]);
+
 requireText("Sign-up form", signUpForm, [
-  'name="returnTo"',
-  'autoComplete="username"',
-  'autoComplete="new-password"',
-  'aria-live="assertive"',
-  'aria-pressed={showPassword}',
+  'name="email"',
+  'type="email"',
+  "(opsional)",
+  "GoogleAuthButton",
   "normalizeUsername(username)",
   "passwordStrength(password.length)",
   "window.location.replace(state.returnTo)",
-  "Duke hapur portalin...",
-  'href={returnTo}',
 ]);
 
-if (/gmail\.com/i.test(signInForm) || /loginHint\s*:/.test(signInForm)) {
+requireText("Password reset request", forgotForm, [
+  "authClient.requestPasswordReset",
+  '"/auth/reset-password"',
+  "window.location.origin",
+  "Nëse emaili lidhet me një llogari",
+]);
+requireText("Password reset completion", resetForm, [
+  "authClient.resetPassword",
+  "newPassword: password",
+  "token",
+  "reset=1",
+]);
+requireText("Password recovery pages", forgotPage + resetPage, [
+  'robots: { index: false, follow: false }',
+  "safeReturnTo(params.returnTo)",
+]);
+
+if (/gmail\.com/i.test(signInForm + signUpForm + googleButton) || /loginHint\s*:/.test(googleButton)) {
   failures.push("Identiteti i administratorit ose loginHint nuk duhet të ekspozohet në bundle-in publik.");
 }
-if (/auth\.signIn\.email/.test(signUpAction)) {
-  failures.push("Regjistrimi nuk duhet të bëjë sign-in të dytë pas sign-up.");
-}
+if (/auth\.signIn\.email/.test(signUpAction)) failures.push("Regjistrimi nuk duhet të bëjë sign-in të dytë pas sign-up.");
 if (/redirect\(returnTo\)/.test(signInAction) || /redirect\(returnTo\)/.test(signUpAction)) {
   failures.push("Server actions duhet t'ia kthejnë suksesin formës; navigimi i plotë bëhet në browser për sesion të freskët.");
 }
@@ -132,6 +168,7 @@ requireText("Auth switch touch targets", authTouchStyles, [
 requireText("Auth browser audit", authBrowserAudit, [
   "auditSignIn(browser)",
   "auditSignUp(browser)",
+  "auditRecovery(browser)",
   "auditMobile(browser)",
   "external returnTo was not rejected",
   "administrator email leaked",
@@ -157,4 +194,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Authentication audit passed: safe redirects, shared session recognition, full-page auth handoff, Google-only admin entry and responsive forms.");
+console.log("Authentication audit passed: fresh sessions, username/email login, optional recovery email, Google for everyone and server-only admin authorization.");
