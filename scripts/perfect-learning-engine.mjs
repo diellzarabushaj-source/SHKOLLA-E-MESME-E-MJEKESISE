@@ -182,6 +182,12 @@ function LearningBlock({children, value}: BlockRendererProps) {
   return <MarkdownLessonBlock value={blockValue}>{children}</MarkdownLessonBlock>;
 }`,
   );
+  renderer = replaceRequired(
+    renderer,
+    "Portable Text components typing",
+    `  return <PortableText value={plannedBody as never} components={{...components, block}} />;`,
+    `  return <PortableText value={plannedBody as never} components={{...components, block} as PortableTextComponents} />;`,
+  );
   writeFileSync(rendererPath, renderer);
 }
 
