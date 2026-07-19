@@ -1,7 +1,7 @@
 import {chromium} from "playwright";
 
 const baseURL = process.env.E2E_BASE_URL || "http://127.0.0.1:3000";
-const storageKey = "medical-lesson-learning-v1:learning-experience-audit-lesson";
+const storageKey = "medical-lesson-learning-v2:learning-experience-audit-lesson";
 const assert = (value, message) => {
   if (!value) throw new Error(message);
 };
@@ -9,9 +9,9 @@ const assert = (value, message) => {
 const expected = {
   title: "1.1. Hierarkia automatike e mësimit",
   section: "SISTEMI I ENËVE",
-  subsection: "3.6. Arteriet",
   letterHeading: "A. Qarkullimi arterial",
-  parenthesizedHeading: "(a) Shtresa e brendshme",
+  parenthesizedHeading: "(a) Shtresa e Brendshme",
+  subsection: "3.6. Arteriet",
   detail: "3.6.1. Ndërtimi i murit arterial",
   paragraph: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   falseHeading: "Arteriet dhe venat lidhen përmes kapilarëve",
@@ -39,11 +39,14 @@ try {
     serviceWorkers: "block",
   });
   await context.addInitScript(({key}) => {
+    if (window.sessionStorage.getItem("learning-audit-seeded") === "1") return;
+    window.sessionStorage.setItem("learning-audit-seeded", "1");
     window.localStorage.setItem(key, JSON.stringify({
-      version: 2,
+      version: 3,
+      revision: "audit-revision-old",
+      signature: "v3-permbajtje-e-vjeter",
       visited: ["seksioni-qe-nuk-ekziston"],
       completed: true,
-      signature: "v2-permbajtje-e-vjeter",
       lastHeading: "seksioni-qe-nuk-ekziston",
       readingProgress: 100,
     }));
@@ -51,7 +54,7 @@ try {
 
   const page = await context.newPage();
   await page.goto(`${baseURL}/learning-experience-audit`, {waitUntil: "domcontentloaded"});
-  await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
+  await page.locator('[data-learning-experience="perfect-v3"]').waitFor({state: "visible", timeout: 10_000});
   await page.waitForFunction(() => {
     const element = document.querySelector("[data-learning-experience]");
     return Boolean(element?.getAttribute("data-content-signature")) && element?.getAttribute("data-content-current") === "true";
@@ -60,7 +63,10 @@ try {
   await page.getByRole("button", {name: "Shëno si të përfunduar"}).waitFor({state: "visible"});
   await page.waitForFunction((key) => {
     const state = JSON.parse(window.localStorage.getItem(key) || "{}");
-    return state.completed === false && typeof state.signature === "string" && state.signature.startsWith("v2-");
+    return state.completed === false
+      && state.revision === "audit-revision-current"
+      && typeof state.signature === "string"
+      && state.signature.startsWith("v3-");
   }, storageKey);
   const resetState = await savedState(page);
   assert(resetState.completed === false, "A lesson changed in Sanity remained incorrectly completed");
@@ -72,30 +78,33 @@ try {
   await exactText(page.locator("h1[data-audit-lesson-title]"), expected.title, "Lesson H1");
 
   const automaticH2 = page.locator('h2[data-learning-heading="true"][data-heading-source="uppercase"]');
+  const letterH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="letter"]');
+  const parenthesizedH4 = page.locator('h4[data-learning-heading="true"][data-heading-source="parenthesized"]');
   const automaticH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="numbered"]');
   const automaticH4 = page.locator('h4[data-learning-heading="true"][data-heading-source="numbered"]');
-  const letterH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="letter"]');
-  const parenthesizedH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="parenthesized"]');
-  const labelH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="label"]');
+  const labelH4 = page.locator('h4[data-learning-heading="true"][data-heading-source="label"]');
   const sanityH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="sanity"]');
 
   await exactText(automaticH2, expected.section, "Automatic H2");
-  await exactText(automaticH3, expected.subsection, "Automatic H3");
   await exactText(letterH3, expected.letterHeading, "Letter H3");
-  await exactText(parenthesizedH3, expected.parenthesizedHeading, "Parenthesized H3");
+  await exactText(parenthesizedH4, expected.parenthesizedHeading, "Parenthesized H4");
+  await exactText(automaticH3, expected.subsection, "Automatic H3");
   await exactText(automaticH4, expected.detail, "Automatic H4");
-  await exactText(labelH3, expected.labelHeading, "Learning-label H3");
+  await exactText(labelH4, expected.labelHeading, "Learning-label H4");
   await exactText(sanityH3, expected.sanityHeading, "Sanity H3");
 
-  await exactText(page.locator('[data-audit-source-key="audit-paragraph"] p'), expected.paragraph, "Paragraph");
-  await exactText(page.locator('[data-audit-source-key="audit-false-heading"] p'), expected.falseHeading, "Verb sentence without punctuation");
-  await exactText(page.locator('[data-audit-source-key="audit-numbered-sentence"] p'), expected.numberedSentence, "Numbered sentence");
+  const paragraph = page.getByText(expected.paragraph, {exact: true});
+  const falseHeading = page.getByText(expected.falseHeading, {exact: true});
+  const numberedSentence = page.getByText(expected.numberedSentence, {exact: true});
+  await exactText(paragraph, expected.paragraph, "Paragraph");
+  await exactText(falseHeading, expected.falseHeading, "Verb sentence without punctuation");
+  await exactText(numberedSentence, expected.numberedSentence, "Numbered sentence");
   await exactText(page.locator('[data-learning-callout="remember"]'), expected.callout, "Learning callout");
-  assert(await page.locator('[data-audit-source-key="audit-false-heading"] h2, [data-audit-source-key="audit-false-heading"] h3, [data-audit-source-key="audit-false-heading"] h4').count() === 0, "A normal sentence was misclassified as a heading");
-  assert(await page.locator('[data-audit-source-key="audit-numbered-sentence"] h2, [data-audit-source-key="audit-numbered-sentence"] h3, [data-audit-source-key="audit-numbered-sentence"] h4').count() === 0, "A numbered sentence was misclassified as a heading");
+  assert(await falseHeading.evaluate((element) => element.tagName) === "P", "A normal sentence was misclassified as a heading");
+  assert(await numberedSentence.evaluate((element) => element.tagName) === "P", "A numbered sentence was misclassified as a heading");
 
-  assert(await page.locator('[data-source-preserved="true"]').count() >= 9, "Source-preservation markers are missing");
-  assert(await page.locator('[data-learning-heading="true"]').count() === 7, "The learning engine did not produce the expected seven-section hierarchy");
+  assert(await page.locator('[data-source-preserved="true"]').count() >= 10, "Source-preservation markers are missing");
+  assert(await page.locator('[data-learning-heading="true"]').count() === 7, "The production renderer did not produce the expected seven-section hierarchy");
 
   const outline = page.locator("details").filter({hasText: "Harta e mësimit"});
   await outline.locator("summary").click();
@@ -105,19 +114,21 @@ try {
 
   await page.waitForFunction((key) => {
     const state = JSON.parse(window.localStorage.getItem(key) || "{}");
-    return typeof state.lastHeading === "string" && state.lastHeading.includes("ndertimi-i-murit-arterial") && state.readingProgress > 0;
+    return typeof state.lastHeading === "string"
+      && state.lastHeading.includes("ndertimi-i-murit-arterial")
+      && state.readingProgress > 0;
   }, storageKey);
   const progressed = await savedState(page);
   const furthestProgress = progressed.readingProgress;
   assert(furthestProgress > 0 && furthestProgress < 100, "Reading progress was not captured before completion");
 
-  await page.evaluate(() => window.scrollTo({top: 0, behavior: "instant"}));
+  await page.evaluate(() => window.scrollTo({top: 0, behavior: "auto"}));
   await page.waitForTimeout(350);
   const afterScrollBack = await savedState(page);
   assert(afterScrollBack.readingProgress >= furthestProgress, "Reading progress decreased when the learner scrolled upward");
 
   await page.reload({waitUntil: "domcontentloaded"});
-  await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
+  await page.locator('[data-learning-experience="perfect-v3"]').waitFor({state: "visible", timeout: 10_000});
   const resume = page.getByRole("button", {name: "Vazhdo te seksioni i fundit"});
   await resume.waitFor({state: "visible"});
   await resume.click();
@@ -136,16 +147,20 @@ try {
 
   await page.waitForFunction((key) => {
     const state = JSON.parse(window.localStorage.getItem(key) || "{}");
-    return state.completed === true && state.readingProgress === 100 && Array.isArray(state.visited) && state.visited.length === 7;
+    return state.completed === true
+      && state.readingProgress === 100
+      && Array.isArray(state.visited)
+      && state.visited.length === 7;
   }, storageKey);
   const completedState = await savedState(page);
-  assert(completedState.version === 2, "Learning progress was not migrated to storage version 2");
+  assert(completedState.version === 3, "Learning progress was not migrated to storage version 3");
+  assert(completedState.revision === "audit-revision-current", "Saved progress is not tied to the current Sanity revision");
   assert(completedState.completed === true, "Per-lesson completion was not saved locally");
   assert(completedState.signature === await page.locator("[data-learning-experience]").getAttribute("data-content-signature"), "Saved progress is not tied to the current lesson content");
   assert(Array.isArray(completedState.visited) && completedState.visited.length === 7, "Visited sections were not saved for every detected heading");
 
   await page.reload({waitUntil: "domcontentloaded"});
-  await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
+  await page.locator('[data-learning-experience="perfect-v3"]').waitFor({state: "visible", timeout: 10_000});
   const restored = page.getByRole("button", {name: "✓ Përfunduar"});
   await restored.waitFor({state: "visible"});
   assert(await restored.isDisabled(), "Completed state was not restored after reload");
@@ -156,4 +171,4 @@ try {
   await browser.close();
 }
 
-console.log("Future Sanity hierarchy, false-positive protection, exact text, content-aware reset, resume, monotonic progress and persistence passed in Chromium.");
+console.log("Production future-Sanity hierarchy, exact text, revision reset, resume, monotonic progress and persistence passed in Chromium.");
