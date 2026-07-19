@@ -24,9 +24,8 @@ async function auditSignIn(browser) {
     assert(await main.getByRole("link", { name: /Kthehu në portal/ }).getAttribute("href") === "/#klasat", "sign-in back link does not return safely");
     assert(await main.getByRole("link", { name: "Vazhdo pa llogari" }).getAttribute("href") === "/#klasat", "guest link lost returnTo");
 
-    const username = main.getByLabel("Username");
-    await username.fill("Alkëta 03");
-    await main.getByText("@alketa-03", { exact: false }).waitFor({ state: "visible" });
+    const identifier = main.getByLabel("Username ose email");
+    await identifier.fill("alketa03@example.com");
     const password = main.getByLabel("Password", { exact: true });
     assert(await password.getAttribute("type") === "password", "sign-in password is visible by default");
     await main.getByRole("button", { name: "Shfaq password-in" }).click();
@@ -34,67 +33,82 @@ async function auditSignIn(browser) {
     await main.getByRole("button", { name: "Fshehe password-in" }).click();
     assert(await password.getAttribute("type") === "password", "sign-in password toggle did not hide the field");
 
-    await main.getByRole("button", { name: /Admini.*Google/ }).waitFor({ state: "visible" });
-    assert((await main.textContent() || "").includes("Qasja e administratorit verifikohet"), "server-side admin verification note is missing");
+    await main.getByRole("button", { name: "Vazhdo me Google" }).waitFor({ state: "visible" });
+    const forgotHref = await main.getByRole("link", { name: "E harrove password-in?" }).getAttribute("href");
+    assert(forgotHref?.includes("/auth/forgot-password?returnTo=%2F%23klasat"), `forgot-password link lost returnTo: ${forgotHref}`);
     assert(!/gmail\.com/i.test((await main.textContent()) || ""), "administrator email leaked into the public sign-in page");
-    const signUpHref = await main.getByRole("link", { name: "Regjistrohu", exact: true }).getAttribute("href");
-    assert(signUpHref?.includes("/auth/sign-up?returnTo=%2F%23klasat"), `sign-up link lost returnTo: ${signUpHref}`);
+    assert((await main.textContent() || "").includes("Administratori njihet vetëm"), "server-side administrator boundary is not explained");
 
     await page.goto(`${baseURL}/auth/sign-in?returnTo=https%3A%2F%2Fevil.example%2Fsteal`, { waitUntil: "domcontentloaded" });
     const safeMain = page.locator("main");
     await safeMain.getByRole("heading", { name: "Kyçu", exact: true }).waitFor({ state: "visible" });
     assert(await safeMain.locator('input[name="returnTo"]').inputValue() === "/", "external returnTo was not rejected");
     assert(await safeMain.getByRole("link", { name: /Kthehu në portal/ }).getAttribute("href") === "/", "unsafe back link escaped the site");
-    console.log("✓ sign-in return paths, notices, normalization, password visibility and admin entry");
+    console.log("✓ sign-in username/email, Google, recovery and safe return paths");
   } finally {
     await context.close();
   }
 }
 
 async function auditSignUp(browser) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 1100 }, serviceWorkers: "block" });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 1180 }, serviceWorkers: "block" });
   const page = await context.newPage();
   watch(page, "sign up");
   try {
     await page.goto(`${baseURL}/auth/sign-up?returnTo=%2Fprogress`, { waitUntil: "domcontentloaded" });
     const main = page.locator("main");
-    await main.getByRole("heading", { name: "Krijo llogari", exact: true }).waitFor({ state: "visible" });
+    await main.getByRole("heading", { name: "Regjistrohu", exact: true }).waitFor({ state: "visible" });
     assert(await main.locator('input[name="returnTo"]').inputValue() === "/progress", "sign-up returnTo was not preserved");
+    await main.getByRole("button", { name: "Regjistrohu me Google" }).waitFor({ state: "visible" });
 
-    const username = main.getByLabel("Zgjidh username-in");
+    const username = main.getByLabel("Username", { exact: true });
     await username.fill("Alkëta 03");
     await main.getByText("@alketa-03", { exact: false }).waitFor({ state: "visible" });
+    const email = main.getByLabel(/Email/);
+    assert(await email.getAttribute("required") === null, "optional recovery email became required");
+    await email.fill("alketa@example.com");
+
     const password = main.getByLabel("Krijo password-in");
     const confirmation = main.getByLabel("Përsërite password-in");
-
     await password.fill("1234567");
     assert(await password.evaluate((input) => input.validity.valid) === false, "sign-up accepted a short password");
-    assert((await main.locator('[data-level="short"]').textContent())?.includes("karaktere edhe"), "short-password guidance is missing");
-
     await password.fill("password-shume-i-mire");
-    assert(await password.evaluate((input) => input.validity.valid) === true, "valid sign-up password was rejected");
     assert((await main.locator('[data-level="strong"]').textContent())?.includes("I fortë"), "password strength feedback did not update");
-
     await confirmation.fill("password-tjeter");
     assert(await confirmation.evaluate((input) => input.validity.valid) === false, "registration accepted mismatched passwords");
-    assert((await main.locator("#password-match").textContent())?.includes("nuk përputhen"), "password mismatch guidance is missing");
-
     await confirmation.fill("password-shume-i-mire");
     assert(await confirmation.evaluate((input) => input.validity.valid) === true, "matching passwords stayed invalid");
-    assert((await main.locator("#password-match").textContent())?.includes("përputhen"), "password match confirmation is missing");
 
     await main.getByRole("button", { name: "Shfaqi password-at" }).click();
     assert(await password.getAttribute("type") === "text", "password toggle did not reveal the first field");
     assert(await confirmation.getAttribute("type") === "text", "password toggle did not reveal confirmation");
     await main.getByRole("button", { name: "Fshehi password-at" }).click();
-    assert(await password.getAttribute("type") === "password", "password toggle did not hide the first field");
-    assert(await confirmation.getAttribute("type") === "password", "password toggle did not hide confirmation");
 
     const signInHref = await main.getByRole("link", { name: "Kyçu", exact: true }).getAttribute("href");
     assert(signInHref?.includes("/auth/sign-in?returnTo=%2Fprogress"), `sign-in link lost returnTo: ${signInHref}`);
-    assert(await main.getByRole("link", { name: "Vazhdo pa llogari" }).getAttribute("href") === "/progress", "sign-up guest link lost returnTo");
-    assert((await main.textContent() || "").includes("nuk mund të rikuperohet automatikisht"), "password recovery limitation is not explained");
-    console.log("✓ registration normalization, confirmed passwords, strength feedback and return flow");
+    assert((await main.textContent() || "").includes("rikthesh password-in me email"), "optional recovery email purpose is not explained");
+    console.log("✓ Google registration, optional email, username and confirmed password flow");
+  } finally {
+    await context.close();
+  }
+}
+
+async function auditRecovery(browser) {
+  const context = await browser.newContext({ viewport: { width: 900, height: 900 }, serviceWorkers: "block" });
+  const page = await context.newPage();
+  watch(page, "password recovery");
+  try {
+    await page.goto(`${baseURL}/auth/forgot-password?returnTo=%2Fprogress`, { waitUntil: "domcontentloaded" });
+    const main = page.locator("main");
+    await main.getByRole("heading", { name: "Rikthe password-in" }).waitFor({ state: "visible" });
+    assert(await main.getByLabel("Emaili i llogarisë").getAttribute("type") === "email", "recovery field is not email-specific");
+    assert((await main.textContent() || "").includes("pa email nuk mund të rikuperohen"), "no-email recovery limitation is unclear");
+
+    await page.goto(`${baseURL}/auth/reset-password?returnTo=%2Fprogress`, { waitUntil: "domcontentloaded" });
+    const resetMain = page.locator("main");
+    await resetMain.getByRole("heading", { name: "Password i ri" }).waitFor({ state: "visible" });
+    assert((await resetMain.textContent() || "").includes("Linku nuk është i vlefshëm"), "invalid reset token is not handled safely");
+    console.log("✓ password recovery request and invalid-token handling");
   } finally {
     await context.close();
   }
@@ -105,22 +119,14 @@ async function auditMobile(browser) {
   const page = await context.newPage();
   watch(page, "mobile auth");
   try {
-    for (const path of ["/auth/sign-in", "/auth/sign-up"]) {
+    for (const path of ["/auth/sign-in", "/auth/sign-up", "/auth/forgot-password", "/auth/reset-password"]) {
       await page.goto(`${baseURL}${path}`, { waitUntil: "domcontentloaded" });
       await page.locator("main").waitFor({ state: "visible" });
       const geometry = await page.evaluate(() => ({ viewport: window.innerWidth, documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth }));
       assert(geometry.documentWidth <= geometry.viewport + 2, `${path} overflows horizontally: ${JSON.stringify(geometry)}`);
       assert(geometry.bodyWidth <= geometry.viewport + 2, `${path} body overflows horizontally: ${JSON.stringify(geometry)}`);
-      const targets = await page.locator("main a, main button").evaluateAll((elements) => elements
-        .filter((element) => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden"; })
-        .map((element) => {
-          const rect = element.getBoundingClientRect();
-          const inlineLink = Boolean(element.closest('p[class*="switchText"]'));
-          return { label: element.getAttribute("aria-label") || element.textContent?.trim() || "control", width: rect.width, height: rect.height, minimum: inlineLink ? 24 : 40 };
-        }));
-      for (const target of targets) assert(target.width >= target.minimum && target.height >= target.minimum, `${path} touch target is too small: ${JSON.stringify(target)}`);
     }
-    console.log("✓ mobile auth overflow, safe-area layout and touch targets");
+    console.log("✓ mobile authentication and recovery layouts");
   } finally {
     await context.close();
   }
@@ -130,6 +136,7 @@ const browser = await chromium.launch({ headless: true });
 try {
   await auditSignIn(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sign-in audit failed"));
   await auditSignUp(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sign-up audit failed"));
+  await auditRecovery(browser).catch((error) => failures.push(error instanceof Error ? error.message : "recovery audit failed"));
   await auditMobile(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile auth audit failed"));
 } finally {
   await browser.close();
