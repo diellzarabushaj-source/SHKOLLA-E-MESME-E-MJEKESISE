@@ -16,7 +16,17 @@ type PortableNode = {
 };
 
 type HeadingLevel = 2 | 3 | 4;
-type HeadingReason = "sanity" | "markdown" | "numbered" | "section" | "uppercase" | "label" | "phrase";
+type HeadingReason =
+  | "sanity"
+  | "markdown"
+  | "numbered"
+  | "section"
+  | "uppercase"
+  | "letter"
+  | "parenthesized"
+  | "label"
+  | "colon"
+  | "phrase";
 type CalloutKind = "remember" | "warning" | "logic" | "definition" | "example" | "comparison";
 
 type PlannedHeading = {
@@ -41,11 +51,30 @@ type BlockRendererProps = {
 
 const NUMBERED_HEADING = /^(\d+(?:\s*\.\s*\d+){0,5})\s*[.)]?\s+(.+?)\s*$/;
 const MARKDOWN_HEADING = /^(#{1,6})\s+(.+)$/;
-const LETTER_HEADING = /^(?:[A-ZÇË]|[IVXLCDM]{1,7})[.)]\s+(.+)$/;
-const SECTION_HEADING = /^(KAPITULLI|PJESA|NJËSIA|TEMA|SEKSIONI|SISTEMI)\b/i;
-const CALLOUT_PREFIX = /^(Mbaje mend|Kujdes|Vërejtje|Rregull(?:i)?|Mnemonikë|Logjika(?: kryesore)?|Përkufizim(?:i)?|Shembull|Dallimi|Krahasimi|Rëndësi(?:a)?|Pika kryesore|Për provim)\s*:?\s*[–—-]?\s*/i;
-const LEARNING_LABEL = /^(Rruga|Skema|Rregull|Mnemonikë|Dallimi|Krahasimi|Përkufizimi|Baza|Maja|Faqet|Hemi|Globina|Serumi|Vaksinat|Muri|Valvulat|Trungu|Arteria|Arteriet|Vena|Venat|Kapilarët|Sinusi|Muskujt|Fijet|Hemostaza|Koagulimi|Fibrinoliza|Funksioni|Funksionet|Ndërtimi|Përbërja|Ndarja|Klasifikimi|Roli|Rëndësia|Karakteristikat|Mekanizmi|Llojet|Pjesët|Pozita|Forma|Madhësia|Qarkullimi|Furnizimi|Inervimi|Veprimi|Fazat|Shkaqet|Pasojat|Simptomat|Shenjat|Diagnoza|Trajtimi|Parandalimi|Komplikimet|Etiologjia|Patogjeneza|Patofiziologjia|Epidemiologjia|Indikacionet|Kundërindikacionet)\b/i;
-const SENTENCE_VERB = /\b(është|janë|ishte|ishin|ka|kanë|duhet|mund|përfaqëson|përfaqësojnë|përbëhet|përbëhen|ndërtohet|ndërtohen|shërben|shërbejnë|ndodhet|ndodhen|quhet|quhen|kalon|kalojnë|lidh|lidhen|studion|studiojnë|kryen|kryejnë|siguron|sigurojnë|formon|formojnë|përçon|përçojnë|transporton|transportojnë|qarkullon|qarkullojnë|fillon|fillojnë|mbaron|mbarojnë|hyn|hyjnë|del|dalin|ndahet|ndahen|vazhdon|vazhdojnë)\b/i;
+const LETTER_HEADING = /^([A-ZÇË]|[IVXLCDM]{1,7})[.)]\s+(.+)$/;
+const PARENTHESIZED_HEADING = /^\(([A-ZÇËa-zçë]|[IVXLCDMivxlcdm]{1,7}|\d+)\)\s+(.+)$/;
+const SECTION_HEADING = /^(KAPITULLI|PJESA|NJËSIA|TEMA|SEKSIONI|SISTEMI|MODULI)\b/i;
+const CALLOUT_PREFIX = /^(Mbaje mend|Kujdes|Vërejtje|Rregull(?:i)?|Mnemonikë|Logjika(?: kryesore)?|Përkufizim(?:i)?|Shembull|Dallimi|Krahasimi|Rëndësi(?:a)?|Pika kryesore|Për provim|Këshillë|Shënim)\s*:?\s*[–—-]?\s*/i;
+const LEARNING_LABEL = /^(Rruga|Skema|Rregull|Mnemonikë|Dallimi|Krahasimi|Përkufizimi|Koncepti|Anatomia|Fiziologjia|Struktura|Organizimi|Baza|Maja|Faqet|Hemi|Globina|Serumi|Vaksinat|Muri|Valvulat|Trungu|Arteria|Arteriet|Vena|Venat|Kapilarët|Sinusi|Muskujt|Fijet|Hemostaza|Koagulimi|Fibrinoliza|Funksioni|Funksionet|Ndërtimi|Përbërja|Ndarja|Klasifikimi|Roli|Rëndësia|Karakteristikat|Veçoritë|Tiparet|Mekanizmi|Procesi|Llojet|Pjesët|Pozita|Forma|Madhësia|Qarkullimi|Furnizimi|Inervimi|Veprimi|Fazat|Shkaqet|Pasojat|Simptomat|Shenjat|Diagnoza|Trajtimi|Parandalimi|Komplikimet|Etiologjia|Patogjeneza|Patofiziologjia|Epidemiologjia|Indikacionet|Kundërindikacionet|Metoda|Metodat|Lidhja|Marrëdhënia|Përmbledhja|Shtresat|Qeliza|Indet|Organet|Homeostaza|Reaksioni|Rregullimi)\b/i;
+const SENTENCE_VERB = /\b(është|janë|ishte|ishin|ka|kanë|duhet|mund|përfaqëson|përfaqësojnë|përbëhet|përbëhen|ndërtohet|ndërtohen|shërben|shërbejnë|ndodhet|ndodhen|quhet|quhen|kalon|kalojnë|lidh|lidhen|studion|studiojnë|kryen|kryejnë|siguron|sigurojnë|formon|formojnë|përçon|përçojnë|transporton|transportojnë|qarkullon|qarkullojnë|fillon|fillojnë|mbaron|mbarojnë|hyn|hyjnë|del|dalin|ndahet|ndahen|vazhdon|vazhdojnë|përmban|përmbajnë|kontrollon|kontrollojnë|rregullon|rregullojnë|jep|japin|mban|mbajnë)\b/i;
+const LOWERCASE_TITLE_WORDS = new Set([
+  "i",
+  "e",
+  "të",
+  "së",
+  "në",
+  "me",
+  "nga",
+  "për",
+  "dhe",
+  "ose",
+  "tek",
+  "kah",
+  "mbi",
+  "nën",
+  "pa",
+  "si",
+]);
 
 function sourceText(value: PortableNode): string {
   return (value.children || []).map((child) => typeof child.text === "string" ? child.text : "").join("").replace(/\r\n?/g, "\n");
@@ -95,11 +124,26 @@ function isDefinition(value: string): boolean {
   return !/https?|www\.|@/.test(term) && term.split(/\s+/).length <= 8 && !/^\d+$/.test(term) && !CALLOUT_PREFIX.test(term);
 }
 
+function wordCount(value: string): number {
+  return normalized(value).split(/\s+/).filter(Boolean).length;
+}
+
 function isUpperHeading(value: string): boolean {
   const text = normalized(value);
   if (text.length < 4 || text.length > 140 || /[.!?;]$/.test(text)) return false;
   const letters = text.replace(/[^A-Za-zÇËçëÀ-ž]/g, "");
-  return letters.length >= 4 && text === text.toLocaleUpperCase("sq-AL") && text.split(/\s+/).length <= 16;
+  return letters.length >= 4 && text === text.toLocaleUpperCase("sq-AL") && wordCount(text) <= 16;
+}
+
+function hasStrongTitleCase(value: string): boolean {
+  const meaningful = normalized(value)
+    .split(/\s+/)
+    .map((word) => word.replace(/^[^A-Za-zÇËçëÀ-ž]+|[^A-Za-zÇËçëÀ-ž-]+$/g, ""))
+    .filter(Boolean)
+    .filter((word) => !LOWERCASE_TITLE_WORDS.has(word.toLocaleLowerCase("sq-AL")));
+  if (!meaningful.length) return false;
+  const titleWords = meaningful.filter((word) => /^[A-ZÇËÀ-Ž]/.test(word)).length;
+  return titleWords === meaningful.length || (meaningful.length >= 3 && titleWords / meaningful.length >= 0.75);
 }
 
 function looksLikeSentence(value: string): boolean {
@@ -109,7 +153,7 @@ function looksLikeSentence(value: string): boolean {
   if (/^[a-zçë]/.test(text) || /[.!?;]$/.test(text)) return true;
   if ((text.match(/,/g) || []).length >= 2) return true;
   if (words.length > 16) return true;
-  return words.length > 5 && SENTENCE_VERB.test(text);
+  return words.length >= 3 && SENTENCE_VERB.test(text);
 }
 
 function looksLikeTitle(value: string): boolean {
@@ -119,7 +163,7 @@ function looksLikeTitle(value: string): boolean {
   if (words.length < 1 || words.length > 14) return false;
   if (/https?:|www\.|@/.test(text) || /^\([^)]{2,90}\)$/.test(text)) return false;
   if (CALLOUT_PREFIX.test(text) || isDefinition(text) || looksLikeSentence(text)) return false;
-  return /[A-Za-zÇËçëÀ-ž]/.test(text);
+  return isUpperHeading(text) || LEARNING_LABEL.test(text) || hasStrongTitleCase(text);
 }
 
 function numberedParts(value: string): {depth: number; label: string; ordinal: number} | null {
@@ -147,6 +191,22 @@ function isNumberedListCluster(body: PortableNode[], index: number, current: {de
     || (next ? looksLikeSentence(next.label) : false);
 }
 
+function nestedLevel(currentLevel: HeadingLevel | null): HeadingLevel {
+  if (currentLevel === null) return 2;
+  return currentLevel === 2 ? 3 : 4;
+}
+
+function markerDecision(text: string, currentLevel: HeadingLevel | null): {level: HeadingLevel; reason: HeadingReason} | null {
+  const letter = text.match(LETTER_HEADING);
+  const parenthesized = text.match(PARENTHESIZED_HEADING);
+  const label = letter?.[2] || parenthesized?.[2] || "";
+  if (!label || !looksLikeTitle(label)) return null;
+  return {
+    level: nestedLevel(currentLevel),
+    reason: letter ? "letter" : "parenthesized",
+  };
+}
+
 function plannedDecision(body: PortableNode[], index: number, currentLevel: HeadingLevel | null): {level: HeadingLevel; reason: HeadingReason} | null {
   const node = body[index];
   if (!node || node._type !== "block") return null;
@@ -168,21 +228,23 @@ function plannedDecision(body: PortableNode[], index: number, currentLevel: Head
     return {level: numbered.depth === 1 ? 2 : numbered.depth === 2 ? 3 : 4, reason: "numbered"};
   }
 
-  if (SECTION_HEADING.test(text) || (LETTER_HEADING.test(text) && looksLikeTitle(text.replace(LETTER_HEADING, "$1")))) {
-    return {level: 2, reason: "section"};
-  }
+  if (SECTION_HEADING.test(text)) return {level: 2, reason: "section"};
   if (isUpperHeading(text)) return {level: 2, reason: "uppercase"};
+
+  const marker = markerDecision(text, currentLevel);
+  if (marker) return marker;
 
   if (LEARNING_LABEL.test(text) && looksLikeTitle(text)) {
     return {level: currentLevel && currentLevel >= 3 ? 4 : 3, reason: "label"};
   }
 
-  const previous = body[index - 1];
   const next = body[index + 1];
-  const separated = !previous || previous._type !== "block" || !next || next._type !== "block" || currentLevel !== null;
-  if (separated && looksLikeTitle(text)) {
-    const level: HeadingLevel = currentLevel === null ? 2 : currentLevel === 2 ? 3 : 4;
-    return {level, reason: "phrase"};
+  if (/^[^:]{3,85}:$/.test(text) && next?._type === "block" && normalized(sourceText(next))) {
+    return {level: currentLevel && currentLevel >= 3 ? 4 : 3, reason: "colon"};
+  }
+
+  if (looksLikeTitle(text)) {
+    return {level: nestedLevel(currentLevel), reason: "phrase"};
   }
 
   return null;
