@@ -2,7 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 
 const failures = [];
 const fallbackAssetPath = "public/assets/anatomy-heart.webp";
-const portalPath = "app/ClassicLearningPortal.tsx";
+const portalPaths = ["app/ClassicLearningPortal.tsx", "app/SchoolLearningPortal.tsx"];
 const stylesPath = "app/globals.css";
 
 if (!existsSync(fallbackAssetPath)) {
@@ -17,33 +17,41 @@ if (!existsSync(fallbackAssetPath)) {
   }
 }
 
-for (const [path, required] of [
-  [portalPath, [
-    "cardIllustration?: SanityImage",
-    '"shortDescription": coalesce(shortDescription, description)',
-    "cardIllustration {",
-    '"asset": asset->{url}',
-    "subject.cardIllustration?.asset?.url",
-    "subject-icon-illustration",
-    "?w=240&fit=max&auto=format",
-    "/assets/anatomy-heart.webp",
-    "isAnatomySubject",
-    'loading="lazy"',
-  ]],
-  [stylesPath, [
-    "/* subject-card-illustrations */",
-    ".subject-top i.subject-icon-illustration img",
-    "object-fit: contain",
-    "pointer-events: none",
-  ]],
-]) {
+const portalRequirements = [
+  "cardIllustration?: SanityImage",
+  '"shortDescription": coalesce(shortDescription, description)',
+  "cardIllustration {",
+  '"asset": asset->{url}',
+  "subject.cardIllustration?.asset?.url",
+  "subject-icon-illustration",
+  "?w=240&fit=max&auto=format",
+  "/assets/anatomy-heart.webp",
+  "isAnatomySubject",
+  'loading="lazy"',
+];
+
+for (const path of portalPaths) {
   if (!existsSync(path)) {
     failures.push(`Mungon ${path}.`);
     continue;
   }
   const source = readFileSync(path, "utf8");
-  for (const token of required) {
+  for (const token of portalRequirements) {
     if (!source.includes(token)) failures.push(`${path}: mungon ${token}.`);
+  }
+}
+
+if (!existsSync(stylesPath)) {
+  failures.push(`Mungon ${stylesPath}.`);
+} else {
+  const styles = readFileSync(stylesPath, "utf8");
+  for (const token of [
+    "/* subject-card-illustrations */",
+    ".subject-top i.subject-icon-illustration img",
+    "object-fit: contain",
+    "pointer-events: none",
+  ]) {
+    if (!styles.includes(token)) failures.push(`${stylesPath}: mungon ${token}.`);
   }
 }
 
@@ -53,4 +61,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Subject card illustration audit passed: Sanity image first, optimized delivery, anatomy fallback and unchanged card behavior.");
+console.log("Subject card illustration audit passed: source and generated portal both use Sanity images, optimized delivery and the anatomy fallback.");
