@@ -28,6 +28,8 @@ requireAll("Build pipeline", packageSource, [
 ]);
 requireAll("Selection-safe editor installer", installer, [
   "admin-toolbar-selection-v1",
+  "useLayoutEffect",
+  "editorRef.current.innerHTML = initialHtml",
   "savedSelectionRef",
   "getEditorSelectionRange",
   "rememberEditorSelection",
@@ -36,10 +38,15 @@ requireAll("Selection-safe editor installer", installer, [
 ]);
 requireAll("Generated editor", editor, [
   "admin-toolbar-selection-v1",
+  "useLayoutEffect",
+  "editorRef.current.innerHTML = initialHtml",
   "savedSelectionRef",
   "getEditorSelectionRange",
   "rememberEditorSelection",
 ]);
+if (editor.includes("dangerouslySetInnerHTML")) {
+  failures.push("Generated editor: React nuk duhet ta rishkruajë innerHTML gjatë çdo keystroke-u.");
+}
 requireAll("Browser formatting audit", browserAudit, [
   'querySelectorAll("p,h2,h3,h4,blockquote,li")',
   "window.getComputedStyle(parent).fontWeight",
@@ -57,4 +64,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Administrator toolbar audit passed selection preservation, real bold serialization, failure evidence and truthful CI exit handling.");
+console.log("Administrator toolbar audit passed caret stability, selection preservation, real bold serialization, failure evidence and truthful CI exit handling.");
