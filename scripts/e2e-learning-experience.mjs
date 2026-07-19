@@ -79,7 +79,7 @@ try {
   assert(await page.locator("[data-learning-audit-article] h1").count() === 0, "Sanity body content created a second H1");
   await exactText(page.locator("h1[data-audit-lesson-title]"), expected.title, "Lesson H1");
 
-  await exactText(page.locator('h2[data-learning-source-key="audit-section"][data-heading-source="uppercase"]'), expected.section, "Automatic H2");
+  await exactText(page.locator('h2[data-learning-source-key="audit-section"][data-heading-source="section"]'), expected.section, "Automatic H2");
   await exactText(page.locator('h3[data-learning-source-key="audit-subsection"][data-heading-source="numbered"]'), expected.subsection, "Automatic H3");
   await exactText(page.locator('h4[data-learning-source-key="audit-letter-heading"][data-heading-source="letter"]'), expected.letterHeading, "Letter H4");
   await exactText(page.locator('h4[data-learning-source-key="audit-parenthesized-heading"][data-heading-source="parenthesized"]'), expected.parenthesizedHeading, "Parenthesized H4");
