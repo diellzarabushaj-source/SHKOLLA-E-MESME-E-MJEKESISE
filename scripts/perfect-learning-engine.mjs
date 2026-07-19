@@ -1,8 +1,10 @@
 import {readFileSync, writeFileSync} from "node:fs";
 
 const rendererPath = "app/LessonContentRenderer.tsx";
+const experiencePath = "app/LessonLearningExperience.tsx";
 const portalPath = "app/SchoolLearningPortal.tsx";
 const rendererMarker = "perfect-whole-lesson-renderer-v2";
+const experienceMarker = "perfect-learning-progress-v2";
 const portalMarker = "perfect-learning-engine-v2";
 
 function replaceRequired(source, label, before, after) {
@@ -199,6 +201,61 @@ function LearningBlock({children, value}: BlockRendererProps) {
   writeFileSync(rendererPath, renderer);
 }
 
+let experience = readFileSync(experiencePath, "utf8");
+if (!experience.includes(experienceMarker)) {
+  experience = replaceRequired(
+    experience,
+    "progress hardening marker",
+    `import styles from "./LessonLearningExperience.module.css";`,
+    `import styles from "./LessonLearningExperience.module.css";
+
+// ${experienceMarker}`,
+  );
+  experience = replaceRequired(
+    experience,
+    "focusable generated headings",
+    `        heading.id = id;
+        heading.dataset.learningHeading = "true";`,
+    `        heading.id = id;
+        heading.tabIndex = -1;
+        heading.dataset.learningHeading = "true";`,
+  );
+  experience = replaceRequired(
+    experience,
+    "race-safe progress reset",
+    `      setReadingProgress((current) => completed ? 100 : Math.max(current, nextProgress));`,
+    `      setReadingProgress((current) => {
+        if (storedSignature && storedSignature !== contentSignature) return 0;
+        return completed ? 100 : Math.max(current, nextProgress);
+      });`,
+  );
+  experience = replaceRequired(
+    experience,
+    "progress effect dependencies",
+    `  }, [completed, headings]);`,
+    `  }, [completed, contentSignature, headings, storedSignature]);`,
+  );
+  experience = replaceRequired(
+    experience,
+    "complete lesson outline",
+    `  const outline = useMemo(() => headings.slice(0, 60), [headings]);`,
+    `  const outline = useMemo(() => headings, [headings]);`,
+  );
+  experience = replaceRequired(
+    experience,
+    "stable accessible section jump",
+    `    element?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveHeading(id);`,
+    `    element?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (element) {
+      window.history.replaceState(window.history.state, "", \`#\${id}\`);
+      window.setTimeout(() => element.focus({ preventScroll: true }), 350);
+    }
+    setActiveHeading(id);`,
+  );
+  writeFileSync(experiencePath, experience);
+}
+
 let portal = readFileSync(portalPath, "utf8");
 if (!portal.includes(portalMarker)) {
   if (!portal.includes("lesson-learning-experience-v1")) {
@@ -224,4 +281,4 @@ import LessonContentRenderer from "./LessonContentRenderer";
   writeFileSync(portalPath, portal);
 }
 
-process.stdout.write("Installed deterministic whole-lesson hierarchy, content-aware progress and exact-text rendering.\n");
+process.stdout.write("Installed deterministic hierarchy, race-safe progress, complete map and exact-text rendering.\n");
