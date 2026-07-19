@@ -14,6 +14,13 @@ let editor = readFileSync(editorPath, "utf8");
 if (!editor.includes(marker)) {
   editor = replaceRequired(
     editor,
+    "Sanity image asset reference type",
+    `  asset?: { url?: string };`,
+    `  asset?: { url?: string; _type?: string; _ref?: string };`,
+  );
+
+  editor = replaceRequired(
+    editor,
     "image upload error messages",
     `  if (error === "LESSON_NOT_FOUND") return "Mësimi nuk u gjet në Sanity.";`,
     `  if (error === "LESSON_NOT_FOUND") return "Mësimi nuk u gjet në Sanity.";\n  if (error === "IMAGE_TOO_LARGE") return "Fotografia është më e madhe se 10 MB.";\n  if (error === "UNSUPPORTED_IMAGE_TYPE") return "Ky format fotografie nuk mbështetet.";\n  if (error === "IMAGE_UPLOAD_FAILED") return "Fotografia nuk u ngarkua në Sanity. Provo përsëri.";`,
