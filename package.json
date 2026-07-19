@@ -14,12 +14,12 @@
     "typecheck": "tsc --noEmit",
     "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs",
     "audit:full": "node scripts/audit-full-project.mjs",
-    "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs && node scripts/audit-anatomy-heart.mjs && node scripts/audit-full-project.mjs && node scripts/audit-learning-experience.mjs",
+    "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs && node scripts/audit-anatomy-heart.mjs && node scripts/audit-full-project.mjs && node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs",
     "audit:annotations": "node scripts/audit-annotations.mjs && node scripts/audit-highlight-removal.mjs && node scripts/audit-adobe-sticky.mjs",
     "audit:admin-sanity": "node scripts/audit-admin-sanity.mjs && node scripts/audit-admin-save-resilience.mjs && node scripts/audit-admin-toolbar.mjs && node scripts/audit-admin-image-paste.mjs && node scripts/audit-admin-table-paste.mjs",
     "audit:sanity-runtime": "node scripts/audit-sanity-runtime.mjs && node scripts/check-live-sanity-data.mjs",
     "audit:auth": "node scripts/audit-auth.mjs",
-    "audit:learning": "node scripts/audit-learning-experience.mjs",
+    "audit:learning": "node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs",
     "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime"
   },
   "dependencies": {
