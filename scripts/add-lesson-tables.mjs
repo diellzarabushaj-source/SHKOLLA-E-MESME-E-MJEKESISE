@@ -30,7 +30,7 @@ type LessonTableValue = {
 `;
 
 const tableRenderer = `function LessonTableBlock({ value }: { value: unknown }) {
-  const table = value && typeof value === "object" ? value as LessonTableValue : {};
+  const table = (value && typeof value === "object" ? value : {}) as LessonTableValue;
   const columns = Array.isArray(table.columns) ? table.columns : [];
   const rows = Array.isArray(table.rows) ? table.rows : [];
   const columnCount = Math.max(
