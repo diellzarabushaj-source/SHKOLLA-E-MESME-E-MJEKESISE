@@ -18,7 +18,17 @@ type MarkdownLessonBlockProps = {
 };
 
 type HeadingLevel = 2 | 3 | 4;
-type HeadingReason = "sanity" | "markdown" | "numbered" | "section" | "uppercase" | "label" | "colon" | "phrase";
+type HeadingReason =
+  | "sanity"
+  | "markdown"
+  | "numbered"
+  | "section"
+  | "uppercase"
+  | "letter"
+  | "parenthesized"
+  | "label"
+  | "colon"
+  | "phrase";
 type HeadingDecision = {
   level: HeadingLevel;
   reason: HeadingReason;
@@ -32,15 +42,34 @@ type HeadingContext = {
 type CalloutKind = "remember" | "warning" | "logic" | "definition" | "example" | "comparison";
 
 const TABLE_DIVIDER = /^:?-{3,}:?$/;
-const BULLET_ITEM = /^\s*(?:[-*+] |•\s+)(.+)$/;
-const NUMBER_ITEM = /^\s*\d+[.)]\s+(.+)$/;
+const BULLET_ITEM = /^\s*(?:[-*+]\s+|[•–—]\s+)(.+)$/;
+const NUMBER_ITEM = /^\s*(\d+)[.)]\s+(.+)$/;
 const MARKDOWN_HEADING = /^(#{1,6})\s+(.+)$/;
 const NUMBERED_HEADING = /^(\d+(?:\.\d+){0,5})\.?\s+(.+)$/;
-const LETTER_HEADING = /^(?:[A-ZÇË]|[IVXLCDM]{1,7})[.)]\s+(.+)$/;
-const SECTION_HEADING = /^(KAPITULLI|PJESA|NJËSIA|TEMA|SEKSIONI)\b/i;
-const CALLOUT_PREFIX = /^(Mbaje mend|Kujdes|Rregull(?:i)?|Mnemonikë|Logjika(?: kryesore)?|Përkufizim(?:i)?|Shembull|Dallimi|Krahasimi|Rëndësi(?:a)?|Pika kryesore)\s*:?\s*[–—-]?\s*/i;
-const LEARNING_SUBHEADING = /^(Rruga|Skema|Rregull|Mnemonikë|Dallimi|Krahasimi|Përkufizimi|Baza|Maja|Faqet|Hemi|Globina|Serumi|Vaksinat|Muri|Valvulat|Trungu|Arteria|Vena|Sinusi|Muskujt|Fijet|Hemostaza|Koagulimi|Fibrinoliza|Funksioni|Ndërtimi|Përbërja|Ndarja|Klasifikimi|Roli|Rëndësia|Karakteristikat|Mekanizmi|Llojet|Pjesët|Pozita|Forma|Madhësia|Qarkullimi|Furnizimi|Inervimi|Veprimi|Fazat|Shkaqet|Pasojat|Simptomat|Diagnoza|Trajtimi|Parandalimi)\b/i;
-const SENTENCE_VERB = /\b(është|janë|ishte|ishin|ka|kanë|duhet|mund|përfaqëson|përfaqësojnë|përbëhet|përbëhen|ndërtohet|ndërtohen|shërben|shërbejnë|ndodhet|ndodhen|quhet|quhen|kalon|kalojnë|lidh|lidhen|studion|studiojnë|kryen|kryejnë|siguron|sigurojnë|formon|formojnë|përçon|përçojnë|transporton|transportojnë)\b/i;
+const LETTER_HEADING = /^([A-ZÇË]|[IVXLCDM]{1,7})[.)]\s+(.+)$/;
+const PARENTHESIZED_HEADING = /^\(([A-ZÇËa-zçë]|[IVXLCDMivxlcdm]{1,7}|\d+)\)\s+(.+)$/;
+const SECTION_HEADING = /^(KAPITULLI|PJESA|NJËSIA|TEMA|SEKSIONI|MODULI)\b/i;
+const CALLOUT_PREFIX = /^(Mbaje mend|Kujdes|Rregull(?:i)?|Mnemonikë|Logjika(?: kryesore)?|Përkufizim(?:i)?|Shembull|Dallimi|Krahasimi|Rëndësi(?:a)?|Pika kryesore|Këshillë|Shënim)\s*:?\s*[–—-]?\s*/i;
+const LEARNING_SUBHEADING = /^(Rruga|Skema|Rregull|Mnemonikë|Dallimi|Krahasimi|Përkufizimi|Koncepti|Anatomia|Fiziologjia|Struktura|Organizimi|Baza|Maja|Faqet|Hemi|Globina|Serumi|Vaksinat|Muri|Valvulat|Trungu|Arteria|Arteriet|Vena|Venat|Sinusi|Muskujt|Fijet|Hemostaza|Koagulimi|Fibrinoliza|Funksioni|Funksionet|Ndërtimi|Përbërja|Ndarja|Klasifikimi|Roli|Rëndësia|Karakteristikat|Veçoritë|Tiparet|Mekanizmi|Procesi|Llojet|Pjesët|Pozita|Forma|Madhësia|Qarkullimi|Furnizimi|Inervimi|Veprimi|Fazat|Shkaqet|Pasojat|Simptomat|Diagnoza|Trajtimi|Parandalimi|Metoda|Metodat|Lidhja|Marrëdhënia|Përmbledhja|Shtresat|Qeliza|Indet|Organet|Sistemi|Homeostaza|Reaksioni|Rregullimi)\b/i;
+const SENTENCE_VERB = /\b(është|janë|ishte|ishin|ka|kanë|duhet|mund|përfaqëson|përfaqësojnë|përbëhet|përbëhen|ndërtohet|ndërtohen|shërben|shërbejnë|ndodhet|ndodhen|quhet|quhen|kalon|kalojnë|lidh|lidhen|studion|studiojnë|kryen|kryejnë|siguron|sigurojnë|formon|formojnë|përçon|përçojnë|transporton|transportojnë|përmban|përmbajnë|kontrollon|kontrollojnë|rregullon|rregullojnë|ndahet|ndahen|fillon|fillojnë|vazhdon|vazhdojnë|mbaron|mbarojnë|hyn|hyjnë|del|dalin|jep|japin|mban|mbajnë)\b/i;
+const LOWERCASE_TITLE_WORDS = new Set([
+  "i",
+  "e",
+  "të",
+  "së",
+  "në",
+  "me",
+  "nga",
+  "për",
+  "dhe",
+  "ose",
+  "tek",
+  "kah",
+  "mbi",
+  "nën",
+  "pa",
+  "si",
+]);
 
 function sourceText(value: PortableBlockValue): string {
   return (value.children || []).map((child) => child.text || "").join("").replace(/\r\n?/g, "\n");
@@ -116,6 +145,21 @@ function isUpperHeading(line: string): boolean {
   return line === line.toLocaleUpperCase("sq-AL");
 }
 
+function wordCount(value: string): number {
+  return normalizedHeading(value).split(/\s+/).filter(Boolean).length;
+}
+
+function hasStrongTitleCase(value: string): boolean {
+  const meaningful = normalizedHeading(value)
+    .split(/\s+/)
+    .map((word) => word.replace(/^[^A-Za-zÇËçëÀ-ž]+|[^A-Za-zÇËçëÀ-ž-]+$/g, ""))
+    .filter(Boolean)
+    .filter((word) => !LOWERCASE_TITLE_WORDS.has(word.toLocaleLowerCase("sq-AL")));
+  if (!meaningful.length) return false;
+  const titleWords = meaningful.filter((word) => /^[A-ZÇËÀ-Ž]/.test(word)).length;
+  return titleWords === meaningful.length || (meaningful.length >= 3 && titleWords / meaningful.length >= 0.75);
+}
+
 function explicitHeadingDecision(style?: string): HeadingDecision | null {
   if (style === "h1" || style === "h2") return { level: 2, reason: "sanity" };
   if (style === "h3") return { level: 3, reason: "sanity" };
@@ -156,27 +200,59 @@ function looksLikeStandaloneTitle(value: string): boolean {
   const text = normalizedHeading(value);
   if (text.length < 3 || text.length > 88) return false;
   if (/^[a-zçë]/.test(text)) return false;
-  if (/[.!?;,]$/.test(text)) return false;
+  if (/[.!?;,:]$/.test(text)) return false;
   if (/https?:|www\.|@/.test(text)) return false;
   if (CALLOUT_PREFIX.test(text) || isDefinition(text)) return false;
-  const words = text.split(/\s+/).filter(Boolean);
-  if (words.length < 1 || words.length > 11) return false;
+  const words = wordCount(text);
+  if (words < 1 || words > 10) return false;
   if (SENTENCE_VERB.test(text)) return false;
-  return /[A-Za-zÇËçëÀ-ž]/.test(text);
+  return hasStrongTitleCase(text);
+}
+
+function nestedHeadingLevel(currentLevel?: HeadingLevel | null): HeadingLevel {
+  if (!currentLevel) return 2;
+  return currentLevel === 2 ? 3 : 4;
+}
+
+function safeNumberedHeading(value: string): HeadingDecision | null {
+  const numbered = value.match(NUMBERED_HEADING);
+  if (!numbered) return null;
+  const depth = numbered[1].split(".").length;
+  const label = numbered[2].trim();
+  const words = wordCount(label);
+  if (!label || /[!?;]$/.test(label)) return null;
+  if (depth === 1 && (SENTENCE_VERB.test(label) || words > 11 || /[,—–:]$/.test(label))) return null;
+  if (depth >= 2 && words > 18 && SENTENCE_VERB.test(label)) return null;
+  return { level: depth === 1 ? 2 : depth === 2 ? 3 : 4, reason: "numbered" };
+}
+
+function safeMarkerHeading(
+  value: string,
+  context: HeadingContext,
+): HeadingDecision | null {
+  const letter = value.match(LETTER_HEADING);
+  const parenthesized = value.match(PARENTHESIZED_HEADING);
+  const label = letter?.[2] || parenthesized?.[2] || "";
+  if (!label) return null;
+  if (/[.!?;,]$/.test(label) || SENTENCE_VERB.test(label) || wordCount(label) > 12) return null;
+  return {
+    level: nestedHeadingLevel(context.currentLevel),
+    reason: letter ? "letter" : "parenthesized",
+  };
 }
 
 function inferredHeadingDecision(line: string, nextLine = "", context: HeadingContext = {}): HeadingDecision | null {
   const value = normalizedHeading(line);
   if (!value || value.length > 150 || CALLOUT_PREFIX.test(value) || isDefinition(value)) return null;
 
-  const numbered = value.match(NUMBERED_HEADING);
-  if (numbered && !/[!?;]$/.test(numbered[2])) {
-    const depth = numbered[1].split(".").length;
-    return { level: depth === 1 ? 2 : depth === 2 ? 3 : 4, reason: "numbered" };
-  }
+  const numbered = safeNumberedHeading(value);
+  if (numbered) return numbered;
 
-  if (SECTION_HEADING.test(value) || LETTER_HEADING.test(value)) return { level: 2, reason: "section" };
+  if (SECTION_HEADING.test(value)) return { level: 2, reason: "section" };
   if (isUpperHeading(value)) return { level: 2, reason: "uppercase" };
+
+  const marker = safeMarkerHeading(value, context);
+  if (marker) return marker;
 
   if (LEARNING_SUBHEADING.test(value) && value.length <= 105 && !/[.!?;]$/.test(value)) {
     return { level: context.currentLevel && context.currentLevel >= 3 ? 4 : 3, reason: "label" };
@@ -186,14 +262,9 @@ function inferredHeadingDecision(line: string, nextLine = "", context: HeadingCo
     return { level: context.currentLevel && context.currentLevel >= 3 ? 4 : 3, reason: "colon" };
   }
 
-  const separated = context.previousBlank || context.nextBlank;
-  if (context.allowGenericPhrase && separated && looksLikeStandaloneTitle(value)) {
-    const level: HeadingLevel = context.currentLevel === null || context.currentLevel === undefined
-      ? 2
-      : context.currentLevel === 2
-        ? 3
-        : 4;
-    return { level, reason: "phrase" };
+  const isolated = context.previousBlank === true && context.nextBlank === true;
+  if (context.allowGenericPhrase && isolated && looksLikeStandaloneTitle(value)) {
+    return { level: nestedHeadingLevel(context.currentLevel), reason: "phrase" };
   }
 
   return null;
@@ -208,6 +279,7 @@ function renderHeading(value: string, key: string, decision: HeadingDecision, ch
       data-learning-heading="true"
       data-learning-level={decision.level}
       data-heading-source={decision.reason}
+      data-source-preserved={decision.reason === "markdown" ? "syntax-only" : "true"}
     >
       {children ?? inlineNodes(value, key)}
     </Tag>
@@ -239,7 +311,7 @@ function shouldParse(raw: string, style?: string): boolean {
     calloutKind(raw) ||
     isDefinition(raw) ||
     raw.includes("\n") ||
-    /(^|\n)\s*•\s+/m.test(raw) ||
+    /(^|\n)\s*[•–—]\s+/m.test(raw) ||
     /(^|\n)\s*[-*+]\s+\S/m.test(raw)
   );
 }
@@ -332,7 +404,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       while (index < lines.length) {
         const match = lines[index].match(NUMBER_ITEM);
         if (!match) break;
-        let item = match[1];
+        let item = match[2];
         index += 1;
         while (index < lines.length && /^\s{2,}\S/.test(lines[index]) && !BULLET_ITEM.test(lines[index]) && !NUMBER_ITEM.test(lines[index])) {
           item += `\n${lines[index].trim()}`;
@@ -410,8 +482,8 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       if (match) {
         const key = nextKey("list");
         output.push(
-          <ol data-learning-list="ordered" data-source-preserved="true" key={key} start={Number.parseInt(line, 10) || 1}>
-            <li>{inlineNodes(match[1], `${key}-0`)}</li>
+          <ol data-learning-list="ordered" data-source-preserved="true" key={key} start={Number.parseInt(match[1], 10) || 1}>
+            <li>{inlineNodes(match[2], `${key}-0`)}</li>
           </ol>,
         );
         index += 1;
