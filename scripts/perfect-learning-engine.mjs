@@ -52,7 +52,11 @@ if (!renderer.includes(rendererMarker)) {
   const letter = text.match(LETTER_HEADING);
   const parenthesized = text.match(PARENTHESIZED_HEADING);
   const label = letter?.[2] || parenthesized?.[2] || "";
-  if (!label || !looksLikeTitle(label)) return null;
+  const markerTitle = Boolean(label)
+    && wordCount(label) <= 12
+    && !looksLikeSentence(label)
+    && !/[.!?;:]$/.test(label);
+  if (!markerTitle) return null;
   const topLevelLetter = Boolean(letter && (SECTION_HEADING.test(label) || isUpperHeading(label)));
   const parenthesizedLevel: HeadingLevel = !currentLevel || currentLevel === 2 ? 3 : 4;
   return {
@@ -83,8 +87,12 @@ if (!renderer.includes(rendererMarker)) {
   renderer = replaceRequired(
     renderer,
     "context-aware learning labels",
-    `    return {level: currentLevel && currentLevel >= 3 ? 4 : 3, reason: "label"};`,
-    `    return {level: nestedLevel(currentLevel), reason: "label"};`,
+    `  if (LEARNING_LABEL.test(text) && looksLikeTitle(text)) {
+    return {level: currentLevel && currentLevel >= 3 ? 4 : 3, reason: "label"};
+  }`,
+    `  if (LEARNING_LABEL.test(text) && !looksLikeSentence(text) && wordCount(text) <= 13) {
+    return {level: nestedLevel(currentLevel), reason: "label"};
+  }`,
   );
   renderer = replaceRequired(
     renderer,
