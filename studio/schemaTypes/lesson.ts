@@ -37,7 +37,7 @@ export const lesson = defineType({
     defineField({
       name: 'body',
       title: 'Përmbajtja',
-      description: 'Shkruaj tekstin dhe ngjit fotografi direkt me Ctrl/⌘+V. Butoni normal për Insert image mbetet i disponueshëm.',
+      description: 'Shkruaj tekst, ngjit fotografi me Ctrl/⌘+V ose përdor Insert → Tabelë për rreshta dhe kolona.',
       type: 'array',
       components: {
         // Sanity's mixed block+image array inference currently resolves the form input
@@ -84,6 +84,11 @@ export const lesson = defineType({
               validation: (rule) => rule.max(1000),
             }),
           ],
+        }),
+        defineArrayMember({
+          name: 'lessonTable',
+          title: 'Tabelë',
+          type: 'lessonTable',
         }),
       ],
       validation: (rule) => rule.max(800),
