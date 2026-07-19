@@ -14,7 +14,7 @@ function replaceRequired(label, before, after) {
   source = source.replace(before, after);
 }
 
-if (!source.includes("data-lesson-annotations")) {
+if (!source.includes("<LessonAnnotations")) {
   throw new Error("Learning experience must run after private lesson annotations are installed.");
 }
 
