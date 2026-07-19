@@ -8,9 +8,14 @@ on:
       - app/MarkdownLessonContent.module.css
       - app/LessonLearningExperience.tsx
       - app/LessonLearningExperience.module.css
+      - app/LessonContentRenderer.tsx
       - app/learning-experience-audit/**
       - scripts/add-learning-experience.mjs
       - scripts/add-markdown-lesson-formatting.mjs
+      - scripts/perfect-learning-engine.mjs
+      - scripts/audit-learning-experience.mjs
+      - scripts/audit-heading-consistency.mjs
+      - scripts/audit-perfect-learning-engine.mjs
       - scripts/e2e-learning-experience.mjs
       - package.json
       - package-lock.json
@@ -47,6 +52,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Build application
         run: npm run build
+      - name: Audit production learning contracts
+        run: npm run audit:learning
       - name: Test automatic hierarchy and exact text preservation
         shell: bash
         run: |

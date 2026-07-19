@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/finalize-admin-image-paste.mjs && node scripts/add-table-copy-paste.mjs && node scripts/add-markdown-lesson-formatting.mjs && node scripts/add-admin-table-e2e.mjs && node scripts/add-user-annotations.mjs && node scripts/add-learning-experience.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs",
+    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/finalize-admin-image-paste.mjs && node scripts/add-table-copy-paste.mjs && node scripts/add-markdown-lesson-formatting.mjs && node scripts/add-admin-table-e2e.mjs && node scripts/add-user-annotations.mjs && node scripts/add-learning-experience.mjs && node scripts/perfect-learning-engine.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs",
     "predev": "npm run prepare:portal",
     "dev": "next dev",
     "prebuild": "npm run prepare:portal",
@@ -14,12 +14,13 @@
     "typecheck": "tsc --noEmit",
     "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs",
     "audit:full": "node scripts/audit-full-project.mjs",
-    "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs && node scripts/audit-anatomy-heart.mjs && node scripts/audit-full-project.mjs && node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs",
+    "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs && node scripts/audit-anatomy-heart.mjs && node scripts/audit-full-project.mjs && node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs && node scripts/audit-perfect-learning-engine.mjs",
     "audit:annotations": "node scripts/audit-annotations.mjs && node scripts/audit-highlight-removal.mjs && node scripts/audit-adobe-sticky.mjs",
     "audit:admin-sanity": "node scripts/audit-admin-sanity.mjs && node scripts/audit-admin-save-resilience.mjs && node scripts/audit-admin-toolbar.mjs && node scripts/audit-admin-image-paste.mjs && node scripts/audit-admin-table-paste.mjs",
     "audit:sanity-runtime": "node scripts/audit-sanity-runtime.mjs && node scripts/check-live-sanity-data.mjs",
     "audit:auth": "node scripts/audit-auth.mjs",
-    "audit:learning": "node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs",
+    "audit:learning": "node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs && node scripts/audit-perfect-learning-engine.mjs",
+    "audit:perfect-learning": "node scripts/audit-perfect-learning-engine.mjs",
     "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime"
   },
   "dependencies": {
