@@ -15,6 +15,9 @@ export const auth = createNeonAuth({
   baseUrl,
   cookies: {
     secret: cookieSecret,
+    // Authentication controls in the shared header must reflect sign-in,
+    // sign-up, Google OAuth and sign-out on the very next request.
+    sessionDataTtl: 0,
   },
   logLevel: "warn",
 });
