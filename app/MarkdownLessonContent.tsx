@@ -235,7 +235,7 @@ function shouldParse(raw: string, style?: string): boolean {
   return Boolean(
     explicitHeadingDecision(style) ||
     markdownHeadingDecision(raw) ||
-    inferredHeadingDecision(raw) ||
+    inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true }) ||
     calloutKind(raw) ||
     isDefinition(raw) ||
     raw.includes("\n") ||
@@ -455,7 +455,7 @@ export default function MarkdownLessonBlock({ value, children }: MarkdownLessonB
   if (!raw.includes("\n")) {
     const markdownHeading = markdownHeadingDecision(raw);
     if (markdownHeading) return renderHeading(markdownHeading.text, key, markdownHeading.decision);
-    const inferred = inferredHeadingDecision(raw, "", { allowGenericPhrase: true, previousBlank: true, nextBlank: true });
+    const inferred = inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true });
     if (inferred) return renderHeading(raw, key, inferred, children);
     return renderLearningParagraph(raw, key, children);
   }
