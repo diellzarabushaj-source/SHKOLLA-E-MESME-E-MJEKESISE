@@ -1,0 +1,46 @@
+name: Deploy Sanity Studio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "studio/**"
+      - ".github/workflows/sanity-studio-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sanity-studio-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Install Studio dependencies
+        run: npm install
+      - name: Verify and build Studio
+        run: npm run check
+      - name: Deploy the existing hosted Studio
+        if: ${{ env.SANITY_AUTH_TOKEN != '' }}
+        run: npm run deploy -- --no-build
+      - name: Explain skipped deployment
+        if: ${{ env.SANITY_AUTH_TOKEN == '' }}
+        run: |
+          echo "### Sanity Studio deployment skipped" >> "$GITHUB_STEP_SUMMARY"
+          echo "The Studio code passed all checks, but the repository does not expose a SANITY_AUTH_TOKEN secret to this workflow." >> "$GITHUB_STEP_SUMMARY"
+          echo "Add that repository secret or run npm run deploy from the studio folder to publish the hosted Studio." >> "$GITHUB_STEP_SUMMARY"
