@@ -1,0 +1,45 @@
+name: Sanity Studio check
+
+on:
+  pull_request:
+    paths:
+      - "studio/**"
+      - ".github/workflows/sanity-studio-check.yml"
+      - ".github/workflows/sanity-studio-deploy.yml"
+  push:
+    branches: [main]
+    paths:
+      - "studio/**"
+      - ".github/workflows/sanity-studio-check.yml"
+      - ".github/workflows/sanity-studio-deploy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Install Studio dependencies
+        run: npm install
+      - name: Typecheck, audit and build Studio
+        run: npm run check
+      - name: Upload Studio build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanity-studio-build-diagnostics
+          path: |
+            studio/dist
+            studio/package-lock.json
+          retention-days: 3
