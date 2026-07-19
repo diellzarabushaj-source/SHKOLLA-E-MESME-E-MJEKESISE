@@ -114,6 +114,46 @@ async function auditRecovery(browser) {
   }
 }
 
+async function auditInstantSignOut(browser) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
+  let signedOut = false;
+  let signOutRequests = 0;
+
+  await context.route("**/api/auth/get-session*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(signedOut ? null : {
+        session: { id: "audit-session", userId: "audit-user", expiresAt: new Date(Date.now() + 3_600_000).toISOString() },
+        user: { id: "audit-user", name: "audit-user", email: "audit@example.com", emailVerified: true },
+      }),
+    });
+  });
+
+  await context.route("**/api/auth/sign-out*", async (route) => {
+    signOutRequests += 1;
+    signedOut = true;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) });
+  });
+
+  const page = await context.newPage();
+  watch(page, "instant sign out");
+  try {
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    const logout = page.getByRole("button", { name: "Dil nga llogaria" });
+    await logout.waitFor({ state: "visible", timeout: 10_000 });
+    await logout.click();
+
+    await page.getByRole("link", { name: "Kyçu", exact: true }).waitFor({ state: "visible", timeout: 10_000 });
+    assert(signOutRequests === 1, `logout sent ${signOutRequests} sign-out requests instead of one`);
+    assert(new URL(page.url()).pathname === "/", `logout did not finish on the home page: ${page.url()}`);
+    assert(await page.getByRole("button", { name: "Dil nga llogaria" }).count() === 0, "logout button remained visible after sign-out");
+    console.log("✓ logout updates the header and session immediately without manual refresh");
+  } finally {
+    await context.close();
+  }
+}
+
 async function auditMobile(browser) {
   const context = await browser.newContext({ viewport: { width: 360, height: 800 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   const page = await context.newPage();
@@ -137,6 +177,7 @@ try {
   await auditSignIn(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sign-in audit failed"));
   await auditSignUp(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sign-up audit failed"));
   await auditRecovery(browser).catch((error) => failures.push(error instanceof Error ? error.message : "recovery audit failed"));
+  await auditInstantSignOut(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sign-out audit failed"));
   await auditMobile(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile auth audit failed"));
 } finally {
   await browser.close();
