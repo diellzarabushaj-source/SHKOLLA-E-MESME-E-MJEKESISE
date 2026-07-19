@@ -137,7 +137,7 @@ editor = replaceRequired(
       setUploadingImages((count) => count + pending.length);
       setDirty(true);
       setError("");
-      setNotice(pending.length === 1 ? "Duke ngarkuar fotografinë në Sanity…" : `Duke ngarkuar ${"${pending.length}"} fotografi në Sanity…`);
+      setNotice(pending.length === 1 ? "Duke ngarkuar fotografinë në Sanity…" : "Duke ngarkuar " + pending.length + " fotografi në Sanity…");
 
       void Promise.allSettled(pending.map(async ({ file, key }) => {
         try {
@@ -311,7 +311,7 @@ route = replaceRequired(
   if (assetIds.length > 200) throw new Error("INVALID_IMAGE_ASSET");
 
   const assetCount = await client.fetch<number>(
-    `count(*[_type == "sanity.imageAsset" && _id in $assetIds])`,
+    "count(*[_type == \\"sanity.imageAsset\\" && _id in $assetIds])",
     { assetIds },
   );
   if (assetCount !== assetIds.length) throw new Error("INVALID_IMAGE_ASSET");
