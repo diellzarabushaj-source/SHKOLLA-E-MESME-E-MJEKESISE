@@ -13,6 +13,7 @@ function requireAll(label, source, tokens) {
 
 const packageSource = read("package.json");
 const hardener = read("scripts/add-admin-image-paste.mjs");
+const finalizer = read("scripts/finalize-admin-image-paste.mjs");
 const helper = read("app/admin-image-paste.ts");
 const uploadRoute = read("app/api/admin/assets/images/route.ts");
 const lessonRoute = read("app/api/admin/lessons/[lessonId]/route.ts");
@@ -22,11 +23,15 @@ const browserAudit = read("scripts/e2e-admin-editor.mjs");
 
 requireAll("Build pipeline", packageSource, [
   "add-admin-image-paste.mjs",
+  "finalize-admin-image-paste.mjs",
   "audit-admin-image-paste.mjs",
 ]);
 const prepare = JSON.parse(packageSource || "{}").scripts?.["prepare:portal"] || "";
 if (prepare.indexOf("add-admin-image-paste.mjs") <= prepare.indexOf("harden-admin-sanity-save.mjs")) {
   failures.push("Image paste duhet të aplikohet pas forcimit të ruajtjes admin/Sanity.");
+}
+if (prepare.indexOf("finalize-admin-image-paste.mjs") <= prepare.indexOf("add-admin-image-paste.mjs")) {
+  failures.push("Finalizimi i image paste duhet të ekzekutohet pas instalimit të tij.");
 }
 
 requireAll("Clipboard image helper", helper, [
@@ -35,7 +40,7 @@ requireAll("Clipboard image helper", helper, [
   "replaceImageUploadPlaceholder",
   "pastedImagePortableNode",
   "MAX_IMAGES_PER_PASTE = 5",
-  "data-pasted-sanity-image",
+  "dataset.pastedSanityImage",
   "asset: { _type: \"reference\", _ref: assetId }",
 ]);
 
@@ -65,6 +70,7 @@ requireAll("Generated administrator editor", editor, [
   "uploadingImages > 0",
   "Paste fotografinë direkt",
   "data-remove-pasted-image",
+  `closest('figure[data-pasted-sanity-image="true"]')`,
 ]);
 
 requireAll("Lesson image validation", lessonRoute, [
@@ -101,6 +107,11 @@ requireAll("Persistent hardener", hardener, [
   "verifyImageAssets",
   "uploadPastedImage",
   "imagePasteHint",
+]);
+requireAll("Generated selector finalizer", finalizer, [
+  "brokenSelector",
+  "safeSelector",
+  "Direct image paste remove selector was not finalized",
 ]);
 
 if (failures.length) {
