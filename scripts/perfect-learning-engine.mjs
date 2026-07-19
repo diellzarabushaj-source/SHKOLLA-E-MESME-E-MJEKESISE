@@ -143,18 +143,19 @@ if (!renderer.includes(rendererMarker)) {
 }
 
 function LearningBlock({children, value}: BlockRendererProps) {
-  if ((value as PlannedNode & {listItem?: string}).listItem) return <>{children}</>;
-  const planned = value._learningHeading;
+  const blockValue = value as PlannedNode & {listItem?: string};
+  if (blockValue.listItem) return <>{children}</>;
+  const planned = blockValue._learningHeading;
   if (planned) {
     const Tag = planned.level === 2 ? "h2" : planned.level === 3 ? "h3" : "h4";
-    const content = planned.reason === "markdown" ? sourceText(value).replace(/^#{1,6}\\s+/, "") : children;
+    const content = planned.reason === "markdown" ? sourceText(blockValue).replace(/^#{1,6}\\s+/, "") : children;
     return (
       <Tag
         id={planned.id}
         data-learning-heading="true"
         data-learning-level={planned.level}
         data-heading-source={planned.reason}
-        data-learning-source-key={sourceKey(value)}
+        data-learning-source-key={sourceKey(blockValue)}
         data-source-preserved={planned.reason === "markdown" ? "syntax-only" : "true"}
       >
         {content}
@@ -162,23 +163,23 @@ function LearningBlock({children, value}: BlockRendererProps) {
     );
   }
 
-  const raw = sourceText(value);
-  if (!raw.includes("\\n") && (value.style === undefined || value.style === "normal")) {
+  const raw = sourceText(blockValue);
+  if (!raw.includes("\\n") && (blockValue.style === undefined || blockValue.style === "normal")) {
     const kind = calloutKind(raw);
     if (kind) {
-      return <blockquote className={learningStyles.callout} data-learning-callout={kind} data-learning-source-key={sourceKey(value)} data-source-preserved="true">{children}</blockquote>;
+      return <blockquote className={learningStyles.callout} data-learning-callout={kind} data-learning-source-key={sourceKey(blockValue)} data-source-preserved="true">{children}</blockquote>;
     }
     if (isDefinition(raw)) {
-      return <p className={learningStyles.definition} data-learning-definition="true" data-learning-source-key={sourceKey(value)} data-source-preserved="true">{children}</p>;
+      return <p className={learningStyles.definition} data-learning-definition="true" data-learning-source-key={sourceKey(blockValue)} data-source-preserved="true">{children}</p>;
     }
-    return <p data-learning-paragraph="true" data-learning-source-key={sourceKey(value)} data-source-preserved="true">{children}</p>;
+    return <p data-learning-paragraph="true" data-learning-source-key={sourceKey(blockValue)} data-source-preserved="true">{children}</p>;
   }
 
-  if (value.style === "blockquote") {
-    return <blockquote data-learning-source-key={sourceKey(value)} data-source-preserved="true">{children}</blockquote>;
+  if (blockValue.style === "blockquote") {
+    return <blockquote data-learning-source-key={sourceKey(blockValue)} data-source-preserved="true">{children}</blockquote>;
   }
 
-  return <MarkdownLessonBlock value={value}>{children}</MarkdownLessonBlock>;
+  return <MarkdownLessonBlock value={blockValue}>{children}</MarkdownLessonBlock>;
 }`,
   );
   writeFileSync(rendererPath, renderer);
