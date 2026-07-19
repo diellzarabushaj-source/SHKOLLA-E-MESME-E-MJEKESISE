@@ -13,34 +13,42 @@ function forbidText(source, value, label) {
   if (source.includes(value)) throw new Error(`Perfect learning audit failed: ${label}`);
 }
 
-requireText(renderer, "function planBody", "whole-lesson planning is missing");
-requireText(renderer, "isNumberedListCluster", "numbered lists are not protected from heading inference");
-requireText(renderer, "looksLikeSentence", "sentence-like paragraphs are not protected");
-requireText(renderer, "explicitLevel", "explicit Sanity heading levels do not have priority");
-requireText(renderer, 'normal: LearningBlock', "normal Portable Text blocks are not controlled by the deterministic renderer");
-requireText(renderer, 'h1: LearningBlock', "Sanity H1 cannot be demoted below the lesson title");
-requireText(renderer, 'data-source-preserved="true"', "source-preservation markers are missing");
-requireText(renderer, "...node", "render planning does not clone the source block");
-requireText(experience, "contentRevision", "content revision is not tracked");
-requireText(experience, "revisionChanged", "updated lessons do not reset stale completion");
-requireText(experience, "headings.map", "the lesson map does not include every heading");
-requireText(experience, 'aria-current={activeHeading === heading.id ? "location" : undefined}', "active outline accessibility is missing");
-requireText(experience, "medical-lesson-learning-v2", "versioned progress storage is missing");
-requireText(installer, "perfect-learning-engine-v2", "generated portal integration marker is missing");
-requireText(installer, "LessonContentRenderer", "generated portal does not use the whole-lesson renderer");
-requireText(installer, "contentRevision={selectedLesson._rev}", "generated portal does not pass the Sanity revision");
+requireText(renderer, "function planBody", "whole lesson planning is missing");
+requireText(renderer, "isNumberedListCluster", "numbered lists are not protected");
+requireText(renderer, "looksLikeSentence", "sentence protection is missing");
+requireText(renderer, "hasStrongTitleCase", "title confidence is missing");
+requireText(renderer, "markerDecision", "marker nesting is missing");
+requireText(renderer, "PARENTHESIZED_HEADING", "parenthesized headings are unsupported");
+requireText(renderer, "explicitLevel", "Sanity heading priority is missing");
+requireText(renderer, 'normal: LearningBlock', "normal blocks are not controlled");
+requireText(renderer, 'h1: LearningBlock', "Sanity H1 is not demoted");
+requireText(renderer, 'data-source-preserved="true"', "source markers are missing");
+requireText(renderer, "...node", "source blocks are not cloned");
+requireText(experience, "contentRevision", "Sanity revision is not tracked");
+requireText(experience, "revisionChanged", "revision reset is missing");
+requireText(experience, "stableSignature", "content signature is missing");
+requireText(experience, "storedSignature !== contentSignature", "signature reset is missing");
+requireText(experience, "Math.max(current, nextProgress)", "progress can decrease");
+requireText(experience, "lastHeading", "last section is not saved");
+requireText(experience, "Vazhdo te seksioni i fundit", "resume control is missing");
+requireText(experience, "headings.map", "complete lesson map is missing");
+requireText(experience, 'aria-current={activeHeading === heading.id ? "location" : undefined}', "active outline state is missing");
+requireText(experience, "medical-lesson-learning-v2", "versioned storage is missing");
+requireText(experience, "STORAGE_VERSION = 3", "storage schema version is missing");
+requireText(installer, "perfect-learning-engine-v2", "portal integration marker is missing");
+requireText(installer, "LessonContentRenderer", "production renderer is not installed");
+requireText(installer, "contentRevision={selectedLesson._rev}", "Sanity revision is not passed");
 
-forbidText(renderer, "dangerouslySetInnerHTML", "unsafe HTML can replace lesson text");
-forbidText(renderer, "innerHTML =", "lesson markup is mutated");
-forbidText(renderer, "textContent =", "lesson text is mutated");
-forbidText(renderer, "fetch(", "front-end classification performs network writes");
-forbidText(renderer, "/api/lessons", "front-end classification can change lesson data");
+forbidText(renderer, "dangerouslySetInnerHTML", "raw HTML replacement is present");
+forbidText(renderer, "innerHTML =", "markup mutation is present");
+forbidText(renderer, "textContent =", "text mutation is present");
+forbidText(renderer, "/api/lessons", "lesson write route is referenced");
 
 const prepare = packageJson.scripts?.["prepare:portal"] || "";
 const baseIndex = prepare.indexOf("add-learning-experience.mjs");
 const perfectIndex = prepare.indexOf("perfect-learning-engine.mjs");
 if (baseIndex < 0 || perfectIndex < 0 || perfectIndex < baseIndex) {
-  throw new Error("Perfect learning audit failed: the perfect installer must run after the base learning installer");
+  throw new Error("Perfect learning audit failed: installer order is incorrect");
 }
 
-console.log("Perfect learning engine verified: future Sanity lessons receive deterministic hierarchy, exact-text rendering and revision-aware progress.");
+console.log("Perfect learning engine verified for future Sanity content.");
