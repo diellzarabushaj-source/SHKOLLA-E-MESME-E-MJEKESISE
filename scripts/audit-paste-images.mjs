@@ -19,7 +19,7 @@ requireAll("Live editor installer", installer, [
   "clipboardData.items",
   "uploadPastedImage",
   "/api/admin/assets/images",
-  "data.sanityAssetRef",
+  "figure.dataset.sanityAssetRef",
   "Fotografia u ngarkua në Sanity",
   "IMAGE_ASSET_REF_PATTERN",
 ]);
