@@ -369,3 +369,196 @@
 @media (prefers-reduced-motion: reduce) {
   .toolbar button { transition: none; }
 }
+
+
+/* admin-image-paste-v1 */
+.imagePasteHint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 10px 0 14px;
+  padding: 11px 14px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 45%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 6%, white);
+  color: var(--text);
+}
+
+.imagePasteHint strong {
+  white-space: nowrap;
+  font-size: 0.86rem;
+}
+
+.imagePasteHint span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.imageUploading,
+.pastedImage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  width: min(100%, 760px);
+  min-height: 150px;
+  margin: 24px auto;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--primary) 4%, white);
+  text-align: center;
+}
+
+.imageUploading {
+  border-style: dashed;
+}
+
+.imageSpinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: admin-image-spin 0.8s linear infinite;
+}
+
+.pastedImage img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 560px;
+  border-radius: 14px;
+  object-fit: contain;
+}
+
+.imageUploadCopy {
+  display: grid;
+  gap: 3px;
+}
+
+.imageUploadCopy strong {
+  font-size: 0.9rem;
+}
+
+.imageUploadCopy small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.imageRemove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid color-mix(in srgb, #b91c1c 30%, transparent);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #991b1b;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+@keyframes admin-image-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  .imagePasteHint {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .imagePasteHint strong {
+    white-space: normal;
+  }
+
+  .imageUploading,
+  .pastedImage {
+    margin: 18px auto;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .pastedImage img {
+    max-height: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .imageSpinner { animation: none; }
+}
+
+
+/* admin-table-paste-v1 */
+.richEditor figure[data-portable-table="true"] {
+  display: block;
+  max-width: 100%;
+  margin: 22px 0;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.richEditor figure[data-portable-table="true"] figcaption {
+  min-width: 34rem;
+  padding: 10px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  background: color-mix(in srgb, var(--primary) 5%, white);
+  font-weight: 750;
+}
+
+.richEditor figure[data-portable-table="true"] table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+}
+
+.richEditor figure[data-portable-table="true"] th,
+.richEditor figure[data-portable-table="true"] td {
+  min-width: 8rem;
+  padding: 9px 11px;
+  border-right: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+  vertical-align: top;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.richEditor figure[data-portable-table="true"] th {
+  background: color-mix(in srgb, var(--primary) 10%, white);
+  font-weight: 750;
+}
+
+.richEditor figure[data-portable-table="true"] tr:last-child > * {
+  border-bottom: 0;
+}
+
+.richEditor figure[data-portable-table="true"] tr > *:last-child {
+  border-right: 0;
+}
+
+.richEditor figure[data-portable-table="true"] th:focus,
+.richEditor figure[data-portable-table="true"] td:focus,
+.richEditor figure[data-portable-table="true"] figcaption:focus {
+  outline: 2px solid color-mix(in srgb, var(--primary) 65%, transparent);
+  outline-offset: -2px;
+}
+
+@media (max-width: 720px) {
+  .richEditor figure[data-portable-table="true"] {
+    margin: 16px 0;
+    border-radius: 10px;
+  }
+
+  .richEditor figure[data-portable-table="true"] table,
+  .richEditor figure[data-portable-table="true"] figcaption {
+    min-width: 30rem;
+  }
+}

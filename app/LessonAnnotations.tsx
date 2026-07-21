@@ -5,9 +5,20 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 import styles from "./LessonAnnotations.module.css";
+import "./annotation-mobile-polish.css";
+import "./highlight-removal.css";
+import "./adobe-sticky-popover.css";
+import "./adobe-sticky-toast.css";
+
+// adobe-sticky-popover-v1
+
+// highlight-removal-option-v1
+
+// annotation-mobile-safety-v2
 
 type AnnotationKind = "highlight" | "note";
 type AnnotationColor = "yellow" | "green" | "blue" | "pink";
@@ -235,6 +246,8 @@ export default function LessonAnnotations({
 }: Props) {
   const wrapperRef = useRef<HTMLElement>(null);
   const articleRef = useRef<HTMLElement>(null);
+  const loadRequestRef = useRef(0);
+  const selectionTimerRef = useRef<number | null>(null);
   const [annotations, setAnnotations] = useState<LessonAnnotation[]>([]);
   const [paintRects, setPaintRects] = useState<PaintRect[]>([]);
   const [notePins, setNotePins] = useState<NotePin[]>([]);
@@ -245,27 +258,33 @@ export default function LessonAnnotations({
   const [noteColor, setNoteColor] = useState<AnnotationColor>("yellow");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
+  const [popoverText, setPopoverText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
   const loadAnnotations = useCallback(async () => {
     if (!enabled) return;
+    const requestId = ++loadRequestRef.current;
     const response = await fetch(`/api/annotations?lessonId=${encodeURIComponent(lessonId)}`, {
-      headers: { Accept: "application/json" },
-      cache: "no-store",
+      headers: { Accept: "application/json" }, cache: "no-store", credentials: "same-origin",
     });
-    const result = await response.json() as { annotations?: LessonAnnotation[]; error?: string };
+    const result = await response.json().catch(() => ({})) as { annotations?: LessonAnnotation[]; error?: string };
     if (!response.ok) throw new Error(result.error || "ANNOTATION_FAILED");
+    if (requestId !== loadRequestRef.current) return;
     setAnnotations(Array.isArray(result.annotations) ? result.annotations : []);
   }, [enabled, lessonId]);
 
   useEffect(() => {
+    loadRequestRef.current += 1;
     setAnnotations([]);
     setSelection(null);
     setPanelOpen(false);
     setComposerOpen(false);
     setEditingId(null);
+    setOpenNoteId(null);
+    setPopoverText("");
     setError("");
     setNotice("");
     if (!enabled) return;
@@ -278,6 +297,24 @@ export default function LessonAnnotations({
       cancelled = true;
     };
   }, [enabled, lessonId, loadAnnotations]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const refresh = () => {
+      if (document.visibilityState !== "visible" || busy) return;
+      void loadAnnotations().catch((e) => setError(messageFor(e instanceof Error ? e.message : "ANNOTATION_FAILED")));
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", refresh); };
+  }, [busy, enabled, loadAnnotations]);
+
+  useEffect(() => {
+    if (!openNoteId) return;
+    if (annotations.some((annotation) => annotation.id === openNoteId && annotation.kind === "note")) return;
+    setOpenNoteId(null);
+    setPopoverText("");
+  }, [annotations, openNoteId]);
 
   const recalculate = useCallback(() => {
     const wrapper = wrapperRef.current;
@@ -378,6 +415,8 @@ export default function LessonAnnotations({
     const endOffset = rangeOffset(startBlock, range.endContainer, range.endOffset) - trailing;
     const blockText = startBlock.textContent || "";
     const rect = range.getBoundingClientRect();
+    const half = 160;
+    const preferredTop = rect.top > 92 ? rect.top - 62 : rect.bottom + 14;
     setNotice("");
     setSelection({
       blockKey: startBlock.dataset.annotationBlockKey as string,
@@ -386,19 +425,31 @@ export default function LessonAnnotations({
       quote,
       prefix: blockText.slice(Math.max(0, startOffset - 64), startOffset),
       suffix: blockText.slice(endOffset, endOffset + 64),
-      left: Math.min(window.innerWidth - 150, Math.max(150, rect.left + rect.width / 2)),
-      top: Math.min(window.innerHeight - 72, Math.max(72, rect.bottom + 12)),
+      left: Math.min(window.innerWidth - half - 12, Math.max(half + 12, rect.left + rect.width / 2)),
+      top: Math.min(window.innerHeight - 66, Math.max(12, preferredTop)),
     });
   }, [busy, composerOpen, enabled]);
 
   useEffect(() => {
     if (!enabled) return;
-    const onPointerUp = () => window.setTimeout(captureSelection, 0);
-    document.addEventListener("mouseup", onPointerUp);
-    document.addEventListener("touchend", onPointerUp, { passive: true });
+    const schedule = (event?: Event) => {
+      const target = event?.target instanceof Element ? event.target : null;
+      if (target?.closest("[data-annotation-ui]")) return;
+      if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+      const delay = window.matchMedia("(pointer: coarse)").matches ? 260 : 24;
+      selectionTimerRef.current = window.setTimeout(() => { selectionTimerRef.current = null; window.requestAnimationFrame(captureSelection); }, delay);
+    };
+    const changed = () => schedule();
+    document.addEventListener("selectionchange", changed);
+    document.addEventListener("pointerup", schedule);
+    document.addEventListener("touchend", schedule, { passive: true });
+    document.addEventListener("keyup", schedule);
     return () => {
-      document.removeEventListener("mouseup", onPointerUp);
-      document.removeEventListener("touchend", onPointerUp);
+      if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+      document.removeEventListener("selectionchange", changed);
+      document.removeEventListener("pointerup", schedule);
+      document.removeEventListener("touchend", schedule);
+      document.removeEventListener("keyup", schedule);
     };
   }, [captureSelection, enabled]);
 
@@ -491,6 +542,48 @@ export default function LessonAnnotations({
     }
   }
 
+  async function removeHighlightsFromSelection() {
+    if (!selection) return;
+
+    const matchingHighlights = annotations.filter((annotation) =>
+      annotation.kind === "highlight"
+      && annotation.blockKey === selection.blockKey
+      && annotation.startOffset < selection.endOffset
+      && annotation.endOffset > selection.startOffset
+    );
+
+    if (!matchingHighlights.length) {
+      setNotice("Nuk ka highlighting në pjesën e zgjedhur.");
+      clearSelection();
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      const removedIds = await Promise.all(matchingHighlights.map(async (annotation) => {
+        const response = await fetch(`/api/annotations?id=${encodeURIComponent(annotation.id)}`, {
+          method: "DELETE",
+          credentials: "same-origin",
+        });
+        const result = await response.json().catch(() => ({})) as { error?: string };
+        if (!response.ok) throw new Error(result.error || "ANNOTATION_FAILED");
+        return annotation.id;
+      }));
+
+      const removed = new Set(removedIds);
+      setAnnotations((current) => current.filter((annotation) => !removed.has(annotation.id)));
+      setNotice(matchingHighlights.length === 1 ? "Highlighting-u u hoq." : `${matchingHighlights.length} highlighting-e u hoqën.`);
+      clearSelection();
+    } catch (deleteError) {
+      setError(messageFor(deleteError instanceof Error ? deleteError.message : "ANNOTATION_FAILED"));
+      void loadAnnotations().catch(() => {});
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function jumpTo(annotation: LessonAnnotation) {
     const article = articleRef.current;
     if (!article) return;
@@ -505,6 +598,7 @@ export default function LessonAnnotations({
   }
 
   const noteCount = annotations.filter((annotation) => annotation.kind === "note").length;
+  const openNotePin = openNoteId ? notePins.find(({ annotation }) => annotation.id === openNoteId) : undefined;
 
   return (
     <section ref={wrapperRef} className={styles.workspace} data-lesson-annotations>
@@ -523,8 +617,14 @@ export default function LessonAnnotations({
 
       <button
         className={styles.libraryButton}
+        data-annotation-ui
+        aria-label="Shënimet e mia"
         type="button"
-        onClick={() => setPanelOpen((open) => !open)}
+        onClick={() => {
+          setOpenNoteId(null);
+          setPopoverText("");
+          setPanelOpen((open) => !open);
+        }}
         aria-expanded={panelOpen}
         aria-controls="lesson-annotation-library"
       >
@@ -536,24 +636,104 @@ export default function LessonAnnotations({
       {notePins.map(({ annotation, left, top }) => (
         <button
           className={styles.notePin}
+          data-annotation-ui
           data-color={annotation.color}
           key={annotation.id}
           style={{ left, top }}
           type="button"
           aria-label={`Hape sticky note: ${annotation.noteText || annotation.quote}`}
+          aria-expanded={openNoteId === annotation.id}
+          data-active={openNoteId === annotation.id ? "true" : "false"}
           onClick={() => {
-            setPanelOpen(true);
-            setEditingId(annotation.id);
-            setEditingText(annotation.noteText || "");
+            setPanelOpen(false);
+            setEditingId(null);
+            setEditingText("");
+            setNotice("");
+            setError("");
+            setPopoverText(annotation.noteText || "");
+            setOpenNoteId((current) => current === annotation.id ? null : annotation.id);
           }}
         >
           <span aria-hidden="true">▰</span>
         </button>
       ))}
 
+      {openNotePin && (
+        <aside
+          data-annotation-ui
+          data-adobe-note-popover
+          data-color={openNotePin.annotation.color}
+          role="dialog"
+          aria-label="Sticky note"
+          style={{ left: openNotePin.left, top: openNotePin.top }}
+        >
+          <header>
+            <div>
+              <strong>Sticky note</strong>
+              <span>Vetëm për llogarinë tënde</span>
+            </div>
+            <button
+              type="button"
+              aria-label="Mbyll sticky note"
+              onClick={() => { setOpenNoteId(null); setPopoverText(""); }}
+            >×</button>
+          </header>
+          <blockquote>“{openNotePin.annotation.quote}”</blockquote>
+          <textarea
+            autoFocus
+            maxLength={4_000}
+            value={popoverText}
+            onChange={(event) => setPopoverText(event.target.value)}
+            placeholder="Shkruaj shënimin tënd…"
+          />
+          <div data-adobe-note-colors aria-label="Ndrysho ngjyrën e sticky note">
+            {COLORS.map((color) => (
+              <button
+                className={openNotePin.annotation.color === color ? styles.selectedColor : ""}
+                data-color={color}
+                key={color}
+                type="button"
+                title={COLOR_LABELS[color]}
+                aria-label={COLOR_LABELS[color]}
+                disabled={busy}
+                onClick={() => void updateAnnotation(openNotePin.annotation, { color })}
+              />
+            ))}
+          </div>
+          <footer>
+            <button
+              type="button"
+              data-adobe-note-delete
+              disabled={busy}
+              onClick={() => void removeAnnotation(openNotePin.annotation)}
+            >Fshi</button>
+            <button
+              type="button"
+              data-adobe-note-save
+              disabled={busy || !popoverText.trim()}
+              onClick={() => void updateAnnotation(openNotePin.annotation, { noteText: popoverText.trim() })}
+            >{busy ? "Duke ruajtur…" : "Ruaj"}</button>
+          </footer>
+        </aside>
+      )}
+
       {selection && !composerOpen && (
-        <div className={styles.selectionToolbar} style={{ left: selection.left, top: selection.top }} role="toolbar" aria-label="Veglat e tekstit të zgjedhur">
+        <div className={styles.selectionToolbar} data-annotation-ui data-annotation-selection-toolbar
+          style={{"--annotation-toolbar-left": `${selection.left}px`, "--annotation-toolbar-top": `${selection.top}px`} as CSSProperties}
+          role="toolbar" aria-label="Veglat e tekstit të zgjedhur"
+          onPointerDown={(event) => { event.preventDefault(); event.stopPropagation(); }}>
           <span>Thekso:</span>
+          <button
+            data-annotation-remove-highlight
+            type="button"
+            title="None — hiq highlighting-un"
+            aria-label="Hiq highlighting-un nga teksti i zgjedhur"
+            disabled={busy}
+            onClick={() => void removeHighlightsFromSelection()}
+          >
+            <span aria-hidden="true">×</span>
+            <span data-annotation-none-label>None</span>
+          </button>
           {COLORS.map((color) => (
             <button
               className={styles.colorButton}
@@ -563,12 +743,13 @@ export default function LessonAnnotations({
               title={COLOR_LABELS[color]}
               aria-label={`Thekso ${COLOR_LABELS[color].toLowerCase()}`}
               disabled={busy}
-              onMouseDown={(event) => event.preventDefault()}
               onClick={() => void createAnnotation("highlight", color, null)}
             />
           ))}
           <button
             className={styles.addNoteButton}
+            data-annotation-add-note
+            aria-label="+ Sticky note"
             type="button"
             disabled={busy}
             onMouseDown={(event) => event.preventDefault()}
@@ -584,7 +765,7 @@ export default function LessonAnnotations({
       )}
 
       {composerOpen && selection && (
-        <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => {
+        <div className={styles.modalBackdrop} data-annotation-ui role="presentation" onMouseDown={(event) => {
           if (event.target === event.currentTarget && !busy) setComposerOpen(false);
         }}>
           <section className={styles.composer} role="dialog" aria-modal="true" aria-labelledby="sticky-note-title">
@@ -621,7 +802,7 @@ export default function LessonAnnotations({
       )}
 
       {panelOpen && (
-        <aside className={styles.library} id="lesson-annotation-library" aria-label="Shënimet private të mësimit">
+        <aside className={styles.library} data-annotation-ui id="lesson-annotation-library" aria-label="Shënimet private të mësimit">
           <header>
             <div>
               <span>Private për llogarinë tënde</span>
@@ -685,7 +866,7 @@ export default function LessonAnnotations({
       )}
 
       {(error || notice) && (
-        <div className={error ? styles.errorToast : styles.noticeToast} role={error ? "alert" : "status"}>
+        <div className={error ? styles.errorToast : styles.noticeToast} data-annotation-ui data-annotation-toast role={error ? "alert" : "status"}>
           {error || notice}
           <button type="button" aria-label="Mbyll mesazhin" onClick={() => { setError(""); setNotice(""); }}>×</button>
         </div>

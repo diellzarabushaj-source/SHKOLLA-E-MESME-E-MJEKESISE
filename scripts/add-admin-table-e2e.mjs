@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const path = "scripts/e2e-admin-editor.mjs";
 const marker = "admin-table-paste-e2e-v1";
-let source = readFileSync(path, "utf8");
+let source = readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
 
 if (source.includes(marker)) {
   console.log("Administrator table-paste browser checks are already installed.");

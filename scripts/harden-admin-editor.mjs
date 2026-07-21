@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const editorPath = "app/LessonAdminEditor.tsx";
-let source = readFileSync(editorPath, "utf8");
+let source = readFileSync(editorPath, "utf8").replace(/\r\n?/g, "\n");
 
 if (source.includes("admin-editor-safety-v1")) {
   process.stdout.write("Admin editor safety is already installed.\n");

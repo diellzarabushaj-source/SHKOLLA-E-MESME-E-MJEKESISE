@@ -6,6 +6,15 @@ import styles from "./portal.module.css";
 import experience from "./learning-experience.module.css";
 import classic from "./classic-learning.module.css";
 import LessonAdminEditor, { type AdminEditableLesson } from "./LessonAdminEditor";
+import LessonAnnotations from "./LessonAnnotations";
+import LessonLearningExperience from "./LessonLearningExperience";
+import LessonTable, { type LessonTableBlock } from "./LessonTable";
+import MarkdownLessonBlock from "./MarkdownLessonContent";
+
+// admin-table-paste-v1
+// markdown-lesson-formatting-v1
+// lesson-learning-experience-v1
+// data-lesson-annotations
 
 type SanityImage = {
   alt?: string;
@@ -67,6 +76,7 @@ type Subject = {
   slug: string;
   shortDescription?: string;
   emoji?: string;
+  cardIllustration?: SanityImage;
   chapters: Chapter[];
 };
 
@@ -115,8 +125,14 @@ const portalQuery = `
         _id,
         title,
         "slug": slug.current,
-        shortDescription,
+        "shortDescription": coalesce(shortDescription, description),
         emoji,
+        cardIllustration {
+          alt,
+          crop,
+          hotspot,
+          "asset": asset->{url}
+        },
         "chapters": *[_type == "chapter" && subject._ref == ^._id && isActive != false]
           | order(order asc, title asc) {
             _id,
@@ -187,7 +203,46 @@ const chapterCardsQuery = `
   }
 `;
 
+function safePortableHref(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const href = value.trim();
+  if (!href || href.startsWith("//") || /[\u0000-\u001F\u007F]/.test(href)) return null;
+  if (href.startsWith("#") || href.startsWith("/")) return href;
+
+  try {
+    const parsed = new URL(href);
+    return ["http:", "https:", "mailto:"].includes(parsed.protocol) ? href : null;
+  } catch {
+    return null;
+  }
+}
+
 const portableTextComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children, value }) => (
+      <MarkdownLessonBlock value={value as never}>{children}</MarkdownLessonBlock>
+    ),
+  },
+  marks: {
+    underline: ({ children }) => <span className="portable-underline">{children}</span>,
+    highlight: ({ children }) => <mark className="portable-highlight">{children}</mark>,
+    code: ({ children }) => <code className="portable-code">{children}</code>,
+    link: ({ children, value }) => {
+      const mark = value as { href?: unknown };
+      const href = safePortableHref(mark?.href);
+      if (!href) return <span>{children}</span>;
+      const external = /^https?:\/\//i.test(href);
+      return (
+        <a
+          className="portable-link"
+          href={href}
+          {...(external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
+        >
+          {children}
+        </a>
+      );
+    },
+  },
   types: {
     image: ({ value }) => {
       const image = value as SanityImage;
@@ -200,6 +255,7 @@ const portableTextComponents: PortableTextComponents = {
         </figure>
       );
     },
+    lessonTable: ({ value }) => <LessonTable value={value as LessonTableBlock} />,
   },
 };
 
@@ -308,7 +364,13 @@ function ModeChooser({ mode, onChange }: { mode: ContentMode; onChange: (mode: C
   );
 }
 
-export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: boolean }) {
+export default function ClassicLearningPortal({
+  isAdmin = false,
+  isAuthenticated = false,
+}: {
+  isAdmin?: boolean;
+  isAuthenticated?: boolean;
+}) {
   const [grades, setGrades] = useState<Grade[]>([]);
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -767,7 +829,7 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
 
     return (
       <main
-        className="inner-page"
+        className={`inner-page ${styles.lessonPage}`}
         data-progress-page="lesson"
         data-progress-grade-id={selectedGrade._id}
         data-progress-subject-id={selectedSubject._id}
@@ -782,90 +844,108 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
           <span>{selectedLesson.title}</span>
         </div>
 
-        <section className={styles.lessonHero}>
-          <div>
-            <span className={styles.eyebrow}>Mësimi · {selectedGrade.title}</span>
-            <h1>{selectedLesson.title}</h1>
-            <p>{selectedLesson.summary || "Mësimi i kapitullit."}</p>
-          </div>
-          {imageUrl && <img className={styles.coverImage} src={imageUrl} alt={selectedLesson.coverImage?.alt || selectedLesson.title} />}
-        </section>
-
-        {recordingUrl && (
-          <section className={experience.audioCard} aria-label="Incizimi i mësimit">
-            <span className={experience.audioIcon}><AudioIcon /></span>
-            <div className={experience.audioCopy}>
-              <span>Dëgjo mësimin</span>
-              <strong>{selectedLesson.recording?.title || selectedLesson.title}</strong>
-              <small>{selectedLesson.recording?.originalFilename || "Incizim audio"}</small>
-            </div>
-            <audio className={experience.audioPlayer} controls preload="metadata" src={recordingUrl}>
-              Shfletuesi yt nuk e mbështet audion.
-            </audio>
-          </section>
-        )}
-
-        {isAdmin && (
-          <LessonAdminEditor
-            lesson={{
-              _id: selectedLesson._id,
-              _rev: selectedLesson._rev,
-              title: selectedLesson.title,
-              body: selectedLesson.body,
-            }}
-            onSaved={applySavedLesson}
-          />
-        )}
-
-        <article className={styles.lessonBody}>
-          {selectedLesson.body?.length ? (
-            <PortableText value={selectedLesson.body as never} components={portableTextComponents} />
-          ) : (
-            <div className={styles.lessonEmpty}>Teksti i plotë i këtij mësimi ende nuk është publikuar.</div>
+        <LessonLearningExperience
+          lessonId={selectedLesson._id}
+          lessonTitle={selectedLesson.title}
+          lessonSummary={selectedLesson.summary || "Mësimi i kapitullit."}
+          gradeTitle={selectedGrade.title}
+          subjectTitle={selectedSubject.title}
+          chapterTitle={selectedChapter.title}
+          flashcardCount={selectedLesson.flashcardCount}
+          coverImage={imageUrl ? (
+            <img
+              className={styles.coverImage}
+              src={imageUrl}
+              alt={selectedLesson.coverImage?.alt || selectedLesson.title}
+            />
+          ) : null}
+          onStartFlashcards={() => void startTest({
+            kind: "lesson",
+            title: selectedLesson.title,
+            chapter: selectedChapter,
+            lesson: selectedLesson,
+          })}
+        >
+          {recordingUrl && (
+            <section className={experience.audioCard} aria-label="Incizimi i mësimit">
+              <span className={experience.audioIcon}><AudioIcon /></span>
+              <div className={experience.audioCopy}>
+                <span>Dëgjo mësimin</span>
+                <strong>{selectedLesson.recording?.title || selectedLesson.title}</strong>
+                <small>{selectedLesson.recording?.originalFilename || "Incizim audio"}</small>
+              </div>
+              <audio className={experience.audioPlayer} controls preload="metadata" src={recordingUrl}>
+                Shfletuesi yt nuk e mbështet audion.
+              </audio>
+            </section>
           )}
-        </article>
 
-        <nav className={styles.lessonNavigation} aria-label="Navigimi ndërmjet mësimeve">
-          <button
-            className={styles.lessonNavButton}
-            type="button"
-            onClick={() => previousLesson && void chooseLesson(previousLesson)}
-            disabled={!previousLesson}
-          >
-            <span className={styles.lessonNavArrow} aria-hidden="true">←</span>
-            <span className={styles.lessonNavCopy}>
-              <small>Mësimi paraprak</small>
-              <strong>{previousLesson?.title || "Ky është mësimi i parë"}</strong>
-            </span>
-          </button>
+          {isAdmin && (
+            <LessonAdminEditor
+              lesson={{
+                _id: selectedLesson._id,
+                _rev: selectedLesson._rev,
+                title: selectedLesson.title,
+                body: selectedLesson.body,
+              }}
+              onSaved={applySavedLesson}
+            />
+          )}
 
-          <button
-            className={`${styles.lessonNavButton} ${styles.lessonNavNext}`}
-            type="button"
-            onClick={() => nextLesson && void chooseLesson(nextLesson)}
-            disabled={!nextLesson}
+          <LessonAnnotations
+            enabled={isAuthenticated}
+            lessonId={selectedLesson._id}
+            contentRevision={selectedLesson._rev}
+            body={selectedLesson.body}
+            articleClassName={styles.lessonBody}
           >
-            <span className={styles.lessonNavCopy}>
-              <small>Mësimi tjetër</small>
-              <strong>{nextLesson?.title || "Ky është mësimi i fundit"}</strong>
-            </span>
-            <span className={styles.lessonNavArrow} aria-hidden="true">→</span>
-          </button>
-        </nav>
+            {selectedLesson.body?.length ? (
+              <PortableText value={selectedLesson.body as never} components={portableTextComponents} />
+            ) : (
+              <div className={styles.lessonEmpty}>Teksti i plotë i këtij mësimi ende nuk është publikuar.</div>
+            )}
+          </LessonAnnotations>
 
-        <section className={styles.lessonStudyBar}>
-          <div>
-            <strong>Testoje këtë mësim</strong>
-            <span>{selectedLesson.flashcardCount} kartela nga vetëm ky mësim</span>
-          </div>
-          <button
-            className={styles.startStudy}
-            onClick={() => void startTest({ kind: "lesson", title: selectedLesson.title, chapter: selectedChapter, lesson: selectedLesson })}
-            disabled={selectedLesson.flashcardCount === 0}
-          >
-            {selectedLesson.flashcardCount ? "Testo mësimin" : "Ende pa flashcards"}
-          </button>
-        </section>
+          <nav className={styles.lessonNavigation} aria-label="Navigimi ndërmjet mësimeve">
+            <button
+              className={styles.lessonNavButton}
+              type="button"
+              onClick={() => previousLesson && void chooseLesson(previousLesson)}
+              disabled={!previousLesson}
+            >
+              <span className={styles.lessonNavCopy}>
+                <small>Mësimi paraprak</small>
+                <strong>{previousLesson?.title || "Ky është mësimi i parë"}</strong>
+              </span>
+            </button>
+
+            <button
+              className={`${styles.lessonNavButton} ${styles.lessonNavNext}`}
+              type="button"
+              onClick={() => nextLesson && void chooseLesson(nextLesson)}
+              disabled={!nextLesson}
+            >
+              <span className={styles.lessonNavCopy}>
+                <small>Mësimi tjetër</small>
+                <strong>{nextLesson?.title || "Ky është mësimi i fundit"}</strong>
+              </span>
+            </button>
+          </nav>
+
+          <section className={styles.lessonStudyBar}>
+            <div>
+              <strong>Ushtroje këtë mësim</strong>
+              <span>{selectedLesson.flashcardCount} kartela nga vetëm ky mësim</span>
+            </div>
+            <button
+              className={styles.startStudy}
+              onClick={() => void startTest({ kind: "lesson", title: selectedLesson.title, chapter: selectedChapter, lesson: selectedLesson })}
+              disabled={selectedLesson.flashcardCount === 0}
+            >
+              {selectedLesson.flashcardCount ? "Hap flashcards" : "Ende pa flashcards"}
+            </button>
+          </section>
+        </LessonLearningExperience>
       </main>
     );
   }
@@ -1062,9 +1142,17 @@ export default function ClassicLearningPortal({ isAdmin = false }: { isAdmin?: b
             <div className="subject-grid">
               {visibleSubjects.map((subject, index) => {
                 const stats = getSubjectStats(subject);
+                const isAnatomySubject = /(anatomi|fiziolog)/i.test(`${subject.slug} ${subject.title}`);
+                const sanityIllustrationUrl = subject.cardIllustration?.asset?.url;
+                const cardIllustrationUrl = sanityIllustrationUrl
+                  ? `${sanityIllustrationUrl}?w=240&fit=max&auto=format`
+                  : isAnatomySubject
+                    ? "/assets/anatomy-heart.webp"
+                    : "";
+                const cardIllustrationAlt = subject.cardIllustration?.alt || "";
                 return (
                   <article className="subject-card" key={subject._id}>
-                    <div className="subject-top"><span>{String(index + 1).padStart(2, "0")}</span><i>{subject.emoji || "✚"}</i></div>
+                    <div className="subject-top"><span>{String(index + 1).padStart(2, "0")}</span><i className={cardIllustrationUrl ? "subject-icon-illustration" : undefined}>{cardIllustrationUrl ? <img src={cardIllustrationUrl} alt={cardIllustrationAlt} aria-hidden={cardIllustrationAlt ? undefined : true} loading="lazy" decoding="async" /> : subject.emoji || "✚"}</i></div>
                     <h3>{subject.title}</h3>
                     <p>{subject.shortDescription || `Lëndë e ${selectedGrade.title}.`}</p>
                     <div className="subject-meta">

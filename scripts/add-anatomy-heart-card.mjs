@@ -28,7 +28,7 @@ function replaceOneOf(source, candidates, after, resultMarker, label) {
 
 function patchPortal(portalPath) {
   if (!existsSync(portalPath)) throw new Error(`Missing portal source: ${portalPath}`);
-  let portal = readFileSync(portalPath, "utf8");
+  let portal = readFileSync(portalPath, "utf8").replace(/\r\n?/g, "\n");
 
   portal = replaceOnce(
     portal,
@@ -70,7 +70,7 @@ function patchPortal(portalPath) {
 
 for (const portalPath of portalPaths) patchPortal(portalPath);
 
-let styles = readFileSync(stylesPath, "utf8");
+let styles = readFileSync(stylesPath, "utf8").replace(/\r\n?/g, "\n");
 const legacyBlock = `\n\n/* anatomy-heart-card */\n.subject-top i.subject-icon-anatomy {\n  overflow: visible;\n  background: transparent;\n  box-shadow: none;\n}\n\n.subject-top i.subject-icon-anatomy img {\n  width: 76px;\n  height: 92px;\n  max-width: none;\n  object-fit: contain;\n  pointer-events: none;\n  filter: drop-shadow(0 12px 18px color-mix(in srgb, var(--primary) 30%, transparent));\n}\n\n@media (max-width: 440px) {\n  .subject-top i.subject-icon-anatomy img {\n    width: 68px;\n    height: 84px;\n  }\n}\n`;
 
 if (styles.includes(legacyBlock)) styles = styles.replace(legacyBlock, "");

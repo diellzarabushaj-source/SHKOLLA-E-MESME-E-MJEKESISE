@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const filePath = "scripts/e2e-navigation.mjs";
-let source = readFileSync(filePath, "utf8");
+let source = readFileSync(filePath, "utf8").replace(/\r\n?/g, "\n");
 let changed = false;
 
 const oldSequence = '  await page.evaluate(() => localStorage.removeItem("medical-portal-selected-grade"));\n  await page.reload({ waitUntil: "domcontentloaded" });';

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 function read(path) {
-  return readFileSync(path, "utf8");
+  return readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
 }
 
 function write(path, source) {

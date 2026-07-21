@@ -100,6 +100,18 @@ async function pasteTestImage(editor) {
   }, onePixelPng);
 }
 
+// admin-table-paste-e2e-v1
+async function pasteTestTable(editor) {
+  await editor.evaluate((element) => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/html", `<table><thead><tr><th>Organi</th><th>Funksioni</th></tr></thead><tbody><tr><td>Zemra</td><td>Pompon gjakun</td></tr></tbody></table>`);
+    dataTransfer.setData("text/plain", "Organi\tFunksioni\nZemra\tPompon gjakun");
+    const event = new Event("paste", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "clipboardData", { value: dataTransfer });
+    element.dispatchEvent(event);
+  });
+}
+
 const browser = await chromium.launch({ headless: true });
 let auditPage = null;
 try {
@@ -213,6 +225,16 @@ try {
   assert(imageUploadCount === 1, `Expected one pasted image upload, received ${imageUploadCount}`);
   assert(await saveButton.isEnabled(), "Save did not enable after pasted image upload");
 
+  await placeCaretAtEnd(page);
+  await pasteTestTable(editor);
+  const pastedTable = editor.locator('[data-portable-table="true"]');
+  await pastedTable.waitFor({ state: "visible", timeout: 5_000 });
+  assert(await pastedTable.locator("th").count() === 2, "Pasted table lost its header cells");
+  assert(await pastedTable.locator("td").count() === 2, "Pasted table lost its body cells");
+  assert((await pastedTable.textContent())?.includes("Pompon gjakun"), "Pasted table lost cell text");
+  await page.getByText("Tabela u ngjit. Ruaje mësimin për ta publikuar.").waitFor({ state: "visible", timeout: 5_000 });
+  assert(await saveButton.isEnabled(), "Save did not remain enabled after table paste");
+
   await saveButton.click();
   await page.getByText("Teksti u ruajt dhe u publikua në Sanity.").waitFor({ state: "visible", timeout: 10_000 });
   assert(savedPayload?.revision === "audit-revision-1", "Editor did not send the loaded revision");
@@ -222,6 +244,10 @@ try {
   assert(serialized.includes('"strong"'), "Portable Text payload lost bold formatting");
   assert(serialized.includes('"_type":"image"'), "Portable Text payload lost pasted image block");
   assert(serialized.includes('"_ref":"image-auditasset-1x1-png"'), "Portable Text payload lost pasted Sanity asset reference");
+  assert(serialized.includes('"_type":"lessonTable"'), "Portable Text payload lost pasted table block");
+  assert(serialized.includes('"_type":"lessonTableRow"'), "Portable Text payload lost table rows");
+  assert(serialized.includes('"_type":"lessonTableCell"'), "Portable Text payload lost table cells");
+  assert(serialized.includes("Pompon gjakun"), "Portable Text payload lost table cell text");
   assert((await page.locator("[data-admin-audit-revision]").textContent()) === "audit-revision-2", "Parent view did not receive the saved revision");
 
   await placeCaretAtEnd(page);
@@ -234,6 +260,7 @@ try {
   await page.getByText("U ngarkua versioni më i ri nga Sanity.").waitFor({ state: "visible", timeout: 10_000 });
   assert(await saveButton.isDisabled(), "Refresh did not clear the dirty state");
   assert(await editor.locator("img").count() === 1, "Saved pasted image did not survive the Sanity refresh");
+  assert(await editor.locator('[data-portable-table="true"]').count() === 1, "Saved pasted table did not survive the Sanity refresh");
 
   await page.screenshot({ path: `${outputDir}/admin-editor-audit.png`, fullPage: true });
   assert(consoleErrors.length === 0, `Admin editor emitted browser errors: ${consoleErrors.join(" | ")}`);
@@ -261,4 +288,4 @@ try {
   await browser.close();
 }
 
-console.log("Administrator browser audit passed access control, rich-text formatting, direct clipboard image upload, Portable Text image save, revision conflict and refresh checks.");
+console.log("Administrator browser audit passed access control, rich-text formatting, direct clipboard image and table paste, Portable Text saves, revision conflict and refresh checks.");

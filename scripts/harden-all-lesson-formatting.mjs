@@ -4,8 +4,8 @@ const componentPath = "app/MarkdownLessonContent.tsx";
 const cssPath = "app/MarkdownLessonContent.module.css";
 const marker = "all-lessons-rich-formatting-v1";
 
-let source = readFileSync(componentPath, "utf8");
-let css = readFileSync(cssPath, "utf8");
+let source = readFileSync(componentPath, "utf8").replace(/\r\n?/g, "\n");
+let css = readFileSync(cssPath, "utf8").replace(/\r\n?/g, "\n");
 
 function replaceRequired(target, label, before, after) {
   if (!target.includes(before)) throw new Error(`${label}: source pattern was not found`);
@@ -132,14 +132,12 @@ if (!css.includes(marker)) {
 .scheme,
 :global([data-learning-scheme="true"]) {
   margin: 18px 0 25px;
-  padding: 17px 19px;
+  max-width: 65ch;
+  padding: 17px 0;
   display: grid;
   gap: 11px;
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
-  border-radius: 17px;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 9%, var(--panel)), color-mix(in srgb, var(--accent) 5%, var(--panel)));
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--text) 5%, transparent);
+  border-block: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  background: transparent;
 }
 
 .schemeLine {
@@ -159,23 +157,17 @@ if (!css.includes(marker)) {
 
 .schemeConnector {
   flex: 0 0 auto;
-  display: inline-grid;
-  min-width: 27px;
-  min-height: 27px;
-  place-items: center;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--primary) 12%, var(--panel));
+  display: inline;
+  padding: 0 2px;
   color: var(--primary);
   font-weight: 950;
-  line-height: 1;
+  line-height: inherit;
 }
 
 @media (max-width: 720px) {
   .scheme,
   :global([data-learning-scheme="true"]) {
-    padding: 14px;
-    border-radius: 14px;
+    padding: 14px 0;
   }
 
   .schemeLine {
@@ -183,10 +175,6 @@ if (!css.includes(marker)) {
     font-size: 0.95rem;
   }
 
-  .schemeConnector {
-    min-width: 25px;
-    min-height: 25px;
-  }
 }
 `;
 }

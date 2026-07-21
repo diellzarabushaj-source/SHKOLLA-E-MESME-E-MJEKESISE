@@ -1,7 +1,7 @@
 import {readFileSync,writeFileSync} from "node:fs";
 
 const file="app/LessonAnnotations.tsx";
-let s=readFileSync(file,"utf8");
+let s=readFileSync(file,"utf8").replace(/\r\n?/g,"\n");
 if(s.includes("annotation-mobile-safety-v2")){console.log("Annotation mobile safety already installed.");process.exit(0)}
 const swap=(label,find,replacement)=>{if(!s.includes(find))throw new Error(`${label}: pattern missing`);s=s.replace(find,replacement)};
 

@@ -15,80 +15,50 @@
 .root h3,
 .root h4,
 :global([data-learning-heading="true"]) {
-  scroll-margin-top: 150px;
+  max-width: 65ch;
+  scroll-margin-top: 130px;
   text-wrap: balance;
 }
 
 .root h2,
 :global(h2[data-learning-heading="true"]) {
-  position: relative;
-  margin: 46px 0 20px;
-  padding: 17px 20px 17px 58px;
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
-  border-radius: 18px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 9%, var(--panel)), var(--panel));
+  margin: 56px 0 22px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
   color: var(--text);
-  box-shadow: 0 14px 34px color-mix(in srgb, var(--text) 6%, transparent);
-  font-size: clamp(1.34rem, 2.2vw, 1.75rem);
-  font-weight: 900;
-  line-height: 1.22;
-  letter-spacing: -0.025em;
-}
-
-.root h2::before,
-:global(h2[data-learning-heading="true"]::before) {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  width: 23px;
-  height: 23px;
-  border: 6px solid color-mix(in srgb, var(--primary) 22%, transparent);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  transform: translateY(-50%);
+  font-size: clamp(1.48rem, 2.4vw, 1.9rem);
+  font-weight: 920;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
 }
 
 .root h3,
 :global(h3[data-learning-heading="true"]) {
-  margin: 34px 0 14px;
-  padding: 2px 0 2px 17px;
-  border-left: 5px solid var(--primary);
+  margin: 38px 0 15px;
+  padding-left: 16px;
+  border-left: 3px solid var(--accent);
   color: var(--text);
-  font-size: clamp(1.13rem, 1.8vw, 1.4rem);
+  font-size: clamp(1.18rem, 1.8vw, 1.42rem);
   font-weight: 880;
   line-height: 1.32;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.02em;
 }
 
 .root h4,
 :global(h4[data-learning-heading="true"]) {
-  position: relative;
-  margin: 25px 0 11px;
-  padding-left: 20px;
-  color: color-mix(in srgb, var(--text) 92%, var(--primary));
-  font-size: clamp(1rem, 1.5vw, 1.16rem);
-  font-weight: 850;
-  line-height: 1.38;
-}
-
-.root h4::before,
-:global(h4[data-learning-heading="true"]::before) {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.62em;
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  background: var(--accent);
-  transform: rotate(45deg);
+  margin: 28px 0 11px;
+  color: color-mix(in srgb, var(--accent) 84%, var(--text));
+  font-size: clamp(1rem, 1.5vw, 1.14rem);
+  font-weight: 880;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .root p,
 :global(p[data-learning-paragraph="true"]) {
-  margin: 0 0 18px;
-  color: var(--text);
+  max-width: 65ch;
+  margin: 0 0 20px;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
   font-size: 1rem;
   line-height: 1.82;
   white-space: pre-line;
@@ -97,18 +67,16 @@
 .root ul,
 .root ol,
 :global([data-learning-list]) {
-  margin: 12px 0 24px;
-  padding: 14px 20px 14px 2.2rem;
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--line));
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--bg-soft) 68%, transparent);
+  max-width: 65ch;
+  margin: 10px 0 26px;
+  padding: 0 0 0 1.55rem;
 }
 
 .root li,
 :global([data-learning-list] li) {
-  margin: 9px 0;
-  padding-inline-start: 0.38rem;
-  color: var(--text);
+  margin: 8px 0;
+  padding-inline-start: 0.42rem;
+  color: color-mix(in srgb, var(--text) 92%, var(--muted));
   font-size: 1rem;
   line-height: 1.72;
   white-space: pre-line;
@@ -116,16 +84,16 @@
 
 .root li::marker,
 :global([data-learning-list] li::marker) {
-  color: var(--primary);
+  color: var(--accent);
   font-weight: 900;
 }
 
 .root blockquote {
-  margin: 25px 0;
-  padding: 18px 20px;
-  border-left: 5px solid var(--accent);
-  border-radius: 0 16px 16px 0;
-  background: color-mix(in srgb, var(--accent) 8%, var(--panel));
+  max-width: 65ch;
+  margin: 28px 0;
+  padding: 17px 20px;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
   color: var(--text);
   font-size: 1rem;
   font-weight: 650;
@@ -135,132 +103,73 @@
 
 .callout,
 :global([data-learning-callout]) {
-  position: relative;
-  margin: 26px 0;
-  padding: 20px 22px 20px 56px;
-  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--line));
-  border-left-width: 1px;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--primary) 7%, var(--panel));
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--text) 5%, transparent);
+  max-width: 65ch;
+  margin: 30px 0;
+  padding: 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+  border-left-width: 4px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+  color: var(--text);
   font-style: normal;
 }
 
-.callout::before,
-:global([data-learning-callout]::before) {
-  content: "💡";
-  position: absolute;
-  left: 18px;
-  top: 17px;
-  display: grid;
-  width: 27px;
-  height: 27px;
-  place-items: center;
-  border-radius: 9px;
-  background: var(--panel);
-  font-size: 17px;
-}
-
 :global([data-learning-callout="warning"]) {
-  border-color: color-mix(in srgb, #c77700 30%, var(--line));
-  background: color-mix(in srgb, #ffb020 10%, var(--panel));
+  border-color: color-mix(in srgb, var(--warning) 55%, var(--line));
+  background: color-mix(in srgb, var(--warning) 8%, var(--panel));
 }
 
-:global([data-learning-callout="warning"]::before) {
-  content: "!";
-  color: #9a5700;
-  font-weight: 950;
-}
-
-:global([data-learning-callout="logic"]::before) {
-  content: "↔";
-  color: var(--primary);
-  font-weight: 950;
-}
-
-:global([data-learning-callout="definition"]::before) {
-  content: "D";
-  color: var(--primary);
-  font-weight: 950;
-}
-
-:global([data-learning-callout="example"]::before) {
-  content: "✓";
-  color: #137a4f;
-  font-weight: 950;
-}
-
-:global([data-learning-callout="comparison"]::before) {
-  content: "⇄";
-  color: var(--primary);
-  font-weight: 950;
+:global([data-learning-callout="example"]) {
+  border-color: color-mix(in srgb, var(--success) 50%, var(--line));
+  background: color-mix(in srgb, var(--success) 7%, var(--panel));
 }
 
 .definition,
 :global([data-learning-definition="true"]) {
-  position: relative;
-  margin: 20px 0;
-  padding: 16px 18px 16px 22px;
-  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
-  border-radius: 15px;
-  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
-}
-
-.definition::before,
-:global([data-learning-definition="true"]::before) {
-  content: "";
-  position: absolute;
-  inset: 12px auto 12px 0;
-  width: 4px;
-  border-radius: 999px;
-  background: var(--accent);
+  max-width: 65ch;
+  margin: 23px 0;
+  padding: 16px 18px;
+  border-left: 3px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 6%, var(--panel));
 }
 
 .root strong {
+  color: var(--text);
   font-weight: 880;
 }
 
 .root em {
-  color: color-mix(in srgb, var(--text) 78%, var(--primary));
+  color: color-mix(in srgb, var(--text) 72%, var(--accent));
 }
 
 .root code {
   padding: 0.12em 0.38em;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 5px;
   background: var(--bg-soft);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.9em;
 }
 
 .divider {
+  width: min(100%, 65ch);
   height: 1px;
-  margin: 36px 0;
+  margin: 40px 0;
   border: 0;
-  background: linear-gradient(90deg, transparent, var(--line) 12%, var(--line) 88%, transparent);
+  background: var(--line);
 }
 
 @media (max-width: 720px) {
   .root h2,
   :global(h2[data-learning-heading="true"]) {
-    margin-top: 36px;
-    padding: 15px 15px 15px 50px;
-    border-radius: 15px;
-    font-size: 1.27rem;
-  }
-
-  .root h2::before,
-  :global(h2[data-learning-heading="true"]::before) {
-    left: 16px;
-    width: 20px;
-    height: 20px;
-    border-width: 5px;
+    margin-top: 42px;
+    font-size: 1.38rem;
   }
 
   .root h3,
   :global(h3[data-learning-heading="true"]) {
-    margin-top: 27px;
-    font-size: 1.1rem;
+    margin-top: 31px;
+    font-size: 1.14rem;
   }
 
   .root h4,
@@ -273,24 +182,14 @@
   .root blockquote,
   :global(p[data-learning-paragraph="true"]),
   :global([data-learning-list] li) {
-    font-size: 0.96rem;
-  }
-
-  .root ul,
-  .root ol,
-  :global([data-learning-list]) {
-    padding: 12px 14px 12px 1.85rem;
+    font-size: 0.98rem;
   }
 
   .callout,
-  :global([data-learning-callout]) {
-    padding: 17px 16px 17px 49px;
-  }
-
-  .callout::before,
-  :global([data-learning-callout]::before) {
-    left: 13px;
-    top: 14px;
+  :global([data-learning-callout]),
+  .definition,
+  :global([data-learning-definition="true"]) {
+    padding: 15px 16px;
   }
 }
 
@@ -299,4 +198,54 @@
   :global([data-learning-heading="true"]) {
     scroll-behavior: auto;
   }
+}
+
+
+/* all-lessons-rich-formatting-v1 */
+.scheme,
+:global([data-learning-scheme="true"]) {
+  margin: 18px 0 25px;
+  max-width: 65ch;
+  padding: 17px 0;
+  display: grid;
+  gap: 11px;
+  border-block: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  background: transparent;
+}
+
+.schemeLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px 10px;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 760;
+  line-height: 1.62;
+}
+
+.schemePart {
+  min-width: 0;
+}
+
+.schemeConnector {
+  flex: 0 0 auto;
+  display: inline;
+  padding: 0 2px;
+  color: var(--primary);
+  font-weight: 950;
+  line-height: inherit;
+}
+
+@media (max-width: 720px) {
+  .scheme,
+  :global([data-learning-scheme="true"]) {
+    padding: 14px 0;
+  }
+
+  .schemeLine {
+    gap: 6px 8px;
+    font-size: 0.95rem;
+  }
+
 }

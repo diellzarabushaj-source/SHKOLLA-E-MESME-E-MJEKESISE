@@ -1,4 +1,4 @@
-const VERSION = "medical-portal-v7";
+const VERSION = "medical-portal-v9";
 const SHELL_CACHE = `${VERSION}-shell`;
 const CONTENT_CACHE = `${VERSION}-content`;
 const MEDIA_CACHE = `${VERSION}-media`;
@@ -95,8 +95,13 @@ self.addEventListener("fetch", (event) => {
 
   const isSanityCdn = url.hostname.endsWith("apicdn.sanity.io") || url.hostname.endsWith("cdn.sanity.io");
   if (isSanityCdn) {
-    const cacheName = request.destination === "image" ? MEDIA_CACHE : CONTENT_CACHE;
-    event.respondWith(staleWhileRevalidate(request, cacheName));
+    // Media may be cached, but GROQ/query JSON must never be served stale.
+    if (request.destination === "image") {
+      event.respondWith(staleWhileRevalidate(request, MEDIA_CACHE));
+    } else {
+      event.respondWith(fetch(request));
+    }
+    return;
   }
 });
 

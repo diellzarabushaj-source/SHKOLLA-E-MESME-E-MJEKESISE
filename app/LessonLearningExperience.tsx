@@ -24,7 +24,13 @@ type SavedLearningState = {
 type Props = {
   lessonId: string;
   lessonTitle: string;
+  lessonSummary: string;
+  gradeTitle: string;
+  subjectTitle: string;
+  chapterTitle: string;
   flashcardCount: number;
+  coverImage?: ReactNode;
+  onStartFlashcards: () => void;
   children: ReactNode;
 };
 
@@ -54,10 +60,21 @@ function clamp(value: number): number {
   return Math.min(100, Math.max(0, value));
 }
 
+function headingCode(heading: LessonHeading, index: number): string {
+  const explicit = heading.label.match(/^(?:([A-ZÇË]|[IVXLCDM]+)[.)]|(\d+(?:\.\d+)*))\s*/i);
+  return explicit?.[1] || explicit?.[2] || String(index + 1).padStart(2, "0");
+}
+
 export default function LessonLearningExperience({
   lessonId,
   lessonTitle,
+  lessonSummary,
+  gradeTitle,
+  subjectTitle,
+  chapterTitle,
   flashcardCount,
+  coverImage,
+  onStartFlashcards,
   children,
 }: Props) {
   const rootRef = useRef<HTMLElement>(null);
@@ -70,8 +87,7 @@ export default function LessonLearningExperience({
   const storageKey = `${STORAGE_PREFIX}:${lessonId}`;
 
   const discoverHeadings = useCallback(() => {
-    const root = rootRef.current;
-    const article = root?.querySelector<HTMLElement>("article");
+    const article = rootRef.current?.querySelector<HTMLElement>("article");
     if (!article) return;
 
     const used = new Set<string>();
@@ -119,8 +135,7 @@ export default function LessonLearningExperience({
   }, [children, discoverHeadings]);
 
   useEffect(() => {
-    const root = rootRef.current;
-    const article = root?.querySelector<HTMLElement>("article");
+    const article = rootRef.current?.querySelector<HTMLElement>("article");
     if (!article) return;
 
     const update = () => {
@@ -133,8 +148,7 @@ export default function LessonLearningExperience({
       let active = "";
       for (const heading of headings) {
         const element = document.getElementById(heading.id);
-        if (!element) continue;
-        if (element.getBoundingClientRect().top <= window.innerHeight * 0.38) active = heading.id;
+        if (element && element.getBoundingClientRect().top <= window.innerHeight * 0.38) active = heading.id;
       }
       if (!active && headings[0]) active = headings[0].id;
       setActiveHeading(active);
@@ -145,6 +159,7 @@ export default function LessonLearningExperience({
           return element ? element.getBoundingClientRect().top <= window.innerHeight * 0.76 : false;
         })
         .map((heading) => heading.id);
+
       if (newlyVisited.length) {
         setVisited((currentVisited) => {
           const next = new Set(currentVisited);
@@ -177,21 +192,28 @@ export default function LessonLearningExperience({
     try {
       window.localStorage.setItem(storageKey, JSON.stringify({ visited: [...visited], completed }));
     } catch {
-      // Learning progress remains available for the active page even when storage is blocked.
+      // The active lesson still works when browser storage is unavailable.
     }
   }, [completed, loadedStorageKey, storageKey, visited]);
 
+  const outline = useMemo(() => {
+    const primary = headings.filter((heading) => heading.level === 2);
+    return (primary.length >= 2 ? primary : headings).slice(0, 18);
+  }, [headings]);
+
   const visitedCount = headings.filter((heading) => visited.has(heading.id)).length;
   const sectionProgress = headings.length ? Math.round((visitedCount / headings.length) * 100) : readingProgress;
-  const xp = visitedCount * 5 + (completed ? 25 : 0);
-  const level = Math.max(1, Math.floor(xp / 50) + 1);
-  const status = completed ? "Mësimi u përfundua" : readingProgress > 5 ? "Mësimi është në vazhdim" : "Fillo mësimin";
   const displayProgress = completed ? 100 : Math.max(readingProgress, sectionProgress);
-
-  const outline = useMemo(() => headings.slice(0, 30), [headings]);
+  const status = completed ? "Mësimi u përfundua" : displayProgress > 5 ? "Mësimi është në vazhdim" : "Gati për të filluar";
 
   function jumpTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function continueReading() {
+    const target = activeHeading || outline[0]?.id || headings[0]?.id;
+    if (target) jumpTo(target);
+    else rootRef.current?.querySelector("article")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function markCompleted() {
@@ -200,68 +222,103 @@ export default function LessonLearningExperience({
     setVisited(new Set(headings.map((heading) => heading.id)));
   }
 
+  const outlineItems = outline.map((heading, index) => (
+    <button
+      className={activeHeading === heading.id ? styles.activeSection : ""}
+      data-level={heading.level}
+      key={heading.id}
+      onClick={() => jumpTo(heading.id)}
+      type="button"
+      aria-current={activeHeading === heading.id ? "location" : undefined}
+    >
+      <span className={styles.sectionCode} aria-hidden="true">{headingCode(heading, index)}</span>
+      <span>{heading.label}</span>
+    </button>
+  ));
+
   return (
     <section ref={rootRef} className={styles.workspace} data-learning-experience data-lesson-id={lessonId}>
-      <header className={styles.dashboard} data-learning-chrome>
-        <div className={styles.primaryRow}>
-          <div className={styles.progressCopy}>
-            <span className={styles.kicker}>Mësim aktiv</span>
-            <strong>{status}</strong>
-            <small>{lessonTitle}</small>
+      <div
+        className={styles.topProgress}
+        data-learning-chrome
+        role="progressbar"
+        aria-label="Progresi i leximit"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={displayProgress}
+      >
+        <span style={{ width: `${displayProgress}%` }} />
+      </div>
+
+      <div className={styles.layout}>
+        <aside className={styles.sidebar} data-learning-chrome aria-label="Përmbajtja e mësimit">
+          <div className={styles.context}>
+            <span>{gradeTitle}</span>
+            <h2>{subjectTitle}</h2>
+            <p>{chapterTitle}</p>
           </div>
 
-          <div className={styles.scoreboard} aria-label="Progresi i mësimit">
-            <span><b>{displayProgress}%</b><small>progres</small></span>
-            <span><b>{xp} XP</b><small>niveli {level}</small></span>
-            <span><b>{headings.length ? `${visitedCount}/${headings.length}` : "—"}</b><small>seksione</small></span>
+          <nav className={styles.outline} aria-label="Seksionet e mësimit">
+            {outlineItems.length ? outlineItems : <p>Përmbajtja shfaqet sapo të ngarkohet mësimi.</p>}
+          </nav>
+
+          <div className={styles.sidebarProgress}>
+            <span>Përparimi në mësim</span>
+            <div><b>{displayProgress}%</b><small>{visitedCount}/{headings.length || 0} seksione</small></div>
+            <span className={styles.progressTrack}><span style={{ width: `${displayProgress}%` }} /></span>
           </div>
-        </div>
+        </aside>
 
-        <div
-          className={styles.progressTrack}
-          role="progressbar"
-          aria-label="Progresi i leximit"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={displayProgress}
-        >
-          <span style={{ width: `${displayProgress}%` }} />
-        </div>
+        <div className={styles.stage}>
+          <details className={styles.mobileOutline} data-learning-chrome>
+            <summary>Përmbajtja e mësimit · {outline.length || headings.length} seksione</summary>
+            <nav aria-label="Seksionet e mësimit në telefon">{outlineItems}</nav>
+          </details>
 
-        <div className={styles.actionsRow}>
-          {outline.length ? (
-            <details className={styles.outline}>
-              <summary>Harta e mësimit · {outline.length} seksione</summary>
-              <nav aria-label="Seksionet e mësimit">
-                {outline.map((heading) => (
-                  <button
-                    className={activeHeading === heading.id ? styles.activeSection : ""}
-                    data-level={heading.level}
-                    key={heading.id}
-                    onClick={() => jumpTo(heading.id)}
-                    type="button"
-                  >
-                    <span aria-hidden="true">{visited.has(heading.id) ? "✓" : "○"}</span>
-                    <span>{heading.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </details>
-          ) : (
-            <span className={styles.readingHint}>Lexoje materialin me radhë dhe provo flashcards në fund.</span>
-          )}
+          <header className={styles.hero} data-learning-chrome>
+            <div className={styles.heroCopy}>
+              <span className={styles.kicker}>Mësimi · {gradeTitle}</span>
+              <h1>{lessonTitle}</h1>
+              <p>{lessonSummary}</p>
+            </div>
 
-          <div className={styles.actionButtons}>
-            {flashcardCount > 0 && <span className={styles.flashcardHint}>{flashcardCount} flashcards</span>}
-            <button className={completed ? styles.completedButton : styles.completeButton} onClick={markCompleted} disabled={completed} type="button">
-              {completed ? "✓ Përfunduar" : "Shëno si të përfunduar"}
+            {coverImage && <div className={styles.heroMedia}>{coverImage}</div>}
+
+            <div className={styles.heroActions}>
+              <button className={styles.continueButton} type="button" onClick={continueReading}>
+                {displayProgress > 5 ? "Vazhdo leximin" : "Fillo leximin"}
+              </button>
+              <button
+                className={styles.flashcardButton}
+                type="button"
+                onClick={onStartFlashcards}
+                disabled={flashcardCount === 0}
+              >
+                {flashcardCount ? `${flashcardCount} flashcards` : "Ende pa flashcards"}
+              </button>
+            </div>
+          </header>
+
+          <div className={styles.lessonMeta} data-learning-chrome>
+            <div>
+              <span>{status}</span>
+              <strong>{displayProgress}% i lexuar</strong>
+            </div>
+            <button
+              className={completed ? styles.completedButton : styles.completeButton}
+              onClick={markCompleted}
+              disabled={completed}
+              type="button"
+            >
+              {completed ? "Përfunduar" : "Shëno si të përfunduar"}
             </button>
           </div>
-        </div>
-      </header>
 
-      <div className={styles.content}>{children}</div>
-      <p className={styles.srStatus} aria-live="polite">{status}. {xp} XP.</p>
+          <div className={styles.content}>{children}</div>
+        </div>
+      </div>
+
+      <p className={styles.srStatus} aria-live="polite">{status}. {displayProgress}%.</p>
     </section>
   );
 }

@@ -306,14 +306,14 @@
 }
 
 .lessonBody {
-  max-width: 920px;
-  margin: 28px auto 0;
-  padding: clamp(24px, 5vw, 50px);
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  background: var(--panel);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--text) 5%, transparent);
-  font-size: 17px;
+  max-width: 780px;
+  margin: 34px auto 0;
+  padding: clamp(22px, 4vw, 44px) 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 16px;
   line-height: 1.8;
 }
 
@@ -426,7 +426,7 @@
 }
 
 .lessonStudyBar {
-  max-width: 920px;
+  max-width: 780px;
   margin: 18px auto 0;
   padding: 18px;
   display: flex;
@@ -436,6 +436,11 @@
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--panel);
+}
+
+.lessonPage {
+  width: min(100%, 1440px);
+  max-width: 1440px;
 }
 
 .lessonStudyBar strong { display: block; margin-bottom: 4px; }
@@ -493,7 +498,7 @@
   .lessonRow { grid-template-columns: 46px minmax(0, 1fr); padding: 16px; gap: 12px; }
   .lessonIndex { width: 44px; height: 44px; border-radius: 13px; }
   .lessonOpen { grid-column: 1 / -1; width: 100%; }
-  .lessonBody { padding: 24px 18px; border-radius: 21px; font-size: 16px; }
+  .lessonBody { padding: 24px 0; border-radius: 0; font-size: 16px; }
   .lessonNavigation { grid-template-columns: 1fr; }
   .lessonNavButton { min-height: 74px; }
   .lessonStudyBar { align-items: stretch; flex-direction: column; }

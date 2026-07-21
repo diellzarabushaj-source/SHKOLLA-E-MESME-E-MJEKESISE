@@ -2,8 +2,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const editorFile = "app/LessonAdminEditor.tsx";
 const routeFile = "app/api/admin/lessons/[lessonId]/route.ts";
-let editor = readFileSync(editorFile, "utf8");
-let route = readFileSync(routeFile, "utf8");
+let editor = readFileSync(editorFile, "utf8").replace(/\r\n?/g, "\n");
+let route = readFileSync(routeFile, "utf8").replace(/\r\n?/g, "\n");
 
 if (editor.includes("admin-sanity-resilience-v1") && route.includes("admin-sanity-resilience-v1")) {
   console.log("Administrator Sanity save resilience already installed.");

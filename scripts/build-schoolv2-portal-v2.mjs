@@ -2,7 +2,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const sourcePath = "app/ClassicLearningPortal.tsx";
 const outputPath = "app/SchoolLearningPortal.tsx";
-let source = readFileSync(sourcePath, "utf8");
+// Normalize checkout line endings so the generator behaves identically on Windows and CI.
+let source = readFileSync(sourcePath, "utf8").replace(/\r\n?/g, "\n");
 
 function replacePattern(label, pattern, replacement) {
   const matches = source.match(pattern);
@@ -178,8 +179,8 @@ function normalizeCards(decks: LessonDeck[]): Flashcard[] {
 
 replacePattern(
   "Sanity data layer",
-  /const portalQuery = `[\s\S]*?const portableTextComponents: PortableTextComponents =/,
-  optimizedDataLayer + "\n\nconst portableTextComponents: PortableTextComponents =",
+  /const portalQuery = `[\s\S]*?(?=function safePortableHref)/,
+  optimizedDataLayer + "\n\n",
 );
 
 replacePattern(

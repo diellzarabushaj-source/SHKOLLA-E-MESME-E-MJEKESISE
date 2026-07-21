@@ -285,3 +285,4 @@ if (failures.length) {
 }
 
 console.log("Browser smoothness audit passed.");
+await import("./e2e-auth.mjs");

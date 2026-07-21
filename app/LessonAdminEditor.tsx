@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -9,6 +10,30 @@ import {
   type MouseEvent,
 } from "react";
 import styles from "./LessonAdminEditor.module.css";
+import {
+  clipboardImageFiles,
+  insertImageUploadPlaceholders,
+  pastedImagePortableNode,
+  removeImageUploadPlaceholder,
+  replaceImageUploadPlaceholder,
+  type UploadedImageAsset,
+} from "./admin-image-paste";
+
+// admin-image-paste-v1
+import {
+  clipboardTableBlocks,
+  createBlankTableBlock,
+  insertTableBlocks,
+  portableTableToHtml,
+  tablePortableNodeFromElement,
+} from "./admin-table-paste";
+
+// admin-table-paste-v1
+
+import "./admin-editor-resilience.css";
+
+// admin-editor-safety-v1
+// admin-sanity-resilience-v1
 
 type PortableSpan = {
   _key?: string;
@@ -77,8 +102,9 @@ function escapeHtml(value: string): string {
 function safeHref(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const href = value.trim();
-  if (!href || href.length > 2048) return null;
-  if (href.startsWith("/") || href.startsWith("#")) return href;
+  if (!href || href.length > 2048 || /[\u0000-\u001F\u007F]/.test(href)) return null;
+  if (href.startsWith("#")) return href;
+  if (href.startsWith("/") && !href.startsWith("//")) return href;
 
   try {
     const parsed = new URL(href);
@@ -88,13 +114,56 @@ function safeHref(value: unknown): string | null {
   }
 }
 
+const SANITY_STUDIO_URL = "https://www.sanity.io/@oZ3HX2fYf/studio/xwvsfazcnhh889nw18ldkuvk/default";
+
+function sanityStudioEditUrl(lessonId: string): string {
+  const params = new URLSearchParams({ id: lessonId, type: "lesson", path: "body" });
+  return `${SANITY_STUDIO_URL}/intent/edit?${params.toString()}`;
+}
+
+async function responseJson<T>(response: Response): Promise<T> {
+  return response.json().catch(() => ({} as T));
+}
+
+async function adminFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20_000);
+  try {
+    return await fetch(input, {
+      ...init,
+      cache: "no-store",
+      credentials: "same-origin",
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw new Error("EDITOR_TIMEOUT");
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 function messageFor(error: string): string {
   if (error === "LESSON_CHANGED_RELOAD") return "Mësimi është ndryshuar në Sanity. Rifreskoje përmbajtjen dhe provo përsëri.";
   if (error === "EDITOR_NOT_CONFIGURED") return "Editorit i mungon lidhja e sigurt me Sanity në Vercel.";
   if (error === "AUTH_REQUIRED" || error === "ADMIN_REQUIRED") return "Sesioni yt nuk ka të drejtë administratori.";
   if (error === "LESSON_BODY_TOO_LARGE") return "Teksti është tepër i madh për një ruajtje të vetme.";
   if (error === "LESSON_NOT_FOUND") return "Mësimi nuk u gjet në Sanity.";
-  return "Ndryshimet nuk u ruajtën. Provo përsëri.";
+  if (error === "INVALID_EMBEDDED_CONTENT") return "Një fotografi ose element i mbrojtur është hequr nga editori. Rifreskoje nga Sanity dhe provo përsëri.";
+  if (error === "EDITOR_TOKEN_INVALID") return "Lidhja e editorit me Sanity nuk ka leje shkrimi. Hape dokumentin në Sanity Studio ose përditëso token-in e Vercel-it.";
+  if (error === "INVALID_ORIGIN") return "Kërkesa e ruajtjes u bllokua për siguri. Rifresko faqen dhe provo përsëri.";
+  if (error === "LESSON_READ_FAILED") return "Mësimi nuk u lexua nga Sanity. Kontrollo lidhjen dhe provo përsëri.";
+  if (error === "LESSON_UPDATE_FAILED") return "Sanity nuk e pranoi ruajtjen. Ndryshimet e tua janë ende në editor.";
+  if (error === "EDITOR_TIMEOUT") return "Sanity nuk u përgjigj me kohë. Ndryshimet e tua janë ende në editor; provo përsëri.";
+  if (error === "IMAGE_TOO_LARGE") return "Fotoja është më e madhe se 12 MB. Zvogëloje dhe bëje paste përsëri.";
+  if (error === "IMAGE_TYPE_NOT_ALLOWED") return "Ky format fotografie nuk pranohet. Përdor PNG, JPG, WebP, GIF ose AVIF.";
+  if (error === "IMAGE_UPLOAD_FAILED") return "Fotoja nuk u ngarkua në Sanity. Teksti yt është ende në editor; provo përsëri.";
+  if (error === "IMAGE_REQUIRED" || error === "IMAGE_EMPTY") return "Clipboard-i nuk përmbante një fotografi të vlefshme.";
+  if (error === "TABLE_TOO_LARGE") return "Tabela është tepër e madhe. Lejohen deri në 100 rreshta dhe 30 kolona.";
+  if (error === "TABLE_CELL_TOO_LARGE") return "Një qelizë e tabelës ka më shumë se 6000 shkronja.";
+  if (error === "TOO_MANY_TABLES") return "Mund të ngjiten maksimumi 5 tabela njëherësh.";
+  if (error === "INVALID_TABLE_CLIPBOARD" || error === "INVALID_TABLE") return "Tabela nuk u njoh. Kopjoje përsëri nga Word, Excel, Google Sheets ose web-i.";
+  return "Ndryshimet nuk u ruajtën. Provo përsëri ose hape mësimin në Sanity Studio.";
 }
 
 function renderSpan(span: PortableSpan, markDefs: PortableMarkDef[]): string {
@@ -162,7 +231,8 @@ function portableToHtml(body: PortableNode[]): string {
     const node = body[index];
 
     if (node._type !== "block") {
-      html.push(renderImmutable(node));
+      const tableHtml = portableTableToHtml(node);
+      html.push(tableHtml || renderImmutable(node));
       continue;
     }
 
@@ -331,6 +401,18 @@ function editorToPortable(root: HTMLElement, sourceBody: PortableNode[]): Portab
 
     if (!(child instanceof HTMLElement)) continue;
 
+    const table = tablePortableNodeFromElement(child);
+    if (table) {
+      result.push(table);
+      continue;
+    }
+
+    const pastedImage = pastedImagePortableNode(child);
+    if (pastedImage) {
+      result.push(pastedImage);
+      continue;
+    }
+
     if (child.dataset.portableImmutable === "true") {
       const original = child.dataset.portableKey ? immutableByKey.get(child.dataset.portableKey) : null;
       if (original) result.push(structuredClone(original));
@@ -357,6 +439,13 @@ function editorToPortable(root: HTMLElement, sourceBody: PortableNode[]): Portab
             ? "blockquote"
             : "normal";
     result.push(blockFromElement(child, style));
+  }
+
+  const usedBlockKeys = new Set<string>();
+  for (const node of result) {
+    if (typeof node._key !== "string") continue;
+    if (usedBlockKeys.has(node._key) && node._type === "block") node._key = keyFor("block");
+    usedBlockKeys.add(node._key);
   }
 
   return result.length ? result : [{
@@ -414,11 +503,13 @@ function plainTextToHtml(text: string): string {
 
 export default function LessonAdminEditor({ lesson, onSaved }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const savedSelectionRef = useRef<Range | null>(null);
   const [currentLesson, setCurrentLesson] = useState<AdminEditableLesson>(lesson);
   const [sourceBody, setSourceBody] = useState<PortableNode[]>(() => structuredClone(lesson.body || []));
   const [editing, setEditing] = useState(false);
   const [loadingEditor, setLoadingEditor] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -430,15 +521,46 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
     setSourceBody(structuredClone(lesson.body || []));
   }, [editing, lesson]);
 
+  useEffect(() => {
+    if (!editing || !dirty) return;
+
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    const confirmLinkNavigation = (event: Event) => {
+      const target = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!target || target.closest('[contenteditable="true"]')) return;
+      if (!window.confirm("Ke ndryshime të paruajtura. Të largohesh pa i ruajtur?")) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+
+    window.addEventListener("beforeunload", beforeUnload);
+    document.addEventListener("click", confirmLinkNavigation, true);
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnload);
+      document.removeEventListener("click", confirmLinkNavigation, true);
+    };
+  }, [editing, dirty]);
+
   const initialHtml = useMemo(() => portableToHtml(sourceBody), [sourceBody, editorVersion]);
 
+  // Initialize the editable document only when it opens or receives a fresh Sanity version.
+  // React must not rewrite innerHTML after every keystroke because that moves the caret.
+  useLayoutEffect(() => {
+    if (!editing || !editorRef.current) return;
+    editorRef.current.innerHTML = initialHtml;
+    savedSelectionRef.current = null;
+  }, [editing, editorVersion, initialHtml]);
+
   async function readLatestFromSanity(showNotice = false): Promise<AdminEditableLesson> {
-    const response = await fetch(`/api/admin/lessons/${encodeURIComponent(lesson._id)}`, {
+    const response = await adminFetch(`/api/admin/lessons/${encodeURIComponent(lesson._id)}`, {
       method: "GET",
       headers: { Accept: "application/json" },
-      cache: "no-store",
     });
-    const result = await response.json() as { lesson?: AdminEditableLesson; error?: string };
+    const result = await responseJson<{ lesson?: AdminEditableLesson; error?: string }>(response);
     if (!response.ok || !result.lesson) throw new Error(result.error || "LESSON_UPDATE_FAILED");
 
     setCurrentLesson(result.lesson);
@@ -483,6 +605,7 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
   }
 
   function cancel() {
+    if (dirty && !window.confirm("Të anulohen ndryshimet e paruajtura?")) return;
     setEditing(false);
     setDirty(false);
     setError("");
@@ -491,27 +614,170 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
     setEditorVersion((version) => version + 1);
   }
 
+  // admin-toolbar-selection-v1: toolbar buttons must not collapse the user's text selection.
+  function getEditorSelectionRange(): Range | null {
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+    if (!editor || !selection || selection.rangeCount === 0) return null;
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const selectionNode = container.nodeType === Node.ELEMENT_NODE ? container : container.parentNode;
+    if (!selectionNode || !editor.contains(selectionNode)) return null;
+    return range.cloneRange();
+  }
+
+  function rememberEditorSelection() {
+    const range = getEditorSelectionRange();
+    if (range) savedSelectionRef.current = range;
+  }
+
   function runCommand(event: MouseEvent<HTMLButtonElement>, command: string, value?: string) {
     event.preventDefault();
-    editorRef.current?.focus();
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    let activeRange = getEditorSelectionRange();
+    if (!activeRange && savedSelectionRef.current) {
+      try {
+        activeRange = savedSelectionRef.current.cloneRange();
+      } catch {
+        savedSelectionRef.current = null;
+      }
+    }
+
+    editor.focus({ preventScroll: true });
+    const selection = window.getSelection();
+    if (activeRange && selection) {
+      selection.removeAllRanges();
+      selection.addRange(activeRange);
+    }
+
+    document.execCommand("styleWithCSS", false, "false");
     document.execCommand(command, false, value);
+    rememberEditorSelection();
     setDirty(true);
     setNotice("");
     setError("");
   }
 
+  function insertBlankTable(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    insertTableBlocks(editor, [createBlankTableBlock()]);
+    rememberEditorSelection();
+    setDirty(true);
+    setNotice("Tabela u shtua. Plotëso qelizat dhe ruaje mësimin.");
+    setError("");
+  }
+
+  async function uploadPastedImage(file: File, uploadKey: string) {
+    const formData = new FormData();
+    formData.set("image", file, file.name || "foto-nga-clipboard.png");
+    const response = await adminFetch("/api/admin/assets/images", {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: formData,
+    });
+    const result = await responseJson<{ asset?: UploadedImageAsset; error?: string }>(response);
+    if (!response.ok || !result.asset) throw new Error(result.error || "IMAGE_UPLOAD_FAILED");
+
+    const editor = editorRef.current;
+    if (!editor || !replaceImageUploadPlaceholder(editor, uploadKey, result.asset, {
+      uploading: styles.imageUploading,
+      uploaded: styles.pastedImage,
+      spinner: styles.imageSpinner,
+      copy: styles.imageUploadCopy,
+      removeButton: styles.imageRemove,
+    })) {
+      throw new Error("IMAGE_UPLOAD_FAILED");
+    }
+  }
+
   function onPaste(event: ClipboardEvent<HTMLDivElement>) {
+    const imageFiles = clipboardImageFiles(event.clipboardData);
+    if (imageFiles.length) {
+      event.preventDefault();
+      const editor = editorRef.current;
+      if (!editor) return;
+
+      const pending = insertImageUploadPlaceholders(editor, imageFiles, {
+        uploading: styles.imageUploading,
+        uploaded: styles.pastedImage,
+        spinner: styles.imageSpinner,
+        copy: styles.imageUploadCopy,
+        removeButton: styles.imageRemove,
+      });
+      setUploadingImages((count) => count + pending.length);
+      setDirty(true);
+      setError("");
+      setNotice(pending.length === 1 ? "Duke ngarkuar fotografinë në Sanity…" : "Duke ngarkuar " + pending.length + " fotografi në Sanity…");
+
+      void Promise.allSettled(pending.map(async ({ file, key }) => {
+        try {
+          await uploadPastedImage(file, key);
+        } catch (uploadError) {
+          removeImageUploadPlaceholder(editor, key);
+          throw uploadError;
+        } finally {
+          setUploadingImages((count) => Math.max(0, count - 1));
+        }
+      })).then((results) => {
+        const failure = results.find((result): result is PromiseRejectedResult => result.status === "rejected");
+        if (failure) {
+          const reason = failure.reason instanceof Error ? failure.reason.message : "IMAGE_UPLOAD_FAILED";
+          setError(messageFor(reason));
+          setNotice("");
+          return;
+        }
+        setNotice(pending.length === 1 ? "Fotoja u ngarkua. Ruaje mësimin për ta publikuar." : "Fotografitë u ngarkuan. Ruaje mësimin për t’i publikuar.");
+      });
+      return;
+    }
+
+    let pastedTables;
+    try {
+      pastedTables = clipboardTableBlocks(event.clipboardData);
+    } catch (tableError) {
+      event.preventDefault();
+      const reason = tableError instanceof Error ? tableError.message : "INVALID_TABLE_CLIPBOARD";
+      setError(messageFor(reason));
+      setNotice("");
+      return;
+    }
+
+    if (pastedTables.length) {
+      event.preventDefault();
+      const editor = editorRef.current;
+      if (!editor) return;
+      insertTableBlocks(editor, pastedTables);
+      rememberEditorSelection();
+      setDirty(true);
+      setError("");
+      setNotice(pastedTables.length === 1
+        ? "Tabela u ngjit. Ruaje mësimin për ta publikuar."
+        : pastedTables.length + " tabela u ngjitën. Ruaje mësimin për t’i publikuar.");
+      return;
+    }
+
     event.preventDefault();
     const html = event.clipboardData.getData("text/html");
     const text = event.clipboardData.getData("text/plain");
     const safeHtml = html ? sanitizePastedHtml(html) : plainTextToHtml(text);
     document.execCommand("insertHTML", false, safeHtml);
+    rememberEditorSelection();
     setDirty(true);
     setNotice("");
     setError("");
   }
 
   async function save() {
+    if (uploadingImages > 0) {
+      setError("Prit derisa fotografitë të ngarkohen në Sanity, pastaj ruaje mësimin.");
+      return;
+    }
     if (!currentLesson._rev || !editorRef.current) {
       setError("Mësimi duhet të rifreskohet para editimit.");
       return;
@@ -523,12 +789,12 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
     setNotice("");
 
     try {
-      const response = await fetch(`/api/admin/lessons/${encodeURIComponent(currentLesson._id)}`, {
+      const response = await adminFetch(`/api/admin/lessons/${encodeURIComponent(currentLesson._id)}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ revision: currentLesson._rev, body }),
       });
-      const result = await response.json() as { lesson?: AdminEditableLesson; error?: string };
+      const result = await responseJson<{ lesson?: AdminEditableLesson; error?: string }>(response);
       if (!response.ok || !result.lesson) throw new Error(result.error || "LESSON_UPDATE_FAILED");
 
       setCurrentLesson(result.lesson);
@@ -551,12 +817,15 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
           <span className={styles.badge}>Vetëm administratori</span>
           <strong>Edito përmbajtjen e këtij mësimi</strong>
           <small>Editor i vetëm rich-text, i sinkronizuar drejtpërdrejt me Sanity.</small>
-          {error && <p className={styles.inlineError} role="alert">{error}</p>}
+          {error && <p className={styles.inlineError} role="alert">{error} <a data-admin-error-studio href={sanityStudioEditUrl(currentLesson._id)} target="_blank" rel="noopener noreferrer">Hape në Sanity Studio</a></p>}
           {notice && <p className={styles.success} role="status">{notice}</p>}
         </div>
-        <button type="button" onClick={() => void startEditing()} disabled={loadingEditor}>
-          {loadingEditor ? "Duke hapur…" : "Edito mësimin"}
-        </button>
+        <div data-admin-actions>
+          <button type="button" onClick={() => void startEditing()} disabled={loadingEditor}>
+            {loadingEditor ? "Duke hapur…" : "Edito mësimin"}
+          </button>
+          <a data-admin-studio-link href={sanityStudioEditUrl(currentLesson._id)} target="_blank" rel="noopener noreferrer">Hape në Sanity Studio</a>
+        </div>
       </section>
     );
   }
@@ -570,17 +839,18 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
           <p>Shkruaj ose bëj paste me formatim. Përmbajtja ruhet si Portable Text në Sanity.</p>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.refresh} type="button" onClick={() => void refreshFromSanity()} disabled={saving || loadingEditor}>
+          <a data-admin-studio-link href={sanityStudioEditUrl(currentLesson._id)} target="_blank" rel="noopener noreferrer">Sanity Studio</a>
+          <button className={styles.refresh} type="button" onClick={() => void refreshFromSanity()} disabled={saving || loadingEditor || uploadingImages > 0}>
             {loadingEditor ? "Duke rifreskuar…" : "Rifresko nga Sanity"}
           </button>
-          <button className={styles.cancel} type="button" onClick={cancel} disabled={saving}>Anulo</button>
-          <button className={styles.save} type="button" onClick={() => void save()} disabled={saving || !dirty}>
+          <button className={styles.cancel} type="button" onClick={cancel} disabled={saving || uploadingImages > 0}>Anulo</button>
+          <button className={styles.save} type="button" onClick={() => void save()} disabled={saving || uploadingImages > 0 || !dirty}>
             {saving ? "Duke ruajtur…" : "Ruaj në Sanity"}
           </button>
         </div>
       </header>
 
-      {error && <div className={styles.error} role="alert">{error}</div>}
+      {error && <div className={styles.error} role="alert"><span>{error}</span><a data-admin-error-studio href={sanityStudioEditUrl(currentLesson._id)} target="_blank" rel="noopener noreferrer">Hape dokumentin në Sanity Studio</a></div>}
       {notice && <div className={styles.notice} role="status">{notice}</div>}
 
       <div className={styles.documentBox}>
@@ -604,8 +874,14 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
           <div className={styles.toolbarGroup}>
             <button type="button" onMouseDown={(event) => runCommand(event, "insertUnorderedList")}>• Listë</button>
             <button type="button" onMouseDown={(event) => runCommand(event, "insertOrderedList")}>1. Listë</button>
+            <button type="button" title="Shto tabelë 3 × 3" onMouseDown={insertBlankTable}>▦ Tabelë</button>
             <button type="button" onMouseDown={(event) => runCommand(event, "removeFormat")}>Hiq formatin</button>
           </div>
+        </div>
+
+        <div className={styles.imagePasteHint} role="note">
+          <strong>Paste foto ose tabelë direkt</strong>
+          <span>Kopjo një fotografi, screenshot ose tabelë nga Word, Excel, Google Sheets apo web-i dhe shtyp Ctrl/⌘ + V te pozita e kursorit.</span>
         </div>
 
         <div
@@ -618,24 +894,40 @@ export default function LessonAdminEditor({ lesson, onSaved }: Props) {
           aria-multiline="true"
           aria-label={`Përmbajtja e ${currentLesson.title}`}
           data-placeholder="Shkruaj përmbajtjen e mësimit këtu…"
-          dangerouslySetInnerHTML={{ __html: initialHtml }}
           onInput={() => {
+            rememberEditorSelection();
             setDirty(true);
             setNotice("");
             setError("");
           }}
+          onKeyUp={rememberEditorSelection}
+          onMouseUp={rememberEditorSelection}
+          onSelect={rememberEditorSelection}
           onPaste={onPaste}
+          onClick={(event) => {
+            if (!(event.target instanceof Element)) return;
+            const removeButton = event.target.closest("[data-remove-pasted-image]");
+            if (removeButton) {
+              event.preventDefault();
+              removeButton.closest('figure[data-pasted-sanity-image="true"]')?.remove();
+              setDirty(true);
+              setNotice("Fotoja u hoq nga mësimi i paruajtur.");
+              setError("");
+              return;
+            }
+            if (event.target.closest("a[href]")) event.preventDefault();
+          }}
         />
       </div>
 
       <footer className={styles.editorFooter}>
         <span>
           {dirty ? "Ke ndryshime të paruajtura." : "Përmbajtja përputhet me versionin e ngarkuar nga Sanity."}
-          {" "}Fotografitë dhe elementet e posaçme ruhen të pandryshuara.
+          {" "}Fotografitë, tabelat dhe elementet e posaçme ruhen në Sanity.
         </span>
         <div>
-          <button className={styles.cancel} type="button" onClick={cancel} disabled={saving}>Anulo</button>
-          <button className={styles.save} type="button" onClick={() => void save()} disabled={saving || !dirty}>
+          <button className={styles.cancel} type="button" onClick={cancel} disabled={saving || uploadingImages > 0}>Anulo</button>
+          <button className={styles.save} type="button" onClick={() => void save()} disabled={saving || uploadingImages > 0 || !dirty}>
             {saving ? "Duke ruajtur…" : "Ruaj në Sanity"}
           </button>
         </div>

@@ -41,6 +41,10 @@ const SECTION_HEADING = /^(KAPITULLI|PJESA|NJËSIA|TEMA|SEKSIONI)\b/i;
 const CALLOUT_PREFIX = /^(Mbaje mend|Kujdes|Rregull(?:i)?|Mnemonikë|Logjika(?: kryesore)?|Përkufizim(?:i)?|Shembull|Dallimi|Krahasimi|Rëndësi(?:a)?|Pika kryesore)\s*:?\s*[–—-]?\s*/i;
 const LEARNING_SUBHEADING = /^(Rruga|Skema|Rregull|Mnemonikë|Dallimi|Krahasimi|Përkufizimi|Baza|Maja|Faqet|Hemi|Globina|Serumi|Vaksinat|Muri|Valvulat|Trungu|Arteria|Vena|Sinusi|Muskujt|Fijet|Hemostaza|Koagulimi|Fibrinoliza|Funksioni|Ndërtimi|Përbërja|Ndarja|Klasifikimi|Roli|Rëndësia|Karakteristikat|Mekanizmi|Llojet|Pjesët|Pozita|Forma|Madhësia|Qarkullimi|Furnizimi|Inervimi|Veprimi|Fazat|Shkaqet|Pasojat|Simptomat|Diagnoza|Trajtimi|Parandalimi)\b/i;
 const SENTENCE_VERB = /\b(është|janë|ishte|ishin|ka|kanë|duhet|mund|përfaqëson|përfaqësojnë|përbëhet|përbëhen|ndërtohet|ndërtohen|shërben|shërbejnë|ndodhet|ndodhen|quhet|quhen|kalon|kalojnë|lidh|lidhen|studion|studiojnë|kryen|kryejnë|siguron|sigurojnë|formon|formojnë|përçon|përçojnë|transporton|transportojnë)\b/i;
+const SCHEME_ARROW = /(?:→|⇒|⟶|➜|↔|⟷)/;
+const SCHEME_EQUALITY = /^\s*[^=\n]{1,90}\s=\s[^=\n]{1,280}\s*$/;
+
+// all-lessons-rich-formatting-v1
 
 function sourceText(value: PortableBlockValue): string {
   return (value.children || []).map((child) => child.text || "").join("").replace(/\r\n?/g, "\n");
@@ -92,6 +96,33 @@ function inlineNodes(value: string, keyPrefix: string): ReactNode[] {
 
   if (cursor < value.length) nodes.push(value.slice(cursor));
   return nodes.length ? nodes : [value];
+}
+
+function isSchemeLine(value: string): boolean {
+  const text = plainInline(value).replace(/\s+/g, " " ).trim();
+  if (!text || text.length > 420) return false;
+  return SCHEME_ARROW.test(text) || SCHEME_EQUALITY.test(text);
+}
+
+function renderSchemeLine(value: string, key: string): ReactNode[] {
+  const parts = value.split(/(\s*(?:→|⇒|⟶|➜|↔|⟷|=)\s*)/).filter(Boolean);
+  return parts.map((part, index) => {
+    const connector = part.trim();
+    if (/^(?:→|⇒|⟶|➜|↔|⟷|=)$/.test(connector)) {
+      return <span className={styles.schemeConnector} key={`${key}-connector-${index}`}>{connector}</span>;
+    }
+    return <span className={styles.schemePart} key={`${key}-part-${index}`}>{inlineNodes(part.trim(), `${key}-part-${index}`)}</span>;
+  });
+}
+
+function renderScheme(lines: string[], key: string): ReactNode {
+  return (
+    <div className={styles.scheme} data-learning-scheme="true" data-source-preserved="true" key={key} role="group" aria-label="Skema e mësimit">
+      {lines.map((line, lineIndex) => (
+        <div className={styles.schemeLine} key={`${key}-line-${lineIndex}`}>{renderSchemeLine(line, `${key}-line-${lineIndex}`)}</div>
+      ))}
+    </div>
+  );
 }
 
 function normalizedHeading(value: string): string {
@@ -158,7 +189,7 @@ function looksLikeStandaloneTitle(value: string): boolean {
   if (/^[a-zçë]/.test(text)) return false;
   if (/[.!?;,]$/.test(text)) return false;
   if (/https?:|www\.|@/.test(text)) return false;
-  if (CALLOUT_PREFIX.test(text) || isDefinition(text)) return false;
+  if (CALLOUT_PREFIX.test(text) || isDefinition(text) || isSchemeLine(text)) return false;
   const words = text.split(/\s+/).filter(Boolean);
   if (words.length < 1 || words.length > 11) return false;
   if (SENTENCE_VERB.test(text)) return false;
@@ -167,7 +198,7 @@ function looksLikeStandaloneTitle(value: string): boolean {
 
 function inferredHeadingDecision(line: string, nextLine = "", context: HeadingContext = {}): HeadingDecision | null {
   const value = normalizedHeading(line);
-  if (!value || value.length > 150 || CALLOUT_PREFIX.test(value) || isDefinition(value)) return null;
+  if (!value || value.length > 150 || CALLOUT_PREFIX.test(value) || isDefinition(value) || isSchemeLine(value)) return null;
 
   const numbered = value.match(NUMBERED_HEADING);
   if (numbered && !/[!?;]$/.test(numbered[2])) {
@@ -238,6 +269,7 @@ function shouldParse(raw: string, style?: string): boolean {
     inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true }) ||
     calloutKind(raw) ||
     isDefinition(raw) ||
+    isSchemeLine(raw) ||
     raw.includes("\n") ||
     /(^|\n)\s*•\s+/m.test(raw) ||
     /(^|\n)\s*[-*+]\s+\S/m.test(raw)
@@ -305,6 +337,16 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       continue;
     }
 
+    if (isSchemeLine(trimmed)) {
+      const schemeLines: string[] = [];
+      while (index < lines.length && isSchemeLine(lines[index].trim())) {
+        schemeLines.push(lines[index].trim());
+        index += 1;
+      }
+      const key = nextKey("scheme");
+      output.push(renderScheme(schemeLines, key));
+      continue;
+    }
     if (BULLET_ITEM.test(line)) {
       const items: string[] = [];
       while (index < lines.length) {
@@ -385,7 +427,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
           previousBlank: false,
           nextBlank: index === lines.length - 1 || !lines[index + 1].trim(),
         });
-        if (candidateHeading || BULLET_ITEM.test(lines[index]) || isNumberedListSequence(lines, index)) break;
+        if (candidateHeading || isSchemeLine(candidate) || BULLET_ITEM.test(lines[index]) || isNumberedListSequence(lines, index)) break;
         parts.push(candidate);
         index += 1;
       }
@@ -427,6 +469,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       if (/^-{3,}$/.test(current) || MARKDOWN_HEADING.test(current) || /^>\s?/.test(current)) break;
       if (BULLET_ITEM.test(lines[index]) || isNumberedListSequence(lines, index)) break;
       if (current.includes("|") && index + 1 < lines.length && isTableDivider(lines[index + 1])) break;
+      if (isSchemeLine(current)) break;
       const candidateHeading = inferredHeadingDecision(current, nextNonEmpty(index + 1), {
         allowGenericPhrase: true,
         currentLevel,
@@ -453,6 +496,7 @@ export default function MarkdownLessonBlock({ value, children }: MarkdownLessonB
   if (!shouldParse(raw, value.style)) return <p data-learning-paragraph="true" data-source-preserved="true">{children}</p>;
 
   if (!raw.includes("\n")) {
+    if (isSchemeLine(raw)) return renderScheme([raw], key);
     const markdownHeading = markdownHeadingDecision(raw);
     if (markdownHeading) return renderHeading(markdownHeading.text, key, markdownHeading.decision);
     const inferred = inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true });

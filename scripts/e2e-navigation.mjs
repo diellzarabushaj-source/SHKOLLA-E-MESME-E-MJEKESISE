@@ -6,6 +6,25 @@ const baseURL = process.env.E2E_BASE_URL || "http://127.0.0.1:3000";
 const root = process.cwd();
 const failures = [];
 
+// e2e-navigation-stability-v2
+async function stableEvaluate(page, callback, argument) {
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return argument === undefined
+        ? await page.evaluate(callback)
+        : await page.evaluate(callback, argument);
+    } catch (error) {
+      lastError = error;
+      const message = String(error);
+      if (!message.includes("Execution context was destroyed") && !message.includes("Cannot find context")) throw error;
+      await page.waitForLoadState("domcontentloaded").catch(() => {});
+      await page.waitForTimeout(120);
+    }
+  }
+  throw lastError;
+}
+
 const fixtureLessonSummary = {
   _id: "lesson-cells",
   _rev: "fixture-revision-1",
@@ -183,8 +202,13 @@ async function expectClasses(page, label) {
 async function clickFirstNestedPath(page) {
   await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
   await waitForPortal(page);
-  await page.evaluate(() => localStorage.removeItem("medical-portal-selected-grade"));
-  await page.reload({ waitUntil: "domcontentloaded" });
+  await stableEvaluate(page, () => localStorage.removeItem("medical-portal-selected-grade"));
+  try {
+    await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
+  } catch (error) {
+    if (!String(error).includes("ERR_ABORTED")) throw error;
+    await page.waitForLoadState("domcontentloaded").catch(() => {});
+  }
   await expectClasses(page, "initial class selector");
 
   const gradeButton = page.locator("#klasat button").first();
@@ -249,7 +273,7 @@ async function auditDesktopFlow(browser) {
   await installSanityFixture(context);
   const page = await context.newPage();
   try {
-    const baselineHistory = await page.evaluate(() => history.length).catch(() => 0);
+    const baselineHistory = await stableEvaluate(page, () => history.length).catch(() => 0);
     const nested = await clickFirstNestedPath(page);
     const lessonURL = page.url();
 
@@ -296,16 +320,16 @@ async function auditDesktopFlow(browser) {
     await page.goBack({ waitUntil: "domcontentloaded" });
     await page.locator('main[data-progress-page="lesson"]').waitFor({ state: "visible", timeout: 20_000 });
 
-    await page.evaluate((gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
+    await stableEvaluate(page, (gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
     await page.goto(`${baseURL}/#klasat`, { waitUntil: "domcontentloaded" });
     await expectClasses(page, "direct /#klasat with saved grade");
 
-    await page.evaluate((gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
+    await stableEvaluate(page, (gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
     await page.goto(`${baseURL}/progress`, { waitUntil: "domcontentloaded" });
     await page.locator('a.brand[href="/"]').click();
     await expectHome(page, "Home from /progress with saved grade");
 
-    const finalHistory = await page.evaluate(() => history.length);
+    const finalHistory = await stableEvaluate(page, () => history.length);
     assert(finalHistory >= baselineHistory, "browser history unexpectedly collapsed");
     console.log("✓ desktop nested flow, Home, Classes, Back and Forward");
   } finally {
@@ -320,7 +344,7 @@ async function auditMobileFlow(browser) {
   try {
     const nested = await clickFirstNestedPath(page);
     await page.goto(`${baseURL}/progress`, { waitUntil: "domcontentloaded" });
-    await page.evaluate((gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
+    await stableEvaluate(page, (gradeId) => localStorage.setItem("medical-portal-selected-grade", gradeId), nested.gradeId);
 
     const mobileNav = page.locator("nav.mobile-navigation");
     await mobileNav.waitFor({ state: "visible", timeout: 10_000 });
