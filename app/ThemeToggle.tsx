@@ -16,14 +16,18 @@ export default function ThemeToggle() {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
-    localStorage.setItem("flashcards-theme", nextTheme);
+    try {
+      window.localStorage.setItem("flashcards-theme", nextTheme);
+    } catch {
+      // Theme switching remains functional when browser storage is blocked.
+    }
   }
 
   const title = theme === "dark" ? "Aktivizo temën e ndritshme" : "Aktivizo temën e errët";
 
   return (
     <button
-      aria-label="Ndrysho temën light/dark"
+      aria-label={title}
       aria-pressed={theme === "dark"}
       className="theme-switch"
       data-theme-state={theme}
