@@ -42,11 +42,6 @@ export default function LearningExperienceAuditPage() {
 
   return (
     <main style={{maxWidth: 920, margin: "0 auto", padding: "96px 20px 180px"}}>
-      <header>
-        <span>Mësim testues</span>
-        <h1 data-audit-lesson-title>1.1. Hierarkia automatike e mësimit</h1>
-      </header>
-
       <LessonLearningExperience
         lessonId="learning-experience-audit-lesson"
         lessonTitle="1.1. Hierarkia automatike e mësimit"
