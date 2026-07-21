@@ -1,0 +1,18 @@
+.desktop-navigation .tab.is-active,
+.desktop-navigation .tab[aria-current="page"] {
+  border-color: color-mix(in srgb, var(--primary) 68%, transparent);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 34%, transparent);
+}
+
+.desktop-navigation .tab.is-active::after,
+.desktop-navigation .tab[aria-current="page"]::after {
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--line));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-navigation .tab {
+    transition: none;
+  }
+}
