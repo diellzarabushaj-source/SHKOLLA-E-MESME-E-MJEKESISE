@@ -57,14 +57,22 @@ try {
   assert(await page.locator('[data-source-preserved="true"]').count() >= 2, "Source-preservation markers are missing");
   assert(await page.locator('[data-learning-heading="true"]').count() === 4, "The learning engine did not produce the expected four-section hierarchy");
 
-  const outline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
-  await outline.locator("summary").click();
-  assert(await outline.locator("nav button").count() === 4, "The lesson outline does not contain every detected heading");
+  const desktopOutline = workspace.locator("aside nav");
+  assert(await desktopOutline.locator("button").count() === 4, "The desktop lesson outline does not contain every detected heading");
+  assert(await desktopOutline.locator('button[data-level="2"]').count() === 1, "The desktop outline is missing its H2 level");
+  assert(await desktopOutline.locator('button[data-level="3"]').count() === 2, "The desktop outline is missing its H3 levels");
+  assert(await desktopOutline.locator('button[data-level="4"]').count() === 1, "The desktop outline is missing its H4 level");
 
-  const subsectionButton = outline.getByRole("button", {name: /3\.6\. Arteriet/});
+  await page.setViewportSize({width: 390, height: 844});
+  const mobileOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
+  await mobileOutline.locator("summary").click();
+  assert(await mobileOutline.locator("nav button").count() === 4, "The mobile lesson outline does not contain every detected heading");
+
+  const subsectionButton = mobileOutline.getByRole("button", {name: /3\.6\. Arteriet/});
+  const subsectionId = await automaticH3.getAttribute("id");
   await subsectionButton.click();
-  assert(!(await outline.getAttribute("open")), "The mobile lesson outline stayed open after navigation");
-  assert(await automaticH3.evaluate((element) => document.activeElement === element), "The selected heading did not receive keyboard focus");
+  assert(!(await mobileOutline.getAttribute("open")), "The mobile lesson outline stayed open after navigation");
+  await page.waitForFunction((id) => document.activeElement?.id === id, subsectionId);
 
   const progress = page.getByRole("progressbar", {name: "Progresi i leximit"});
   const automaticProgress = Number(await progress.getAttribute("aria-valuenow"));
@@ -93,4 +101,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, outline navigation, truthful progress and persistence passed in Chromium.");
+console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, responsive outline navigation, truthful progress and persistence passed in Chromium.");
