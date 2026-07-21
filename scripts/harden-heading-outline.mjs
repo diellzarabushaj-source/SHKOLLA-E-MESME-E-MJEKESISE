@@ -2,13 +2,50 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const experiencePath = "app/LessonLearningExperience.tsx";
 const experienceCssPath = "app/LessonLearningExperienceQA.module.css";
+const markdownPath = "app/MarkdownLessonContent.tsx";
 const portalPaths = ["app/ClassicLearningPortal.tsx", "app/SchoolLearningPortal.tsx"];
 const marker = "sanitized-sanity-heading-v1";
+const inferenceMarker = "conservative-heading-inference-v1";
 
 function replaceRequired(target, label, before, after) {
   if (!target.includes(before)) throw new Error(`${label}: source pattern was not found`);
   return target.replace(before, after);
 }
+
+let markdown = readFileSync(markdownPath, "utf8").replace(/\r\n?/g, "\n");
+if (!markdown.includes(inferenceMarker)) {
+  markdown = replaceRequired(
+    markdown,
+    "generic title punctuation guard",
+    "  if (/[.!?;,]$/.test(text)) return false;",
+    "  if (/[.!?;,:]$/.test(text)) return false;",
+  );
+
+  markdown = replaceRequired(
+    markdown,
+    "learning label sentence guard",
+    "  if (LEARNING_SUBHEADING.test(value) && value.length <= 105 && !/[.!?;]$/.test(value)) {",
+    "  if (LEARNING_SUBHEADING.test(value) && value.length <= 105 && !/[.!?;:]$/.test(value) && !SENTENCE_VERB.test(value)) {",
+  );
+
+  markdown = replaceRequired(
+    markdown,
+    "remove colon lead-in heading inference",
+    `
+  if (/^[^:]{3,85}:$/.test(value) && nextLine.trim()) {
+    return { level: context.currentLevel && context.currentLevel >= 3 ? 4 : 3, reason: "colon" };
+  }
+`,
+    "\n",
+  );
+
+  markdown = markdown.replaceAll("allowGenericPhrase: true", "allowGenericPhrase: false");
+  markdown = markdown.replace(
+    "// all-lessons-rich-formatting-v1",
+    `// all-lessons-rich-formatting-v1\n// ${inferenceMarker}`,
+  );
+}
+writeFileSync(markdownPath, markdown);
 
 let experience = readFileSync(experiencePath, "utf8").replace(/\r\n?/g, "\n");
 
@@ -121,4 +158,4 @@ for (const portalPath of portalPaths) {
   writeFileSync(portalPath, portal);
 }
 
-console.log("Lesson headings are sanitized before rendering and before entering the outline.");
+console.log("Prose labels stay paragraphs; only validated headings enter the lesson outline.");
