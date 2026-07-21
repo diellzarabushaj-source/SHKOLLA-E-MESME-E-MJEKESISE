@@ -14,12 +14,29 @@ const expected = {
   paragraph: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   callout: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
   sanityHeading: "Nëntitull i caktuar drejtpërdrejt në Sanity",
+  falseHeadings: [
+    "Pra:",
+    "Funksioni i tyre është:",
+    "Sipas librit, antitrupat prodhohen nga:",
+  ],
 };
 
 async function exactText(locator, value, label) {
   await locator.waitFor({state: "visible", timeout: 10_000});
   const actual = await locator.evaluate((element) => element.textContent || "");
   assert(actual === value, `${label} changed. Expected ${JSON.stringify(value)}, received ${JSON.stringify(actual)}`);
+}
+
+async function assertNoHorizontalOverflow(page, label) {
+  const dimensions = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth,
+  }));
+  assert(
+    Math.max(dimensions.document, dimensions.body) <= dimensions.viewport + 1,
+    `${label} has horizontal overflow: ${JSON.stringify(dimensions)}`,
+  );
 }
 
 const browser = await chromium.launch({headless: true});
@@ -30,11 +47,16 @@ try {
   });
   const page = await context.newPage();
   await page.goto(`${baseURL}/learning-experience-audit`, {waitUntil: "domcontentloaded"});
-  await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
+  const workspace = page.locator("[data-learning-experience]");
+  await workspace.waitFor({state: "visible", timeout: 10_000});
 
   assert(await page.locator("h1").count() === 1, "The lesson page must contain exactly one H1 title");
   assert(await page.locator("[data-learning-audit-article] h1").count() === 0, "Sanity body content must never create another H1");
-  await exactText(page.locator("h1[data-audit-lesson-title]"), expected.title, "Lesson H1");
+  await exactText(workspace.locator("h1"), expected.title, "Lesson H1");
+
+  const firstHeadingTag = await workspace.locator("h1,h2,h3,h4").first().evaluate((element) => element.tagName);
+  assert(firstHeadingTag === "H1", `The lesson heading order starts with ${firstHeadingTag}, not H1`);
+  assert(await workspace.locator("aside h2").count() === 0, "The sidebar introduces an H2 before the lesson title");
 
   const automaticH2 = page.locator('h2[data-learning-heading="true"][data-heading-source="uppercase"]');
   const automaticH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="numbered"]');
@@ -46,21 +68,88 @@ try {
   await exactText(automaticH4, expected.detail, "Automatic H4");
   await exactText(sanityH3, expected.sanityHeading, "Sanity H3");
 
-  await exactText(page.locator('[data-learning-paragraph="true"]'), expected.paragraph, "Paragraph");
+  await exactText(page.locator('[data-learning-paragraph="true"]').first(), expected.paragraph, "Paragraph");
   await exactText(page.locator('[data-learning-callout="remember"]'), expected.callout, "Learning callout");
 
-  assert(await page.locator('[data-source-preserved="true"]').count() >= 2, "Source-preservation markers are missing");
+  const articleHeadingTexts = await page.locator("[data-learning-audit-article] h1,[data-learning-audit-article] h2,[data-learning-audit-article] h3,[data-learning-audit-article] h4").allTextContents();
+  for (const label of expected.falseHeadings) {
+    const matchingParagraphs = page.locator('[data-learning-paragraph="true"]').filter({hasText: label});
+    assert(await matchingParagraphs.count() >= 1, `${JSON.stringify(label)} was not preserved as paragraph text`);
+    assert(!articleHeadingTexts.map((value) => value.trim()).includes(label), `${JSON.stringify(label)} was promoted to a semantic heading`);
+  }
+
+  const rejectedSanityHeading = page.locator('[data-learning-rejected-heading="true"][data-rejected-sanity-style="h1"]');
+  await exactText(rejectedSanityHeading, "Pra:", "Rejected Sanity H1 text");
+
+  assert(await page.locator('[data-source-preserved="true"]').count() >= 6, "Source-preservation markers are missing");
   assert(await page.locator('[data-learning-heading="true"]').count() === 4, "The learning engine did not produce the expected four-section hierarchy");
 
-  const outline = page.locator("details").filter({hasText: "Harta e mësimit"});
-  await outline.locator("summary").click();
-  assert(await outline.locator("nav button").count() === 4, "The lesson map does not contain every detected heading");
+  const desktopOutline = workspace.locator("aside nav");
+  assert(await desktopOutline.locator("button").count() === 4, "The desktop lesson outline does not contain every detected heading");
+  assert(await desktopOutline.locator('button[data-level="2"]').count() === 1, "The desktop outline is missing its H2 level");
+  assert(await desktopOutline.locator('button[data-level="3"]').count() === 2, "The desktop outline is missing its H3 levels");
+  assert(await desktopOutline.locator('button[data-level="4"]').count() === 1, "The desktop outline is missing its H4 level");
+  const desktopOutlineLabels = (await desktopOutline.locator("button").allTextContents()).map((value) => value.replace(/^\s*\w+(?:\.\w+)*\s*/, "").trim());
+  for (const label of expected.falseHeadings) {
+    assert(!desktopOutlineLabels.some((value) => value.includes(label)), `${JSON.stringify(label)} leaked into the desktop outline`);
+  }
+
+  const hero = workspace.locator("header").first();
+  const desktopTitleBox = await hero.locator("h1").boundingBox();
+  const desktopActionsBox = await hero.locator("button").first().boundingBox();
+  const desktopMediaBox = await hero.locator("[data-audit-cover]").boundingBox();
+  assert(desktopTitleBox && desktopActionsBox && desktopMediaBox, "Desktop hero boxes could not be measured");
+  assert(desktopActionsBox.x > desktopTitleBox.x, "Desktop hero actions are not positioned to the right of the copy");
+  assert(desktopMediaBox.y > Math.max(desktopTitleBox.y, desktopActionsBox.y), "Desktop hero media is not below copy and actions");
+  await assertNoHorizontalOverflow(page, "Desktop lesson viewport");
+
+  const initialTheme = await page.evaluate(() => document.documentElement.dataset.theme);
+  const themeToggle = page.locator(".theme-switch");
+  await themeToggle.click();
+  await page.waitForFunction((theme) => document.documentElement.dataset.theme !== theme, initialTheme);
+  const toggledTheme = await page.evaluate(() => document.documentElement.dataset.theme);
+  const storedTheme = await page.evaluate(() => window.localStorage.getItem("flashcards-theme"));
+  assert(toggledTheme === "light" || toggledTheme === "dark", "Theme toggle produced an invalid theme");
+  assert(storedTheme === toggledTheme, "Theme toggle did not persist the selected theme");
+  await themeToggle.click();
+  await page.waitForFunction((theme) => document.documentElement.dataset.theme === theme, initialTheme);
+
+  await page.setViewportSize({width: 820, height: 1180});
+  assert(await workspace.locator("aside").isHidden(), "Tablet viewport still shows the desktop sidebar");
+  const tabletOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
+  assert(await tabletOutline.locator("summary").isVisible(), "Tablet viewport does not expose the compact lesson outline");
+  await assertNoHorizontalOverflow(page, "Tablet lesson viewport");
+
+  await page.setViewportSize({width: 390, height: 844});
+  const mobileOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
+  await mobileOutline.locator("summary").click();
+  assert(await mobileOutline.locator("nav button").count() === 4, "The mobile lesson outline does not contain every detected heading");
+  const mobileOutlineText = await mobileOutline.locator("nav").innerText();
+  for (const label of expected.falseHeadings) {
+    assert(!mobileOutlineText.includes(label), `${JSON.stringify(label)} leaked into the mobile outline`);
+  }
+
+  const mobileActionsBox = await hero.locator("button").first().boundingBox();
+  const mobileMediaBox = await hero.locator("[data-audit-cover]").boundingBox();
+  assert(mobileActionsBox && mobileMediaBox && mobileActionsBox.y < mobileMediaBox.y, "Mobile hero actions are not placed before the media");
+  await assertNoHorizontalOverflow(page, "Mobile lesson viewport");
+
+  const subsectionButton = mobileOutline.getByRole("button", {name: /3\.6\. Arteriet/});
+  const subsectionId = await automaticH3.getAttribute("id");
+  await subsectionButton.click();
+  assert(!(await mobileOutline.getAttribute("open")), "The mobile lesson outline stayed open after navigation");
+  await page.waitForFunction((id) => document.activeElement?.id === id, subsectionId);
+
+  const progress = page.getByRole("progressbar", {name: "Progresi i leximit"});
+  const automaticProgress = Number(await progress.getAttribute("aria-valuenow"));
+  assert(automaticProgress < 100, "Automatic reading progress reached 100% before explicit completion");
 
   const completion = page.getByRole("button", {name: "Shëno si të përfunduar"});
   await completion.click();
-  const progress = page.getByRole("progressbar", {name: "Progresi i leximit"});
   assert(await progress.getAttribute("aria-valuenow") === "100", "Completing the lesson did not set progress to 100%");
-  await page.getByRole("button", {name: "✓ Përfunduar"}).waitFor({state: "visible"});
+  const restoredButton = page.getByRole("button", {name: "Përfunduar"});
+  await restoredButton.waitFor({state: "visible"});
+  assert(await restoredButton.isDisabled(), "Completed action is not disabled");
 
   const saved = await page.evaluate((key) => window.localStorage.getItem(key), storageKey);
   const parsed = JSON.parse(saved || "{}");
@@ -69,7 +158,7 @@ try {
 
   await page.reload({waitUntil: "domcontentloaded"});
   await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
-  const restored = page.getByRole("button", {name: "✓ Përfunduar"});
+  const restored = page.getByRole("button", {name: "Përfunduar"});
   await restored.waitFor({state: "visible"});
   assert(await restored.isDisabled(), "Completed state was not restored after reload");
 
@@ -78,4 +167,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, lesson map, progress and persistence passed in Chromium.");
+console.log("Automatic hierarchy, false-heading protection, exact Sanity text, desktop/tablet/mobile layout, dark/light mode, overflow, truthful progress and persistence passed in Chromium.");

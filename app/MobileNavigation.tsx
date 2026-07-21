@@ -83,6 +83,15 @@ export default function MobileNavigation() {
     };
   }, [pathname]);
 
+  useEffect(() => {
+    document.querySelectorAll<HTMLElement>(".desktop-navigation [data-navigation-section]").forEach((item) => {
+      const active = item.dataset.navigationSection === section;
+      item.classList.toggle("is-active", active);
+      if (active) item.setAttribute("aria-current", "page");
+      else item.removeAttribute("aria-current");
+    });
+  }, [section]);
+
   const renderedItems = useMemo(() => items.map((item) => ({
     ...item,
     active: section === item.id,

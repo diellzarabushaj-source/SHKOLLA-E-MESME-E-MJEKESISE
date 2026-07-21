@@ -4,15 +4,15 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/finalize-admin-image-paste.mjs && node scripts/add-table-copy-paste.mjs && node scripts/add-markdown-lesson-formatting.mjs && node scripts/harden-all-lesson-formatting.mjs && node scripts/add-admin-table-e2e.mjs && node scripts/add-user-annotations.mjs && node scripts/add-learning-experience.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs",
-    "predev": "pnpm run prepare:portal",
+    "prepare:portal": "node scripts/build-schoolv2-portal-v2.mjs && node scripts/align-sanity-v2.mjs && node scripts/harden-sanity-runtime.mjs && node scripts/harden-navigation-v3.mjs && node scripts/add-rich-text-marks.mjs && node scripts/harden-admin-editor.mjs && node scripts/harden-admin-toolbar-selection.mjs && node scripts/harden-admin-sanity-save.mjs && node scripts/add-admin-image-paste.mjs && node scripts/finalize-admin-image-paste.mjs && node scripts/add-table-copy-paste.mjs && node scripts/add-markdown-lesson-formatting.mjs && node scripts/harden-all-lesson-formatting.mjs && node scripts/add-admin-table-e2e.mjs && node scripts/add-user-annotations.mjs && node scripts/add-learning-experience.mjs && node scripts/harden-annotations-mobile.mjs && node scripts/add-remove-highlight-option.mjs && node scripts/add-adobe-sticky-popover.mjs && node scripts/stabilize-e2e-navigation.mjs && node scripts/integrate-auth-e2e.mjs && node scripts/pin-live-sanity.mjs && node scripts/add-anatomy-heart-card.mjs && node scripts/harden-heading-outline.mjs",
+    "predev": "npm run prepare:portal",
     "dev": "next dev",
-    "prebuild": "pnpm run prepare:portal",
+    "prebuild": "npm run prepare:portal",
     "build": "next build",
     "start": "next start",
-    "pretypecheck": "pnpm run prepare:portal",
+    "pretypecheck": "npm run prepare:portal",
     "typecheck": "tsc --noEmit",
-    "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs",
+    "audit:navigation": "node scripts/audit-navigation.mjs && node scripts/audit-navigation-boundaries.mjs && node scripts/audit-navigation-active.mjs",
     "audit:full": "node scripts/audit-full-project.mjs",
     "audit:smoothness": "node scripts/audit-smoothness.mjs && node scripts/audit-auth.mjs && node scripts/audit-anatomy-heart.mjs && node scripts/audit-full-project.mjs && node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs && node scripts/audit-all-lesson-formatting.mjs",
     "audit:annotations": "node scripts/audit-annotations.mjs && node scripts/audit-highlight-removal.mjs && node scripts/audit-adobe-sticky.mjs",
@@ -20,7 +20,7 @@
     "audit:sanity-runtime": "node scripts/audit-sanity-runtime.mjs && node scripts/check-live-sanity-data.mjs",
     "audit:auth": "node scripts/audit-auth.mjs",
     "audit:learning": "node scripts/audit-learning-experience.mjs && node scripts/audit-heading-consistency.mjs && node scripts/audit-all-lesson-formatting.mjs",
-    "audit:app": "pnpm run typecheck && pnpm run build && pnpm run audit:navigation && pnpm run audit:smoothness && pnpm run audit:annotations && pnpm run audit:admin-sanity && pnpm run audit:sanity-runtime"
+    "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime"
   },
   "dependencies": {
     "@neondatabase/auth": "0.4.2-beta",

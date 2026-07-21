@@ -1,0 +1,121 @@
+.workspace {
+  min-width: 0;
+}
+
+.contextTitle {
+  display: block;
+  margin: 10px 0 8px;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.progressLabel {
+  color: var(--muted) !important;
+}
+
+.workspace .outlineButton {
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.workspace .outlineButton > span:last-child {
+  min-width: 0;
+}
+
+.workspace .outlineButton.outlineLevel2 {
+  font-weight: 800;
+}
+
+.workspace .outlineButton.outlineLevel3 {
+  grid-template-columns: 28px minmax(0, 1fr);
+  padding-left: 20px;
+  font-size: 0.79rem;
+  font-weight: 720;
+}
+
+.workspace .outlineButton.outlineLevel4 {
+  grid-template-columns: 24px minmax(0, 1fr);
+  padding-left: 34px;
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+  font-size: 0.76rem;
+  font-weight: 680;
+}
+
+.workspace .outlineLevel3 :global([class*="sectionCode"]),
+.workspace .outlineLevel4 :global([class*="sectionCode"]) {
+  opacity: 0.78;
+}
+
+.workspace .outlineButton:focus-visible,
+.focusControl:focus-visible,
+.mobileOutline summary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  outline-offset: 3px;
+}
+
+.workspace .outlineButton:focus-visible {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--primary) 14%, var(--panel));
+  color: var(--text);
+}
+
+.heroCopy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.heroActions {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.heroMedia {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.heroTitle {
+  overflow-wrap: anywhere;
+}
+
+.mobileOutline summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  outline-offset: -2px;
+}
+
+@media (max-width: 880px) {
+  .workspace .outlineButton.outlineLevel3 {
+    padding-left: 18px;
+  }
+
+  .workspace .outlineButton.outlineLevel4 {
+    padding-left: 30px;
+  }
+}
+
+@media (max-width: 680px) {
+  .heroCopy,
+  .heroActions,
+  .heroMedia {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .heroTitle {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace .outlineButton,
+  .focusControl {
+    transition: none;
+  }
+}

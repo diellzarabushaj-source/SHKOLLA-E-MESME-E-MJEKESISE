@@ -1,6 +1,7 @@
 import {notFound} from "next/navigation";
-import LessonLearningExperience from "../LessonLearningExperience";
 import MarkdownLessonBlock from "../MarkdownLessonContent";
+import SanitizedLessonHeading from "../SanitizedLessonHeading";
+import AuditLearningExperience from "./AuditLearningExperience";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,21 @@ const blocks = [
     text: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   },
   {
+    _key: "audit-false-pra",
+    style: "normal",
+    text: "Pra:",
+  },
+  {
+    _key: "audit-false-function",
+    style: "normal",
+    text: "Funksioni i tyre është:",
+  },
+  {
+    _key: "audit-false-book",
+    style: "normal",
+    text: "Sipas librit, antitrupat prodhohen nga:",
+  },
+  {
     _key: "audit-callout",
     style: "normal",
     text: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
@@ -37,26 +53,14 @@ const blocks = [
   },
 ] as const;
 
+const rejectedSanityHeading = "Pra:";
+
 export default function LearningExperienceAuditPage() {
   if (process.env.E2E_LEARNING_EXPERIENCE_AUDIT !== "1") notFound();
 
   return (
     <main style={{maxWidth: 920, margin: "0 auto", padding: "96px 20px 180px"}}>
-      <header>
-        <span>Mësim testues</span>
-        <h1 data-audit-lesson-title>1.1. Hierarkia automatike e mësimit</h1>
-      </header>
-
-      <LessonLearningExperience
-        lessonId="learning-experience-audit-lesson"
-        lessonTitle="1.1. Hierarkia automatike e mësimit"
-        lessonSummary="Një faqe prove për hierarkinë, navigimin dhe progresin e mësimit."
-        gradeTitle="Klasa 10"
-        subjectTitle="Anatomi"
-        chapterTitle="Kapitulli i auditimit"
-        flashcardCount={6}
-        onStartFlashcards={() => undefined}
-      >
+      <AuditLearningExperience>
         <article data-learning-audit-article>
           {blocks.map((block) => (
             <MarkdownLessonBlock
@@ -70,8 +74,15 @@ export default function LearningExperienceAuditPage() {
               {block.text}
             </MarkdownLessonBlock>
           ))}
+
+          <SanitizedLessonHeading
+            style="h1"
+            value={{children: [{text: rejectedSanityHeading}]}}
+          >
+            {rejectedSanityHeading}
+          </SanitizedLessonHeading>
         </article>
-      </LessonLearningExperience>
+      </AuditLearningExperience>
     </main>
   );
 }

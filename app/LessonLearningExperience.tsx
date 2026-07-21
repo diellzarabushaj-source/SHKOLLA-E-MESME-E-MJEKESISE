@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import styles from "./LessonLearningExperience.module.css";
+import qa from "./LessonLearningExperienceQA.module.css";
 
 type LessonHeading = {
   id: string;
@@ -36,7 +37,7 @@ type Props = {
 
 const STORAGE_PREFIX = "medical-lesson-learning-v1";
 
-function safeId(value: string, index: number): string {
+function safeId(value: string, index: number, prefix = "seksioni"): string {
   const slug = value
     .toLocaleLowerCase("sq-AL")
     .normalize("NFKD")
@@ -44,7 +45,7 @@ function safeId(value: string, index: number): string {
     .replace(/[^a-z0-9çë]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 72);
-  return `seksioni-${slug || index + 1}`;
+  return `${prefix}-${slug || index + 1}`;
 }
 
 function readSavedState(key: string): SavedLearningState {
@@ -58,6 +59,10 @@ function readSavedState(key: string): SavedLearningState {
 
 function clamp(value: number): number {
   return Math.min(100, Math.max(0, value));
+}
+
+function preferredScrollBehavior(): ScrollBehavior {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 }
 
 function headingCode(heading: LessonHeading, index: number): string {
@@ -78,6 +83,7 @@ export default function LessonLearningExperience({
   children,
 }: Props) {
   const rootRef = useRef<HTMLElement>(null);
+  const mobileOutlineRef = useRef<HTMLDetailsElement>(null);
   const [headings, setHeadings] = useState<LessonHeading[]>([]);
   const [activeHeading, setActiveHeading] = useState("");
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -85,6 +91,7 @@ export default function LessonLearningExperience({
   const [completed, setCompleted] = useState(false);
   const [loadedStorageKey, setLoadedStorageKey] = useState("");
   const storageKey = `${STORAGE_PREFIX}:${lessonId}`;
+  const lessonTitleId = useMemo(() => safeId(lessonTitle, 0, "titulli-i-mesimit"), [lessonTitle]);
 
   const discoverHeadings = useCallback(() => {
     const article = rootRef.current?.querySelector<HTMLElement>("article");
@@ -103,6 +110,7 @@ export default function LessonLearningExperience({
         while (used.has(id)) id = `${base}-${suffix++}`;
         used.add(id);
         heading.id = id;
+        heading.tabIndex = -1;
         heading.dataset.learningHeading = "true";
         heading.dataset.learningLevel = String(level);
         return { id, label, level };
@@ -196,24 +204,28 @@ export default function LessonLearningExperience({
     }
   }, [completed, loadedStorageKey, storageKey, visited]);
 
-  const outline = useMemo(() => {
-    const primary = headings.filter((heading) => heading.level === 2);
-    return (primary.length >= 2 ? primary : headings).slice(0, 18);
-  }, [headings]);
-
+  const outline = useMemo(() => headings, [headings]);
   const visitedCount = headings.filter((heading) => visited.has(heading.id)).length;
   const sectionProgress = headings.length ? Math.round((visitedCount / headings.length) * 100) : readingProgress;
-  const displayProgress = completed ? 100 : Math.max(readingProgress, sectionProgress);
+  const rawProgress = Math.max(readingProgress, sectionProgress);
+  const displayProgress = completed ? 100 : Math.min(rawProgress, 99);
   const status = completed ? "Mësimi u përfundua" : displayProgress > 5 ? "Mësimi është në vazhdim" : "Gati për të filluar";
 
-  function jumpTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const jumpTo = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    if (mobileOutlineRef.current?.open) mobileOutlineRef.current.open = false;
+    window.requestAnimationFrame(() => {
+      element.scrollIntoView({ behavior: preferredScrollBehavior(), block: "start" });
+      element.focus({ preventScroll: true });
+    });
+  }, []);
 
   function continueReading() {
-    const target = activeHeading || outline[0]?.id || headings[0]?.id;
+    const firstUnread = headings.find((heading) => !visited.has(heading.id));
+    const target = firstUnread?.id || activeHeading || outline[0]?.id || headings[0]?.id;
     if (target) jumpTo(target);
-    else rootRef.current?.querySelector("article")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    else rootRef.current?.querySelector<HTMLElement>("article")?.scrollIntoView({ behavior: preferredScrollBehavior(), block: "start" });
   }
 
   function markCompleted() {
@@ -222,22 +234,31 @@ export default function LessonLearningExperience({
     setVisited(new Set(headings.map((heading) => heading.id)));
   }
 
-  const outlineItems = outline.map((heading, index) => (
-    <button
-      className={activeHeading === heading.id ? styles.activeSection : ""}
-      data-level={heading.level}
-      key={heading.id}
-      onClick={() => jumpTo(heading.id)}
-      type="button"
-      aria-current={activeHeading === heading.id ? "location" : undefined}
-    >
-      <span className={styles.sectionCode} aria-hidden="true">{headingCode(heading, index)}</span>
-      <span>{heading.label}</span>
-    </button>
-  ));
+  const outlineItems = outline.map((heading, index) => {
+    const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    return (
+      <button
+        className={`${qa.outlineButton} ${levelClass} ${activeHeading === heading.id ? styles.activeSection : ""}`}
+        data-level={heading.level}
+        key={heading.id}
+        onClick={() => jumpTo(heading.id)}
+        type="button"
+        aria-current={activeHeading === heading.id ? "location" : undefined}
+      >
+        <span className={styles.sectionCode} aria-hidden="true">{headingCode(heading, index)}</span>
+        <span>{heading.label}</span>
+      </button>
+    );
+  });
 
   return (
-    <section ref={rootRef} className={styles.workspace} data-learning-experience data-lesson-id={lessonId}>
+    <section
+      ref={rootRef}
+      className={`${styles.workspace} ${qa.workspace}`}
+      data-learning-experience
+      data-lesson-id={lessonId}
+      aria-labelledby={lessonTitleId}
+    >
       <div
         className={styles.topProgress}
         data-learning-chrome
@@ -246,6 +267,7 @@ export default function LessonLearningExperience({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={displayProgress}
+        aria-valuetext={completed ? "Mësimi u përfundua" : `${displayProgress}% i lexuar`}
       >
         <span style={{ width: `${displayProgress}%` }} />
       </div>
@@ -254,7 +276,7 @@ export default function LessonLearningExperience({
         <aside className={styles.sidebar} data-learning-chrome aria-label="Përmbajtja e mësimit">
           <div className={styles.context}>
             <span>{gradeTitle}</span>
-            <h2>{subjectTitle}</h2>
+            <strong className={qa.contextTitle}>{subjectTitle}</strong>
             <p>{chapterTitle}</p>
           </div>
 
@@ -263,33 +285,31 @@ export default function LessonLearningExperience({
           </nav>
 
           <div className={styles.sidebarProgress}>
-            <span>Përparimi në mësim</span>
+            <span className={qa.progressLabel}>Përparimi në mësim</span>
             <div><b>{displayProgress}%</b><small>{visitedCount}/{headings.length || 0} seksione</small></div>
-            <span className={styles.progressTrack}><span style={{ width: `${displayProgress}%` }} /></span>
+            <span className={styles.progressTrack} aria-hidden="true"><span style={{ width: `${displayProgress}%` }} /></span>
           </div>
         </aside>
 
         <div className={styles.stage}>
-          <details className={styles.mobileOutline} data-learning-chrome>
+          <details ref={mobileOutlineRef} className={`${styles.mobileOutline} ${qa.mobileOutline}`} data-learning-chrome>
             <summary>Përmbajtja e mësimit · {outline.length || headings.length} seksione</summary>
             <nav aria-label="Seksionet e mësimit në telefon">{outlineItems}</nav>
           </details>
 
           <header className={styles.hero} data-learning-chrome>
-            <div className={styles.heroCopy}>
+            <div className={`${styles.heroCopy} ${qa.heroCopy}`}>
               <span className={styles.kicker}>Mësimi · {gradeTitle}</span>
-              <h1>{lessonTitle}</h1>
+              <h1 id={lessonTitleId} className={qa.heroTitle}>{lessonTitle}</h1>
               <p>{lessonSummary}</p>
             </div>
 
-            {coverImage && <div className={styles.heroMedia}>{coverImage}</div>}
-
-            <div className={styles.heroActions}>
-              <button className={styles.continueButton} type="button" onClick={continueReading}>
+            <div className={`${styles.heroActions} ${qa.heroActions}`}>
+              <button className={`${styles.continueButton} ${qa.focusControl}`} type="button" onClick={continueReading}>
                 {displayProgress > 5 ? "Vazhdo leximin" : "Fillo leximin"}
               </button>
               <button
-                className={styles.flashcardButton}
+                className={`${styles.flashcardButton} ${qa.focusControl}`}
                 type="button"
                 onClick={onStartFlashcards}
                 disabled={flashcardCount === 0}
@@ -297,6 +317,8 @@ export default function LessonLearningExperience({
                 {flashcardCount ? `${flashcardCount} flashcards` : "Ende pa flashcards"}
               </button>
             </div>
+
+            {coverImage && <div className={`${styles.heroMedia} ${qa.heroMedia}`}>{coverImage}</div>}
           </header>
 
           <div className={styles.lessonMeta} data-learning-chrome>
@@ -305,7 +327,7 @@ export default function LessonLearningExperience({
               <strong>{displayProgress}% i lexuar</strong>
             </div>
             <button
-              className={completed ? styles.completedButton : styles.completeButton}
+              className={`${completed ? styles.completedButton : styles.completeButton} ${qa.focusControl}`}
               onClick={markCompleted}
               disabled={completed}
               type="button"
@@ -318,7 +340,7 @@ export default function LessonLearningExperience({
         </div>
       </div>
 
-      <p className={styles.srStatus} aria-live="polite">{status}. {displayProgress}%.</p>
+      <p className={styles.srStatus} aria-live="polite">{completed ? "Mësimi u shënua si i përfunduar." : ""}</p>
     </section>
   );
 }
