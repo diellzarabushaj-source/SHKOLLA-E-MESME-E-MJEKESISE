@@ -4,68 +4,57 @@ const portalPaths = ["app/ClassicLearningPortal.tsx", "app/SchoolLearningPortal.
 const stylesPath = "app/globals.css";
 const marker = "chapter-theme-illustrations-v1";
 
-function replaceRequired(source, label, before, after) {
-  if (!source.includes(before)) throw new Error(`${label}: source anchor was not found`);
-  return source.replace(before, after);
-}
-
-function replaceOneOf(source, label, candidates, after) {
-  const before = candidates.find((candidate) => source.includes(candidate));
-  if (!before) throw new Error(`${label}: none of the supported source anchors were found`);
-  return source.replace(before, after(before));
+function replacePatternRequired(source, label, pattern, replacement) {
+  if (!pattern.test(source)) throw new Error(`${label}: source pattern was not found`);
+  pattern.lastIndex = 0;
+  return source.replace(pattern, replacement);
 }
 
 function patchPortal(path) {
   let portal = readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
 
   if (!portal.includes("cardIllustrationLight?: SanityImage")) {
-    portal = replaceRequired(
+    portal = replacePatternRequired(
       portal,
       `${path} chapter image types`,
-      `  coverImage?: SanityImage;\n  lessons: Lesson[];`,
-      `  coverImage?: SanityImage;\n  cardIllustrationLight?: SanityImage;\n  cardIllustrationDark?: SanityImage;\n  lessons: Lesson[];`,
+      /(type Chapter = \{[\s\S]*?\n\s*coverImage\?: SanityImage;\n)(\s*lessons: Lesson\[\];)/,
+      `$1  cardIllustrationLight?: SanityImage;\n  cardIllustrationDark?: SanityImage;\n$2`,
     );
   }
 
   if (!portal.includes("cardIllustrationLight {")) {
-    portal = replaceOneOf(
+    portal = replacePatternRequired(
       portal,
       `${path} chapter image query`,
-      [
-        `             "summary": coalesce(summary, description),\n             coverImage { alt, "asset": asset->{url} },\n             "lessons":`,
-        `             summary,\n             coverImage { alt, "asset": asset->{url} },\n             "lessons":`,
-      ],
-      (before) => before.replace(
-        `             "lessons":`,
-        `             cardIllustrationLight {\n               alt,\n               crop,\n               hotspot,\n               "asset": asset->{url}\n             },\n             cardIllustrationDark {\n               alt,\n               crop,\n               hotspot,\n               "asset": asset->{url}\n             },\n             "lessons":`,
-      ),
+      /("chapters":\s*\*\[_type == "chapter"[\s\S]*?coverImage\s*\{\s*alt,\s*"asset": asset->\{url\}\s*\},\n)(\s*)"lessons":/,
+      `$1$2cardIllustrationLight {\n$2  alt,\n$2  crop,\n$2  hotspot,\n$2  "asset": asset->{url}\n$2},\n$2cardIllustrationDark {\n$2  alt,\n$2  crop,\n$2  hotspot,\n$2  "asset": asset->{url}\n$2},\n$2"lessons":`,
     );
   }
 
   if (!portal.includes("const lightIllustrationSource")) {
-    portal = replaceRequired(
+    portal = replacePatternRequired(
       portal,
       `${path} chapter illustration data`,
-      `                const flashcardCount = getChapterFlashcardCount(chapter);\n                return (`,
-      `                const flashcardCount = getChapterFlashcardCount(chapter);\n                const lightIllustrationSource = chapter.cardIllustrationLight?.asset?.url || chapter.cardIllustrationDark?.asset?.url || "";\n                const darkIllustrationSource = chapter.cardIllustrationDark?.asset?.url || chapter.cardIllustrationLight?.asset?.url || "";\n                const lightIllustrationUrl = lightIllustrationSource ? lightIllustrationSource + "?w=300&fit=max&auto=format" : "";\n                const darkIllustrationUrl = darkIllustrationSource ? darkIllustrationSource + "?w=300&fit=max&auto=format" : "";\n                const chapterIllustrationAlt = chapter.cardIllustrationLight?.alt || chapter.cardIllustrationDark?.alt || "";\n                return (`,
+      /(\s*)const flashcardCount = getChapterFlashcardCount\(chapter\);\n\s*return \(/,
+      `$1const flashcardCount = getChapterFlashcardCount(chapter);\n$1const lightIllustrationSource = chapter.cardIllustrationLight?.asset?.url || chapter.cardIllustrationDark?.asset?.url || "";\n$1const darkIllustrationSource = chapter.cardIllustrationDark?.asset?.url || chapter.cardIllustrationLight?.asset?.url || "";\n$1const lightIllustrationUrl = lightIllustrationSource ? lightIllustrationSource + "?w=300&fit=max&auto=format" : "";\n$1const darkIllustrationUrl = darkIllustrationSource ? darkIllustrationSource + "?w=300&fit=max&auto=format" : "";\n$1const chapterIllustrationAlt = chapter.cardIllustrationLight?.alt || chapter.cardIllustrationDark?.alt || "";\n$1return (`,
     );
   }
 
   if (!portal.includes('className="chapter-illustration"')) {
-    portal = replaceRequired(
+    portal = replacePatternRequired(
       portal,
       `${path} chapter illustration markup`,
-      `                  <article className="chapter-row" key={chapter._id}>\n                    <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>`,
-      `                  <article className="chapter-row chapter-row-illustrated" key={chapter._id}>\n                    <figure\n                      className="chapter-illustration"\n                      role={chapterIllustrationAlt ? "img" : undefined}\n                      aria-label={chapterIllustrationAlt || undefined}\n                      aria-hidden={chapterIllustrationAlt ? undefined : true}\n                    >\n                      {lightIllustrationUrl && <img className="chapter-illustration-light" src={lightIllustrationUrl} alt="" loading="lazy" decoding="async" />}\n                      {darkIllustrationUrl && <img className="chapter-illustration-dark" src={darkIllustrationUrl} alt="" loading="lazy" decoding="async" />}\n                      {!lightIllustrationUrl && !darkIllustrationUrl && <span className="chapter-illustration-placeholder" aria-hidden="true">✚</span>}\n                    </figure>\n                    <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>`,
+      /<article className="chapter-row" key=\{chapter\._id\}>\s*<span className="chapter-number">/,
+      `<article className="chapter-row chapter-row-illustrated" key={chapter._id}>\n                    <figure\n                      className="chapter-illustration"\n                      role={chapterIllustrationAlt ? "img" : undefined}\n                      aria-label={chapterIllustrationAlt || undefined}\n                      aria-hidden={chapterIllustrationAlt ? undefined : true}\n                    >\n                      {lightIllustrationUrl && <img className="chapter-illustration-light" src={lightIllustrationUrl} alt="" loading="lazy" decoding="async" />}\n                      {darkIllustrationUrl && <img className="chapter-illustration-dark" src={darkIllustrationUrl} alt="" loading="lazy" decoding="async" />}\n                      {!lightIllustrationUrl && !darkIllustrationUrl && <span className="chapter-illustration-placeholder" aria-hidden="true">✚</span>}\n                    </figure>\n                    <span className="chapter-number">`,
     );
   }
 
   if (!portal.includes('"chapter-open-button"')) {
-    portal = replaceRequired(
+    portal = replacePatternRequired(
       portal,
       `${path} chapter button class`,
-      `                    <button className={classic.openButton} onClick={() => chooseChapter(chapter)} type="button">`,
-      `                    <button className={[classic.openButton, "chapter-open-button"].join(" ")} onClick={() => chooseChapter(chapter)} type="button">`,
+      /<button className=\{classic\.openButton\} onClick=\{\(\) => chooseChapter\(chapter\)\}([^>]*)>/,
+      `<button className={[classic.openButton, "chapter-open-button"].join(" ")} onClick={() => chooseChapter(chapter)}$1>`,
     );
   }
 
