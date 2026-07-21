@@ -13,6 +13,7 @@ export default function AuditLearningExperience({children}: {children: ReactNode
       subjectTitle="Anatomi"
       chapterTitle="Kapitulli i auditimit"
       flashcardCount={6}
+      coverImage={<div data-audit-cover aria-label="Kopertina e auditimit" style={{minHeight: 132}} />}
       onStartFlashcards={() => undefined}
     >
       {children}
