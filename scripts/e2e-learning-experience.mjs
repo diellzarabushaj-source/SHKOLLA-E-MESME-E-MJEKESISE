@@ -113,6 +113,18 @@ try {
     assert(!desktopOutlineLabels.some((value) => value.includes(label)), `${JSON.stringify(label)} leaked into the desktop outline`);
   }
 
+  const primarySectionButton = desktopOutline.getByRole("button", {name: expected.section, exact: true});
+  const desktopSubsectionButton = desktopOutline.getByRole("button", {name: "Arteriet", exact: true});
+  await desktopSubsectionButton.click();
+  await page.waitForFunction(() => Boolean(document.querySelector('aside nav button[data-level="3"][aria-current="location"]')));
+  assert(await primarySectionButton.getAttribute("data-section-active") === "true", "The parent H2 lost its section highlight while an H3 was current");
+  assert(await desktopSubsectionButton.getAttribute("aria-current") === "location", "The current H3 is not exposed as the exact location");
+  assert(await desktopOutline.locator('button[data-section-active="true"]').count() === 1, "More than one primary sidebar section is highlighted");
+  const primaryBackground = await primarySectionButton.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const subsectionBackground = await desktopSubsectionButton.evaluate((element) => getComputedStyle(element).backgroundColor);
+  assert(primaryBackground !== "rgba(0, 0, 0, 0)", "The active primary H2 has no visible background highlight");
+  assert(subsectionBackground === "rgba(0, 0, 0, 0)", `The active H3 has an unwanted background highlight: ${subsectionBackground}`);
+
   const hero = workspace.locator("header").first();
   const desktopTitleBox = await hero.locator("h1").boundingBox();
   const desktopActionsBox = await hero.locator("button").first().boundingBox();
@@ -146,6 +158,7 @@ try {
   assert(await mobileOutline.locator('[class*="outlineBullet"]').count() === 4, "The mobile outline does not use one bullet per heading");
   const mobileOutlineLabels = (await mobileOutline.locator("nav button").allTextContents()).map((value) => value.trim());
   assertCleanOutlineLabels(mobileOutlineLabels, "Mobile outline");
+  assert(await mobileOutline.locator('button[data-section-active="true"]').count() === 1, "Mobile outline does not preserve exactly one active primary section");
   const mobileOutlineText = await mobileOutline.locator("nav").innerText();
   for (const label of expected.falseHeadings) {
     assert(!mobileOutlineText.includes(label), `${JSON.stringify(label)} leaked into the mobile outline`);
@@ -189,4 +202,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic hierarchy, clean bullet navigation, false-heading protection, exact Sanity text, responsive layout, theme, overflow, progress and persistence passed in Chromium.");
+console.log("Automatic hierarchy, clean bullet navigation, primary-only highlight, false-heading protection, exact Sanity text, responsive layout, theme, overflow, progress and persistence passed in Chromium.");
