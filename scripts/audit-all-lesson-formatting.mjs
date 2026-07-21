@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 
 const source = readFileSync("app/MarkdownLessonContent.tsx", "utf8");
 const styles = readFileSync("app/MarkdownLessonContent.module.css", "utf8");
+const portal = readFileSync("app/ClassicLearningPortal.tsx", "utf8");
 
 function requireSource(value, label) {
   if (!source.includes(value)) throw new Error(`All lesson formatting audit failed: ${label}`);
@@ -9,6 +10,10 @@ function requireSource(value, label) {
 
 function requireStyle(value, label) {
   if (!styles.includes(value)) throw new Error(`All lesson formatting audit failed: ${label}`);
+}
+
+function requirePortal(value, label) {
+  if (!portal.includes(value)) throw new Error(`All lesson formatting audit failed: ${label}`);
 }
 
 requireSource("all-lessons-rich-formatting-v1", "global lesson hardening marker is missing");
@@ -29,6 +34,10 @@ requireStyle(".scheme,", "scheme panel styling is missing");
 requireStyle(".schemeLine", "scheme line styling is missing");
 requireStyle(".schemeConnector", "scheme connector styling is missing");
 requireStyle("white-space: pre-line;", "authored multiline text is not preserved visually");
+requirePortal('import LessonTable, { type LessonTableBlock } from "./LessonTable";', "native lesson table renderer is not imported by the portal");
+requirePortal('lessonTable: ({ value }) => <LessonTable value={value as LessonTableBlock} />', "native lessonTable blocks are not registered in Portable Text");
+requirePortal('import MarkdownLessonBlock from "./MarkdownLessonContent";', "rich lesson block renderer is not imported by the portal");
+requirePortal('normal: ({ children, value }) => (', "normal Portable Text blocks are not routed through the rich lesson renderer");
 
 const schemeIndex = source.indexOf("if (isSchemeLine(trimmed))");
 const listIndex = source.indexOf("if (BULLET_ITEM.test(line))");
@@ -52,4 +61,4 @@ if (source.includes("dangerouslySetInnerHTML")) {
   throw new Error("All lesson formatting audit failed: lesson content uses unsafe HTML replacement");
 }
 
-console.log("All lesson formatting verified: headings, subheadings, lists, tables, line breaks and schemes are protected globally.");
+console.log("All lesson formatting verified: headings, subheadings, lists, native tables, line breaks and schemes are protected globally.");
