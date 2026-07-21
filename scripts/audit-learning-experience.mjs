@@ -38,11 +38,18 @@ requireText(experience, "aria-labelledby={lessonTitleId}", "lesson workspace is 
 requireText(experience, "aria-valuetext", "progressbar lacks a human-readable value");
 requireText(experience, '<strong className={qa.contextTitle}>{subjectTitle}</strong>', "sidebar context incorrectly introduces a heading before the lesson H1");
 requireText(experience, "lessonSummary", "shared lesson header is missing");
+requireText(experience, "function outlineLabel", "outline labels do not remove numeric heading prefixes");
+requireText(experience, "qa.outlineBullet", "outline entries do not render bullet markers");
+requireText(experience, "outlineLabel(heading.label)", "outline still displays the raw numbered heading label");
+forbidText(experience, "function headingCode", "outline still generates numeric section codes");
+forbidText(experience, "styles.sectionCode", "outline still renders a numeric code column");
 forbidText(experience, "<h2>{subjectTitle}</h2>", "sidebar H2 appears before the lesson H1");
 
 requireText(experienceStyles, ".outlineButton:focus-visible", "outline keyboard focus is not visible");
 requireText(experienceStyles, ".outlineButton.outlineLevel3", "H3 outline indentation is missing");
 requireText(experienceStyles, ".outlineButton.outlineLevel4", "H4 outline indentation is missing");
+requireText(experienceStyles, ".outlineBullet", "outline bullet styling is missing");
+requireText(experienceStyles, "grid-template-columns: 12px", "outline still reserves a wide numeric column");
 requireText(experienceStyles, "grid-column: 2", "hero actions are not explicitly placed in the desktop grid");
 requireText(experienceStyles, "grid-row: 2", "hero media is not explicitly placed below the hero controls");
 requireText(experienceStyles, "overflow-wrap: anywhere", "long lesson headings can overflow their container");
@@ -63,4 +70,4 @@ if (annotationIndex < 0 || learningIndex < 0 || learningIndex < annotationIndex)
   throw new Error("Learning experience audit failed: installer must run after lesson annotations.");
 }
 
-console.log("Learning experience verified: responsive hierarchy, accessible navigation and truthful progress preserve the original Sanity text.");
+console.log("Learning experience verified: clean bullet navigation preserves hierarchy and the original Sanity text.");
