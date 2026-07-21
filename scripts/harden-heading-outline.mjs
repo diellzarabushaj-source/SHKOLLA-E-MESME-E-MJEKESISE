@@ -147,10 +147,10 @@ if (!experience.includes(bulletOutlineMarker)) {
   experience = replaceRequired(
     experience,
     "highlight only the active primary heading",
-    `        className={\`${qa.outlineButton} ${levelClass} ${activeHeading === heading.id ? styles.activeSection : ""}\`}
+    `        className={\`\${qa.outlineButton} \${levelClass} \${activeHeading === heading.id ? styles.activeSection : ""}\`}
         data-level={heading.level}
-        key={heading.id}`, 
-    `        className={\`${qa.outlineButton} ${levelClass} ${isPrimaryActive ? styles.activeSection : ""}\`}
+        key={heading.id}`,
+    `        className={\`\${qa.outlineButton} \${levelClass} \${isPrimaryActive ? styles.activeSection : ""}\`}
         data-level={heading.level}
         data-section-active={isPrimaryActive ? "true" : undefined}
         key={heading.id}`,
@@ -159,7 +159,7 @@ if (!experience.includes(bulletOutlineMarker)) {
   experience = replaceRequired(
     experience,
     "preserve exact current location semantics",
-    `        aria-current={activeHeading === heading.id ? "location" : undefined}`, 
+    `        aria-current={activeHeading === heading.id ? "location" : undefined}`,
     `        aria-current={isCurrent ? "location" : undefined}`,
   );
 
