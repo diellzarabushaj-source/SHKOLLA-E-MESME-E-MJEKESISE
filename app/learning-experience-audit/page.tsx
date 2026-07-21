@@ -1,6 +1,6 @@
 import {notFound} from "next/navigation";
-import LessonLearningExperience from "../LessonLearningExperience";
 import MarkdownLessonBlock from "../MarkdownLessonContent";
+import AuditLearningExperience from "./AuditLearningExperience";
 
 export const dynamic = "force-dynamic";
 
@@ -42,16 +42,7 @@ export default function LearningExperienceAuditPage() {
 
   return (
     <main style={{maxWidth: 920, margin: "0 auto", padding: "96px 20px 180px"}}>
-      <LessonLearningExperience
-        lessonId="learning-experience-audit-lesson"
-        lessonTitle="1.1. Hierarkia automatike e mësimit"
-        lessonSummary="Një faqe prove për hierarkinë, navigimin dhe progresin e mësimit."
-        gradeTitle="Klasa 10"
-        subjectTitle="Anatomi"
-        chapterTitle="Kapitulli i auditimit"
-        flashcardCount={6}
-        onStartFlashcards={() => undefined}
-      >
+      <AuditLearningExperience>
         <article data-learning-audit-article>
           {blocks.map((block) => (
             <MarkdownLessonBlock
@@ -66,7 +57,7 @@ export default function LearningExperienceAuditPage() {
             </MarkdownLessonBlock>
           ))}
         </article>
-      </LessonLearningExperience>
+      </AuditLearningExperience>
     </main>
   );
 }
