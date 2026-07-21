@@ -117,6 +117,7 @@ try {
   const desktopSubsectionButton = desktopOutline.getByRole("button", {name: "Arteriet", exact: true});
   await desktopSubsectionButton.click();
   await page.waitForFunction(() => Boolean(document.querySelector('aside nav button[data-level="3"][aria-current="location"]')));
+  await page.waitForTimeout(220);
   assert(await primarySectionButton.getAttribute("data-section-active") === "true", "The parent H2 lost its section highlight while an H3 was current");
   assert(await desktopSubsectionButton.getAttribute("aria-current") === "location", "The current H3 is not exposed as the exact location");
   assert(await desktopOutline.locator('button[data-section-active="true"]').count() === 1, "More than one primary sidebar section is highlighted");
