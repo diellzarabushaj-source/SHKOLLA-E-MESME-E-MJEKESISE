@@ -290,7 +290,7 @@ async function auditDesktopFlow(browser) {
     assert(restoredBody === nested.lessonBody, "Forward restored the lesson without the same full body content");
     assert(restoredAudio === nested.hasAudio, "Forward did not restore the lesson audio state");
 
-    const studyButton = page.locator('main[data-progress-page="lesson"] button').filter({ hasText: "Testo mësimin" }).last();
+    const studyButton = page.locator('main[data-progress-page="lesson"] button').filter({ hasText: "Hap flashcards" }).last();
     try {
       await studyButton.waitFor({ state: "visible", timeout: 15_000 });
     } catch {
