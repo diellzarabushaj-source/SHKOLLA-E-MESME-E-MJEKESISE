@@ -22,6 +22,18 @@ async function exactText(locator, value, label) {
   assert(actual === value, `${label} changed. Expected ${JSON.stringify(value)}, received ${JSON.stringify(actual)}`);
 }
 
+async function assertNoHorizontalOverflow(page, label) {
+  const dimensions = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth,
+  }));
+  assert(
+    Math.max(dimensions.document, dimensions.body) <= dimensions.viewport + 1,
+    `${label} has horizontal overflow: ${JSON.stringify(dimensions)}`,
+  );
+}
+
 const browser = await chromium.launch({headless: true});
 try {
   const context = await browser.newContext({
@@ -63,10 +75,41 @@ try {
   assert(await desktopOutline.locator('button[data-level="3"]').count() === 2, "The desktop outline is missing its H3 levels");
   assert(await desktopOutline.locator('button[data-level="4"]').count() === 1, "The desktop outline is missing its H4 level");
 
+  const hero = workspace.locator("header").first();
+  const desktopTitleBox = await hero.locator("h1").boundingBox();
+  const desktopActionsBox = await hero.locator("button").first().boundingBox();
+  const desktopMediaBox = await hero.locator("[data-audit-cover]").boundingBox();
+  assert(desktopTitleBox && desktopActionsBox && desktopMediaBox, "Desktop hero boxes could not be measured");
+  assert(desktopActionsBox.x > desktopTitleBox.x, "Desktop hero actions are not positioned to the right of the copy");
+  assert(desktopMediaBox.y > Math.max(desktopTitleBox.y, desktopActionsBox.y), "Desktop hero media is not below copy and actions");
+  await assertNoHorizontalOverflow(page, "Desktop lesson viewport");
+
+  const initialTheme = await page.evaluate(() => document.documentElement.dataset.theme);
+  const themeToggle = page.locator(".theme-switch");
+  await themeToggle.click();
+  await page.waitForFunction((theme) => document.documentElement.dataset.theme !== theme, initialTheme);
+  const toggledTheme = await page.evaluate(() => document.documentElement.dataset.theme);
+  const storedTheme = await page.evaluate(() => window.localStorage.getItem("flashcards-theme"));
+  assert(toggledTheme === "light" || toggledTheme === "dark", "Theme toggle produced an invalid theme");
+  assert(storedTheme === toggledTheme, "Theme toggle did not persist the selected theme");
+  await themeToggle.click();
+  await page.waitForFunction((theme) => document.documentElement.dataset.theme === theme, initialTheme);
+
+  await page.setViewportSize({width: 820, height: 1180});
+  assert(await workspace.locator("aside").isHidden(), "Tablet viewport still shows the desktop sidebar");
+  const tabletOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
+  assert(await tabletOutline.locator("summary").isVisible(), "Tablet viewport does not expose the compact lesson outline");
+  await assertNoHorizontalOverflow(page, "Tablet lesson viewport");
+
   await page.setViewportSize({width: 390, height: 844});
   const mobileOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
   await mobileOutline.locator("summary").click();
   assert(await mobileOutline.locator("nav button").count() === 4, "The mobile lesson outline does not contain every detected heading");
+
+  const mobileActionsBox = await hero.locator("button").first().boundingBox();
+  const mobileMediaBox = await hero.locator("[data-audit-cover]").boundingBox();
+  assert(mobileActionsBox && mobileMediaBox && mobileActionsBox.y < mobileMediaBox.y, "Mobile hero actions are not placed before the media");
+  await assertNoHorizontalOverflow(page, "Mobile lesson viewport");
 
   const subsectionButton = mobileOutline.getByRole("button", {name: /3\.6\. Arteriet/});
   const subsectionId = await automaticH3.getAttribute("id");
@@ -101,4 +144,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, responsive outline navigation, truthful progress and persistence passed in Chromium.");
+console.log("Automatic hierarchy, exact Sanity text, desktop/tablet/mobile layout, dark/light mode, overflow, truthful progress and persistence passed in Chromium.");
