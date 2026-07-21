@@ -26,6 +26,38 @@ export const chapter = defineType({
       validation: (rule) => rule.max(2000),
     }),
     defineField({
+      name: 'cardIllustrationLight',
+      title: 'Fotografia e kapitullit — light mode',
+      description: 'Ngarko PNG ose WebP me sfond transparent. Shfaqet në kartelën e kapitullit kur portali është në light mode.',
+      type: 'image',
+      options: {hotspot: false},
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Teksti alternativ',
+          type: 'string',
+          description: 'Përshkrim i shkurtër i figurës. Mund të lihet bosh kur fotografia është vetëm dekorative.',
+          validation: (rule) => rule.max(300),
+        }),
+      ],
+    }),
+    defineField({
+      name: 'cardIllustrationDark',
+      title: 'Fotografia e kapitullit — dark mode',
+      description: 'Ngarko PNG ose WebP me sfond transparent, të optimizuar për sfond të errët. Shfaqet vetëm në dark mode.',
+      type: 'image',
+      options: {hotspot: false},
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Teksti alternativ',
+          type: 'string',
+          description: 'Përdor të njëjtin përshkrim si fotografia e light mode.',
+          validation: (rule) => rule.max(300),
+        }),
+      ],
+    }),
+    defineField({
       name: 'subject',
       title: 'Lënda',
       type: 'reference',
