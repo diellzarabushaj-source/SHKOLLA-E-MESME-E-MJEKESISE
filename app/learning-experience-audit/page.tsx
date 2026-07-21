@@ -1,5 +1,6 @@
 import {notFound} from "next/navigation";
 import MarkdownLessonBlock from "../MarkdownLessonContent";
+import SanitizedLessonHeading from "../SanitizedLessonHeading";
 import AuditLearningExperience from "./AuditLearningExperience";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,21 @@ const blocks = [
     text: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   },
   {
+    _key: "audit-false-pra",
+    style: "normal",
+    text: "Pra:",
+  },
+  {
+    _key: "audit-false-function",
+    style: "normal",
+    text: "Funksioni i tyre është:",
+  },
+  {
+    _key: "audit-false-book",
+    style: "normal",
+    text: "Sipas librit, antitrupat prodhohen nga:",
+  },
+  {
     _key: "audit-callout",
     style: "normal",
     text: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
@@ -36,6 +52,8 @@ const blocks = [
     text: "Nëntitull i caktuar drejtpërdrejt në Sanity",
   },
 ] as const;
+
+const rejectedSanityHeading = "Pra:";
 
 export default function LearningExperienceAuditPage() {
   if (process.env.E2E_LEARNING_EXPERIENCE_AUDIT !== "1") notFound();
@@ -56,6 +74,13 @@ export default function LearningExperienceAuditPage() {
               {block.text}
             </MarkdownLessonBlock>
           ))}
+
+          <SanitizedLessonHeading
+            style="h1"
+            value={{children: [{text: rejectedSanityHeading}]}}
+          >
+            {rejectedSanityHeading}
+          </SanitizedLessonHeading>
         </article>
       </AuditLearningExperience>
     </main>
