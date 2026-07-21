@@ -5,6 +5,7 @@ const experience = readFileSync("app/LessonLearningExperience.tsx", "utf8");
 const experienceStyles = readFileSync("app/LessonLearningExperienceQA.module.css", "utf8");
 const themeToggle = readFileSync("app/ThemeToggle.tsx", "utf8");
 const portal = readFileSync("app/SchoolLearningPortal.tsx", "utf8");
+const lessonSchema = readFileSync("studio/schemaTypes/lesson.ts", "utf8");
 const installer = readFileSync("scripts/add-learning-experience.mjs", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
@@ -29,6 +30,8 @@ requireText(experience, "Progresi i leximit", "reading progress is missing");
 requireText(experience, "medical-lesson-learning-v1", "local per-lesson progress is missing");
 requireText(experience, "Shëno si të përfunduar", "manual completion is missing");
 requireText(experience, "const outline = useMemo(() => headings", "the full H2/H3/H4 hierarchy is not exposed in the outline");
+requireText(experience, "activePrimaryHeading", "the current H3/H4 does not retain its parent H2 highlight");
+requireText(experience, 'data-section-active={isPrimaryActive ? "true" : undefined}', "primary section highlight state is not explicit");
 requireText(experience, "firstUnread", "continue reading does not resume at the first unread section");
 requireText(experience, "Math.min(rawProgress, 99)", "progress can report 100% before explicit completion");
 requireText(experience, 'window.matchMedia("(prefers-reduced-motion: reduce)")', "programmatic scrolling ignores reduced motion");
@@ -38,14 +41,31 @@ requireText(experience, "aria-labelledby={lessonTitleId}", "lesson workspace is 
 requireText(experience, "aria-valuetext", "progressbar lacks a human-readable value");
 requireText(experience, '<strong className={qa.contextTitle}>{subjectTitle}</strong>', "sidebar context incorrectly introduces a heading before the lesson H1");
 requireText(experience, "lessonSummary", "shared lesson header is missing");
+requireText(experience, "function outlineLabel", "outline labels do not remove numeric heading prefixes");
+requireText(experience, "qa.outlineBullet", "outline entries do not render bullet markers");
+requireText(experience, "outlineLabel(heading.label)", "outline still displays the raw numbered heading label");
+forbidText(experience, "function headingCode", "outline still generates numeric section codes");
+forbidText(experience, "styles.sectionCode", "outline still renders a numeric code column");
 forbidText(experience, "<h2>{subjectTitle}</h2>", "sidebar H2 appears before the lesson H1");
 
 requireText(experienceStyles, ".outlineButton:focus-visible", "outline keyboard focus is not visible");
 requireText(experienceStyles, ".outlineButton.outlineLevel3", "H3 outline indentation is missing");
 requireText(experienceStyles, ".outlineButton.outlineLevel4", "H4 outline indentation is missing");
+requireText(experienceStyles, ".outlineBullet", "outline bullet styling is missing");
+requireText(experienceStyles, 'data-level="3"][aria-current="location"]', "current H3 can still receive a background highlight");
+requireText(experienceStyles, 'data-level="4"][aria-current="location"]', "current H4 can still receive a background highlight");
+requireText(experienceStyles, 'data-section-active="true"', "active H2 bullet styling is missing");
+requireText(experienceStyles, "grid-template-columns: 12px", "outline still reserves a wide numeric column");
 requireText(experienceStyles, "grid-column: 2", "hero actions are not explicitly placed in the desktop grid");
 requireText(experienceStyles, "grid-row: 2", "hero media is not explicitly placed below the hero controls");
 requireText(experienceStyles, "overflow-wrap: anywhere", "long lesson headings can overflow their container");
+
+requireText(lessonSchema, "Seksion kryesor (H2)", "Sanity Studio does not explain the H2 role");
+requireText(lessonSchema, "Nënseksion (H3)", "Sanity Studio does not explain the H3 role");
+requireText(lessonSchema, "Detaj (H4)", "Sanity Studio does not explain the H4 role");
+requireText(lessonSchema, "validateLessonBodyHierarchy", "Sanity Studio lacks hierarchy validation");
+requireText(lessonSchema, "AUXILIARY_HEADING", "Sanity Studio does not warn about prose labels used as headings");
+forbidText(lessonSchema, "{title: 'Heading 1', value: 'h1'}", "Sanity Studio still offers H1 inside lesson body");
 
 requireText(themeToggle, "aria-label={title}", "theme toggle does not expose the current action");
 requireText(themeToggle, "window.localStorage.setItem", "theme preference is not persisted");
@@ -63,4 +83,4 @@ if (annotationIndex < 0 || learningIndex < 0 || learningIndex < annotationIndex)
   throw new Error("Learning experience audit failed: installer must run after lesson annotations.");
 }
 
-console.log("Learning experience verified: responsive hierarchy, accessible navigation and truthful progress preserve the original Sanity text.");
+console.log("Learning experience verified: bullet hierarchy, primary-only highlight, Sanity heading guards and original text preservation are enforced.");

@@ -2,6 +2,63 @@ import type {ComponentType} from 'react'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {PortableTextClipboardPasteInput} from '../components/portable-text-image-paste-input'
 
+type LessonTextBlock = {
+  _type?: string
+  style?: string
+  children?: Array<{text?: string}>
+}
+
+const AUXILIARY_HEADING = /^(?:pra|skema|skemë|mnemonikë|shembull|formula|kujdes|mbaje mend|dallimi(?: kryesor)?|krahasim|veprimi|funksioni|reaksioni|rregulli kryesor)$/i
+
+function blockText(block: LessonTextBlock): string {
+  return (block.children || []).map((child) => child.text || '').join('').replace(/\s+/g, ' ').trim()
+}
+
+function validateLessonBodyHierarchy(value: unknown): true | string {
+  if (!Array.isArray(value)) return true
+
+  let hasH2 = false
+  let hasH3InCurrentSection = false
+
+  for (const candidate of value) {
+    const block = candidate as LessonTextBlock
+    if (block?._type !== 'block') continue
+
+    const style = block.style || 'normal'
+    const isHeading = style === 'h2' || style === 'h3' || style === 'h4'
+    if (!isHeading && style !== 'normal' && style !== 'blockquote') {
+      return 'Në përmbajtje përdor vetëm Normal, H2, H3, H4 ose Citat. H1 ruhet vetëm për titullin e faqes.'
+    }
+
+    const text = blockText(block)
+    if (isHeading && /^\([^)]*\)$/.test(text)) {
+      return `“${text}” është shpjegim në kllapa, jo heading. Vendose Normal.`
+    }
+    if (isHeading && /[:;.]$/.test(text)) {
+      return `“${text}” duket si fjali hyrëse, jo heading. Vendose Normal.`
+    }
+    if (isHeading && AUXILIARY_HEADING.test(text)) {
+      return `“${text}” është etiketë ndihmëse, jo seksion i sidebar-it. Vendose Normal ose formatoje me Strong.`
+    }
+
+    if (style === 'h2') {
+      hasH2 = true
+      hasH3InCurrentSection = false
+      continue
+    }
+    if (style === 'h3') {
+      if (!hasH2) return `“${text}” është H3 pa H2 paraprak. Krijo fillimisht seksionin H2.`
+      hasH3InCurrentSection = true
+      continue
+    }
+    if (style === 'h4' && (!hasH2 || !hasH3InCurrentSection)) {
+      return `“${text}” është H4 pa hierarki H2 → H3 paraprake.`
+    }
+  }
+
+  return true
+}
+
 export const lesson = defineType({
   name: 'lesson',
   title: 'Mësimet',
@@ -37,7 +94,7 @@ export const lesson = defineType({
     defineField({
       name: 'body',
       title: 'Përmbajtja',
-      description: 'Shkruaj tekstin dhe ngjit fotografi ose tabela direkt me Ctrl/⌘+V. Butonat normalë për Insert image dhe Tabelë mbeten të disponueshëm.',
+      description: 'Titulli i faqes është H1. Brenda mësimit përdor H2 për seksion kryesor, H3 për nënseksion dhe H4 për detaj. Etiketat si “Pra:”, “Skema” ose shpjegimet në kllapa mbeten Normal.',
       type: 'array',
       components: {
         // Sanity's mixed Portable Text array inference currently resolves the form input
@@ -47,6 +104,13 @@ export const lesson = defineType({
       of: [
         defineArrayMember({
           type: 'block',
+          styles: [
+            {title: 'Tekst normal', value: 'normal'},
+            {title: 'Seksion kryesor (H2)', value: 'h2'},
+            {title: 'Nënseksion (H3)', value: 'h3'},
+            {title: 'Detaj (H4)', value: 'h4'},
+            {title: 'Citat', value: 'blockquote'},
+          ],
           marks: {
             annotations: [
               {
@@ -90,7 +154,10 @@ export const lesson = defineType({
           title: 'Tabelë',
         }),
       ],
-      validation: (rule) => rule.max(800),
+      validation: (rule) => [
+        rule.max(800),
+        rule.custom(validateLessonBodyHierarchy).warning(),
+      ],
     }),
     defineField({
       name: 'audio',

@@ -14,6 +14,12 @@ const expected = {
   paragraph: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   callout: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
   sanityHeading: "Nëntitull i caktuar drejtpërdrejt në Sanity",
+  outlineLabels: [
+    "SISTEMI I ENËVE",
+    "Arteriet",
+    "Ndërtimi i murit arterial",
+    "Nëntitull i caktuar drejtpërdrejt në Sanity",
+  ],
   falseHeadings: [
     "Pra:",
     "Funksioni i tyre është:",
@@ -36,6 +42,17 @@ async function assertNoHorizontalOverflow(page, label) {
   assert(
     Math.max(dimensions.document, dimensions.body) <= dimensions.viewport + 1,
     `${label} has horizontal overflow: ${JSON.stringify(dimensions)}`,
+  );
+}
+
+function assertCleanOutlineLabels(actual, label) {
+  assert(
+    JSON.stringify(actual) === JSON.stringify(expected.outlineLabels),
+    `${label} labels are not clean. Expected ${JSON.stringify(expected.outlineLabels)}, received ${JSON.stringify(actual)}`,
+  );
+  assert(
+    actual.every((value) => !/^(?:(?:\d+(?:\.\d+){0,5})\.?|(?:[A-ZÇË]|[IVXLCDM]{1,7})[.)])\s+/i.test(value)),
+    `${label} still contains heading-number prefixes`,
   );
 }
 
@@ -89,10 +106,24 @@ try {
   assert(await desktopOutline.locator('button[data-level="2"]').count() === 1, "The desktop outline is missing its H2 level");
   assert(await desktopOutline.locator('button[data-level="3"]').count() === 2, "The desktop outline is missing its H3 levels");
   assert(await desktopOutline.locator('button[data-level="4"]').count() === 1, "The desktop outline is missing its H4 level");
-  const desktopOutlineLabels = (await desktopOutline.locator("button").allTextContents()).map((value) => value.replace(/^\s*\w+(?:\.\w+)*\s*/, "").trim());
+  assert(await desktopOutline.locator('[class*="outlineBullet"]').count() === 4, "The desktop outline does not use one bullet per heading");
+  const desktopOutlineLabels = (await desktopOutline.locator("button").allTextContents()).map((value) => value.trim());
+  assertCleanOutlineLabels(desktopOutlineLabels, "Desktop outline");
   for (const label of expected.falseHeadings) {
     assert(!desktopOutlineLabels.some((value) => value.includes(label)), `${JSON.stringify(label)} leaked into the desktop outline`);
   }
+
+  const primarySectionButton = desktopOutline.getByRole("button", {name: expected.section, exact: true});
+  const desktopSubsectionButton = desktopOutline.getByRole("button", {name: "Arteriet", exact: true});
+  await desktopSubsectionButton.click();
+  await page.waitForFunction(() => Boolean(document.querySelector('aside nav button[data-level="3"][aria-current="location"]')));
+  assert(await primarySectionButton.getAttribute("data-section-active") === "true", "The parent H2 lost its section highlight while an H3 was current");
+  assert(await desktopSubsectionButton.getAttribute("aria-current") === "location", "The current H3 is not exposed as the exact location");
+  assert(await desktopOutline.locator('button[data-section-active="true"]').count() === 1, "More than one primary sidebar section is highlighted");
+  const primaryBackground = await primarySectionButton.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const subsectionBackground = await desktopSubsectionButton.evaluate((element) => getComputedStyle(element).backgroundColor);
+  assert(primaryBackground !== "rgba(0, 0, 0, 0)", "The active primary H2 has no visible background highlight");
+  assert(subsectionBackground === "rgba(0, 0, 0, 0)", `The active H3 has an unwanted background highlight: ${subsectionBackground}`);
 
   const hero = workspace.locator("header").first();
   const desktopTitleBox = await hero.locator("h1").boundingBox();
@@ -124,6 +155,10 @@ try {
   const mobileOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
   await mobileOutline.locator("summary").click();
   assert(await mobileOutline.locator("nav button").count() === 4, "The mobile lesson outline does not contain every detected heading");
+  assert(await mobileOutline.locator('[class*="outlineBullet"]').count() === 4, "The mobile outline does not use one bullet per heading");
+  const mobileOutlineLabels = (await mobileOutline.locator("nav button").allTextContents()).map((value) => value.trim());
+  assertCleanOutlineLabels(mobileOutlineLabels, "Mobile outline");
+  assert(await mobileOutline.locator('button[data-section-active="true"]').count() === 1, "Mobile outline does not preserve exactly one active primary section");
   const mobileOutlineText = await mobileOutline.locator("nav").innerText();
   for (const label of expected.falseHeadings) {
     assert(!mobileOutlineText.includes(label), `${JSON.stringify(label)} leaked into the mobile outline`);
@@ -134,7 +169,7 @@ try {
   assert(mobileActionsBox && mobileMediaBox && mobileActionsBox.y < mobileMediaBox.y, "Mobile hero actions are not placed before the media");
   await assertNoHorizontalOverflow(page, "Mobile lesson viewport");
 
-  const subsectionButton = mobileOutline.getByRole("button", {name: /3\.6\. Arteriet/});
+  const subsectionButton = mobileOutline.getByRole("button", {name: "Arteriet", exact: true});
   const subsectionId = await automaticH3.getAttribute("id");
   await subsectionButton.click();
   assert(!(await mobileOutline.getAttribute("open")), "The mobile lesson outline stayed open after navigation");
@@ -167,4 +202,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic hierarchy, false-heading protection, exact Sanity text, desktop/tablet/mobile layout, dark/light mode, overflow, truthful progress and persistence passed in Chromium.");
+console.log("Automatic hierarchy, clean bullet navigation, primary-only highlight, false-heading protection, exact Sanity text, responsive layout, theme, overflow, progress and persistence passed in Chromium.");

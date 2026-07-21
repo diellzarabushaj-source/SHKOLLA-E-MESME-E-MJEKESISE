@@ -6,6 +6,7 @@ const markdownPath = "app/MarkdownLessonContent.tsx";
 const portalPaths = ["app/ClassicLearningPortal.tsx", "app/SchoolLearningPortal.tsx"];
 const marker = "sanitized-sanity-heading-v1";
 const inferenceMarker = "conservative-heading-inference-v1";
+const bulletOutlineMarker = "bullet-outline-navigation-v1";
 
 function replaceRequired(target, label, before, after) {
   if (!target.includes(before)) throw new Error(`${label}: source pattern was not found`);
@@ -98,6 +99,80 @@ if (!experience.includes("data.learningRejectedHeading")) {
   );
 }
 
+if (!experience.includes(bulletOutlineMarker)) {
+  experience = replaceRequired(
+    experience,
+    "clean outline labels without changing lesson headings",
+    `function headingCode(heading: LessonHeading, index: number): string {
+  const explicit = heading.label.match(/^(?:([A-ZÇË]|[IVXLCDM]+)[.)]|(\\d+(?:\\.\\d+)*))\\s*/i);
+  return explicit?.[1] || explicit?.[2] || String(index + 1).padStart(2, "0");
+}`,
+    `function outlineLabel(value: string): string {
+  return value
+    .replace(/^(?:(?:\\d+(?:\\.\\d+){0,5})\\.?|(?:[A-ZÇË]|[IVXLCDM]{1,7})[.)])\\s+/i, "")
+    .trim();
+}
+
+// ${bulletOutlineMarker}`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "derive the active primary section",
+    "  const outline = useMemo(() => headings, [headings]);",
+    `  const outline = useMemo(() => headings, [headings]);
+  const activePrimaryHeading = useMemo(() => {
+    let primary = "";
+    for (const heading of outline) {
+      if (heading.level === 2) primary = heading.id;
+      if (heading.id === activeHeading) return primary || heading.id;
+    }
+    return outline.find((heading) => heading.level === 2)?.id || "";
+  }, [activeHeading, outline]);`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "outline no longer needs generated numeric indexes",
+    `  const outlineItems = outline.map((heading, index) => {
+    const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    return (`,
+    `  const outlineItems = outline.map((heading) => {
+    const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    const isCurrent = activeHeading === heading.id;
+    const isPrimaryActive = heading.level === 2 && activePrimaryHeading === heading.id;
+    return (`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "highlight only the active primary heading",
+    `        className={\`\${qa.outlineButton} \${levelClass} \${activeHeading === heading.id ? styles.activeSection : ""}\`}
+        data-level={heading.level}
+        key={heading.id}`,
+    `        className={\`\${qa.outlineButton} \${levelClass} \${isPrimaryActive ? styles.activeSection : ""}\`}
+        data-level={heading.level}
+        data-section-active={isPrimaryActive ? "true" : undefined}
+        key={heading.id}`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "preserve exact current location semantics",
+    `        aria-current={activeHeading === heading.id ? "location" : undefined}`,
+    `        aria-current={isCurrent ? "location" : undefined}`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "render a bullet and a clean navigation label",
+    `        <span className={styles.sectionCode} aria-hidden="true">{headingCode(heading, index)}</span>
+        <span>{heading.label}</span>`,
+    `        <span className={qa.outlineBullet} aria-hidden="true" />
+        <span>{outlineLabel(heading.label)}</span>`,
+  );
+}
+
 writeFileSync(experiencePath, experience);
 
 let experienceCss = readFileSync(experienceCssPath, "utf8").replace(/\r\n?/g, "\n");
@@ -114,6 +189,67 @@ if (!experienceCss.includes(marker)) {
   font-weight: 700;
   line-height: 1.65;
   letter-spacing: normal;
+}
+`;
+}
+
+if (!experienceCss.includes(bulletOutlineMarker)) {
+  experienceCss += `
+
+/* ${bulletOutlineMarker} */
+.workspace .outlineButton,
+.workspace .outlineButton.outlineLevel2,
+.workspace .outlineButton.outlineLevel3,
+.workspace .outlineButton.outlineLevel4 {
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.outlineBullet {
+  width: 7px;
+  height: 7px;
+  margin-top: 0.42em;
+  display: block;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.72;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.workspace .outlineButton.outlineLevel2 .outlineBullet {
+  width: 8px;
+  height: 8px;
+  opacity: 1;
+}
+
+.workspace .outlineButton.outlineLevel3 .outlineBullet {
+  width: 6px;
+  height: 6px;
+}
+
+.workspace .outlineButton.outlineLevel4 .outlineBullet {
+  width: 5px;
+  height: 5px;
+  opacity: 0.58;
+}
+
+.workspace .outlineButton[aria-current="location"] .outlineBullet,
+.workspace .outlineButton[data-section-active="true"] .outlineBullet {
+  opacity: 1;
+  transform: scale(1.18);
+}
+
+.workspace .outlineButton[data-level="3"][aria-current="location"],
+.workspace .outlineButton[data-level="4"][aria-current="location"] {
+  border-left-color: transparent;
+  background: transparent;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outlineBullet {
+    transition: none;
+  }
 }
 `;
 }
@@ -158,4 +294,4 @@ for (const portalPath of portalPaths) {
   writeFileSync(portalPath, portal);
 }
 
-console.log("Prose labels stay paragraphs; only validated headings enter the lesson outline.");
+console.log("Validated lesson headings use clean bullet navigation with one highlighted primary section.");
