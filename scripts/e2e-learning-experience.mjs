@@ -14,6 +14,11 @@ const expected = {
   paragraph: "Arteriet përçojnë gjakun nga zemra kah periferia e trupit.",
   callout: "Mbaje mend: Teksti i Sanity-t mbetet i pandryshuar.",
   sanityHeading: "Nëntitull i caktuar drejtpërdrejt në Sanity",
+  falseHeadings: [
+    "Pra:",
+    "Funksioni i tyre është:",
+    "Sipas librit, antitrupat prodhohen nga:",
+  ],
 };
 
 async function exactText(locator, value, label) {
@@ -63,10 +68,20 @@ try {
   await exactText(automaticH4, expected.detail, "Automatic H4");
   await exactText(sanityH3, expected.sanityHeading, "Sanity H3");
 
-  await exactText(page.locator('[data-learning-paragraph="true"]'), expected.paragraph, "Paragraph");
+  await exactText(page.locator('[data-learning-paragraph="true"]').first(), expected.paragraph, "Paragraph");
   await exactText(page.locator('[data-learning-callout="remember"]'), expected.callout, "Learning callout");
 
-  assert(await page.locator('[data-source-preserved="true"]').count() >= 2, "Source-preservation markers are missing");
+  const articleHeadingTexts = await page.locator("[data-learning-audit-article] h1,[data-learning-audit-article] h2,[data-learning-audit-article] h3,[data-learning-audit-article] h4").allTextContents();
+  for (const label of expected.falseHeadings) {
+    const matchingParagraphs = page.locator('[data-learning-paragraph="true"]').filter({hasText: label});
+    assert(await matchingParagraphs.count() >= 1, `${JSON.stringify(label)} was not preserved as paragraph text`);
+    assert(!articleHeadingTexts.map((value) => value.trim()).includes(label), `${JSON.stringify(label)} was promoted to a semantic heading`);
+  }
+
+  const rejectedSanityHeading = page.locator('[data-learning-rejected-heading="true"][data-rejected-sanity-style="h1"]');
+  await exactText(rejectedSanityHeading, "Pra:", "Rejected Sanity H1 text");
+
+  assert(await page.locator('[data-source-preserved="true"]').count() >= 6, "Source-preservation markers are missing");
   assert(await page.locator('[data-learning-heading="true"]').count() === 4, "The learning engine did not produce the expected four-section hierarchy");
 
   const desktopOutline = workspace.locator("aside nav");
@@ -74,6 +89,10 @@ try {
   assert(await desktopOutline.locator('button[data-level="2"]').count() === 1, "The desktop outline is missing its H2 level");
   assert(await desktopOutline.locator('button[data-level="3"]').count() === 2, "The desktop outline is missing its H3 levels");
   assert(await desktopOutline.locator('button[data-level="4"]').count() === 1, "The desktop outline is missing its H4 level");
+  const desktopOutlineLabels = (await desktopOutline.locator("button").allTextContents()).map((value) => value.replace(/^\s*\w+(?:\.\w+)*\s*/, "").trim());
+  for (const label of expected.falseHeadings) {
+    assert(!desktopOutlineLabels.some((value) => value.includes(label)), `${JSON.stringify(label)} leaked into the desktop outline`);
+  }
 
   const hero = workspace.locator("header").first();
   const desktopTitleBox = await hero.locator("h1").boundingBox();
@@ -105,6 +124,10 @@ try {
   const mobileOutline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
   await mobileOutline.locator("summary").click();
   assert(await mobileOutline.locator("nav button").count() === 4, "The mobile lesson outline does not contain every detected heading");
+  const mobileOutlineText = await mobileOutline.locator("nav").innerText();
+  for (const label of expected.falseHeadings) {
+    assert(!mobileOutlineText.includes(label), `${JSON.stringify(label)} leaked into the mobile outline`);
+  }
 
   const mobileActionsBox = await hero.locator("button").first().boundingBox();
   const mobileMediaBox = await hero.locator("[data-audit-cover]").boundingBox();
@@ -144,4 +167,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic hierarchy, exact Sanity text, desktop/tablet/mobile layout, dark/light mode, overflow, truthful progress and persistence passed in Chromium.");
+console.log("Automatic hierarchy, false-heading protection, exact Sanity text, desktop/tablet/mobile layout, dark/light mode, overflow, truthful progress and persistence passed in Chromium.");
