@@ -30,11 +30,16 @@ try {
   });
   const page = await context.newPage();
   await page.goto(`${baseURL}/learning-experience-audit`, {waitUntil: "domcontentloaded"});
-  await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
+  const workspace = page.locator("[data-learning-experience]");
+  await workspace.waitFor({state: "visible", timeout: 10_000});
 
   assert(await page.locator("h1").count() === 1, "The lesson page must contain exactly one H1 title");
   assert(await page.locator("[data-learning-audit-article] h1").count() === 0, "Sanity body content must never create another H1");
-  await exactText(page.locator("h1[data-audit-lesson-title]"), expected.title, "Lesson H1");
+  await exactText(workspace.locator("h1"), expected.title, "Lesson H1");
+
+  const firstHeadingTag = await workspace.locator("h1,h2,h3,h4").first().evaluate((element) => element.tagName);
+  assert(firstHeadingTag === "H1", `The lesson heading order starts with ${firstHeadingTag}, not H1`);
+  assert(await workspace.locator("aside h2").count() === 0, "The sidebar introduces an H2 before the lesson title");
 
   const automaticH2 = page.locator('h2[data-learning-heading="true"][data-heading-source="uppercase"]');
   const automaticH3 = page.locator('h3[data-learning-heading="true"][data-heading-source="numbered"]');
@@ -52,15 +57,25 @@ try {
   assert(await page.locator('[data-source-preserved="true"]').count() >= 2, "Source-preservation markers are missing");
   assert(await page.locator('[data-learning-heading="true"]').count() === 4, "The learning engine did not produce the expected four-section hierarchy");
 
-  const outline = page.locator("details").filter({hasText: "Harta e mësimit"});
+  const outline = page.locator("details").filter({hasText: "Përmbajtja e mësimit"});
   await outline.locator("summary").click();
-  assert(await outline.locator("nav button").count() === 4, "The lesson map does not contain every detected heading");
+  assert(await outline.locator("nav button").count() === 4, "The lesson outline does not contain every detected heading");
+
+  const subsectionButton = outline.getByRole("button", {name: /3\.6\. Arteriet/});
+  await subsectionButton.click();
+  assert(!(await outline.getAttribute("open")), "The mobile lesson outline stayed open after navigation");
+  assert(await automaticH3.evaluate((element) => document.activeElement === element), "The selected heading did not receive keyboard focus");
+
+  const progress = page.getByRole("progressbar", {name: "Progresi i leximit"});
+  const automaticProgress = Number(await progress.getAttribute("aria-valuenow"));
+  assert(automaticProgress < 100, "Automatic reading progress reached 100% before explicit completion");
 
   const completion = page.getByRole("button", {name: "Shëno si të përfunduar"});
   await completion.click();
-  const progress = page.getByRole("progressbar", {name: "Progresi i leximit"});
   assert(await progress.getAttribute("aria-valuenow") === "100", "Completing the lesson did not set progress to 100%");
-  await page.getByRole("button", {name: "✓ Përfunduar"}).waitFor({state: "visible"});
+  const restoredButton = page.getByRole("button", {name: "Përfunduar"});
+  await restoredButton.waitFor({state: "visible"});
+  assert(await restoredButton.isDisabled(), "Completed action is not disabled");
 
   const saved = await page.evaluate((key) => window.localStorage.getItem(key), storageKey);
   const parsed = JSON.parse(saved || "{}");
@@ -69,7 +84,7 @@ try {
 
   await page.reload({waitUntil: "domcontentloaded"});
   await page.locator("[data-learning-experience]").waitFor({state: "visible", timeout: 10_000});
-  const restored = page.getByRole("button", {name: "✓ Përfunduar"});
+  const restored = page.getByRole("button", {name: "Përfunduar"});
   await restored.waitFor({state: "visible"});
   assert(await restored.isDisabled(), "Completed state was not restored after reload");
 
@@ -78,4 +93,4 @@ try {
   await browser.close();
 }
 
-console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, lesson map, progress and persistence passed in Chromium.");
+console.log("Automatic H1/H2/H3/H4 hierarchy, exact Sanity text preservation, outline navigation, truthful progress and persistence passed in Chromium.");
