@@ -3,7 +3,7 @@ import {readFileSync, writeFileSync} from "node:fs";
 const experiencePath = "app/LessonLearningExperience.tsx";
 const cssPath = "app/LessonLearningExperienceQA.module.css";
 const marker = "primary-outline-highlight-v1";
-const inlineStyle = 'style={isCurrent && heading.level > 2 ? {background: "transparent", borderLeftColor: "transparent"} : undefined}';
+const inlineStyle = 'style={isCurrent && heading.level > 2 ? {background: "transparent", borderLeftColor: "transparent", transition: "none"} : undefined}';
 
 let experience = readFileSync(experiencePath, "utf8").replace(/\r\n?/g, "\n");
 if (!experience.includes(inlineStyle)) {
@@ -26,6 +26,7 @@ if (!css.includes(marker)) {
 .workspace .outlineButton[data-level="4"][aria-current="location"] {
   border-left-color: transparent !important;
   background: transparent !important;
+  transition: none !important;
 }
 `;
 }
