@@ -118,9 +118,49 @@ if (!experience.includes(bulletOutlineMarker)) {
 
   experience = replaceRequired(
     experience,
+    "derive the active primary section",
+    "  const outline = useMemo(() => headings, [headings]);",
+    `  const outline = useMemo(() => headings, [headings]);
+  const activePrimaryHeading = useMemo(() => {
+    let primary = "";
+    for (const heading of outline) {
+      if (heading.level === 2) primary = heading.id;
+      if (heading.id === activeHeading) return primary || heading.id;
+    }
+    return outline.find((heading) => heading.level === 2)?.id || "";
+  }, [activeHeading, outline]);`,
+  );
+
+  experience = replaceRequired(
+    experience,
     "outline no longer needs generated numeric indexes",
-    "  const outlineItems = outline.map((heading, index) => {",
-    "  const outlineItems = outline.map((heading) => {",
+    `  const outlineItems = outline.map((heading, index) => {
+    const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    return (`,
+    `  const outlineItems = outline.map((heading) => {
+    const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    const isCurrent = activeHeading === heading.id;
+    const isPrimaryActive = heading.level === 2 && activePrimaryHeading === heading.id;
+    return (`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "highlight only the active primary heading",
+    `        className={\`${qa.outlineButton} ${levelClass} ${activeHeading === heading.id ? styles.activeSection : ""}\`}
+        data-level={heading.level}
+        key={heading.id}`, 
+    `        className={\`${qa.outlineButton} ${levelClass} ${isPrimaryActive ? styles.activeSection : ""}\`}
+        data-level={heading.level}
+        data-section-active={isPrimaryActive ? "true" : undefined}
+        key={heading.id}`,
+  );
+
+  experience = replaceRequired(
+    experience,
+    "preserve exact current location semantics",
+    `        aria-current={activeHeading === heading.id ? "location" : undefined}`, 
+    `        aria-current={isCurrent ? "location" : undefined}`,
   );
 
   experience = replaceRequired(
@@ -193,9 +233,17 @@ if (!experienceCss.includes(bulletOutlineMarker)) {
   opacity: 0.58;
 }
 
-.workspace .outlineButton[aria-current="location"] .outlineBullet {
+.workspace .outlineButton[aria-current="location"] .outlineBullet,
+.workspace .outlineButton[data-section-active="true"] .outlineBullet {
   opacity: 1;
   transform: scale(1.18);
+}
+
+.workspace .outlineButton[data-level="3"][aria-current="location"],
+.workspace .outlineButton[data-level="4"][aria-current="location"] {
+  border-left-color: transparent;
+  background: transparent;
+  color: var(--text);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -246,4 +294,4 @@ for (const portalPath of portalPaths) {
   writeFileSync(portalPath, portal);
 }
 
-console.log("Validated lesson headings use clean bullet navigation without changing Sanity text.");
+console.log("Validated lesson headings use clean bullet navigation with one highlighted primary section.");
