@@ -7,7 +7,7 @@
     "dev": "sanity dev",
     "build": "sanity build",
     "typecheck": "tsc --noEmit",
-    "audit": "node scripts/audit-image-paste.mjs",
+    "audit": "node scripts/audit-image-paste.mjs && node scripts/audit-chapter-theme-images.mjs",
     "check": "npm run typecheck && npm run audit && npm run build",
     "deploy": "sanity deploy"
   },
