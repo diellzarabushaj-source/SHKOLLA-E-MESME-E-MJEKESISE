@@ -23,21 +23,26 @@ const browserAudit = read("scripts/e2e-annotations.mjs");
 const packageJson = JSON.parse(read("package.json") || "{}");
 
 requireText("Generated highlight removal UI", component, [
-  "highlight-removal-option-v1",
+  "highlight-removal-option-v2",
   "removeHighlightsFromSelection",
   "data-annotation-remove-highlight",
   "Hiq highlighting-un nga teksti i zgjedhur",
-  "annotation.kind === \"highlight\"",
-  "annotation.startOffset < selection.endOffset",
-  "annotation.endOffset > selection.startOffset",
+  "const selectedBlock = blocks?.get(selection.blockKey) || null;",
+  "resolveAnnotationRange(annotation, blocks)",
+  "resolved.element === selectedBlock",
+  "const liveStart = rangeOffset(",
+  "const liveEnd = rangeOffset(",
   "credentials: \"same-origin\"",
   "Highlighting-u u hoq.",
 ]);
 
 requireText("Highlight removal installer", installer, [
-  "annotation-mobile-safety-v2",
   "highlight-removal-option-v1",
-  "matchingHighlights",
+  "highlight-removal-option-v2",
+  "previousRemovalHandler",
+  "resilientRemovalHandler",
+  "resolveAnnotationRange(annotation, blocks)",
+  "liveStart < selection.endOffset",
   'method: "DELETE"',
   "new Set(removedIds)",
   "clearSelection();",
@@ -54,7 +59,8 @@ requireText("Responsive None control", styles, [
 requireText("Browser coverage", browserAudit, [
   "Hiq highlighting-un nga teksti i zgjedhur",
   "Highlighting-u u hoq.",
-  "None control did not delete the selected highlight",
+  "Simulate stale stored offsets",
+  "None control did not delete a visually resolved highlight with stale offsets",
 ]);
 
 const prepare = String(packageJson.scripts?.["prepare:portal"] || "");
@@ -72,4 +78,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Highlight removal audit passed: None deletes only overlapping highlights, preserves sticky notes and remains usable on mobile.");
+console.log("Highlight removal audit passed: None follows live rendered ranges, removes stale-offset highlights, preserves sticky notes and remains usable on mobile.");
