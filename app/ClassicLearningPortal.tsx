@@ -10,7 +10,6 @@ import LessonAnnotations from "./LessonAnnotations";
 import LessonLearningExperience from "./LessonLearningExperience";
 import LessonTable, { type LessonTableBlock } from "./LessonTable";
 import MarkdownLessonBlock from "./MarkdownLessonContent";
-import SanitizedLessonHeading from "./SanitizedLessonHeading";
 
 // admin-table-paste-v1
 // markdown-lesson-formatting-v1
@@ -68,7 +67,6 @@ type Chapter = {
   slug: string;
   summary?: string;
   coverImage?: SanityImage;
-  chapterImage?: SanityImage;
   lessons: Lesson[];
 };
 
@@ -142,12 +140,6 @@ const portalQuery = `
             "slug": slug.current,
             summary,
             coverImage { alt, "asset": asset->{url} },
-            chapterImage {
-              alt,
-              crop,
-              hotspot,
-              "asset": asset->{url}
-            },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
               | order(order asc, title asc) {
                 _id,
@@ -230,14 +222,7 @@ const portableTextComponents: PortableTextComponents = {
     normal: ({ children, value }) => (
       <MarkdownLessonBlock value={value as never}>{children}</MarkdownLessonBlock>
     ),
-    h1: ({ children, value }) => <SanitizedLessonHeading style="h1" value={value as never}>{children}</SanitizedLessonHeading>,
-    h2: ({ children, value }) => <SanitizedLessonHeading style="h2" value={value as never}>{children}</SanitizedLessonHeading>,
-    h3: ({ children, value }) => <SanitizedLessonHeading style="h3" value={value as never}>{children}</SanitizedLessonHeading>,
-    h4: ({ children, value }) => <SanitizedLessonHeading style="h4" value={value as never}>{children}</SanitizedLessonHeading>,
-    h5: ({ children, value }) => <SanitizedLessonHeading style="h5" value={value as never}>{children}</SanitizedLessonHeading>,
-    h6: ({ children, value }) => <SanitizedLessonHeading style="h6" value={value as never}>{children}</SanitizedLessonHeading>,
   },
-  // sanitized-sanity-heading-v1
   marks: {
     underline: ({ children }) => <span className="portable-underline">{children}</span>,
     highlight: ({ children }) => <mark className="portable-highlight">{children}</mark>,
@@ -1089,28 +1074,8 @@ export default function ClassicLearningPortal({
             <div className="chapter-list">
               {selectedSubject.chapters.map((chapter, index) => {
                 const flashcardCount = getChapterFlashcardCount(chapter);
-
-                const chapterImageSource = chapter.chapterImage?.asset?.url || "";
-
-                const chapterImageUrl = chapterImageSource ? chapterImageSource + "?w=300&fit=max&auto=format" : "";
-
-                const chapterImageAlt = chapter.chapterImage?.alt || chapter.title;
-
                 return (
-                  <article className="chapter-row chapter-row-illustrated" key={chapter._id}>
-                    <figure className="chapter-illustration">
-                      {chapterImageUrl ? (
-                        <img
-                          className="chapter-illustration-image"
-                          src={chapterImageUrl}
-                          alt={chapterImageAlt}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span className="chapter-illustration-placeholder" aria-hidden="true">✚</span>
-                      )}
-                    </figure>
+                  <article className="chapter-row" key={chapter._id}>
                     <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>
                     <div className="chapter-copy">
                       <h3>{chapter.title}</h3>
@@ -1118,7 +1083,7 @@ export default function ClassicLearningPortal({
                       <span className="chapter-count-mobile">{chapter.lessons.length} mësime · {flashcardCount} kartela</span>
                     </div>
                     <span className="chapter-count">{chapter.lessons.length} mësime · {flashcardCount} kartela</span>
-                    <button className={[classic.openButton, "chapter-open-button"].join(" ")} onClick={() => chooseChapter(chapter)} type="button">
+                    <button className={classic.openButton} onClick={() => chooseChapter(chapter)} type="button">
                       {contentMode === "lessons" ? "Hape kapitullin" : "Hape flashcards"}
                       <span>→</span>
                     </button>

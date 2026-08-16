@@ -1,7 +1,5 @@
 "use client";
 
-// portal-first-paint-v1
-
 // canonical-sanity-schoolv2
 
 // sanity-v2-contract-v2: generated portal aligned with u5d5zn7n/schoolv2.
@@ -18,7 +16,6 @@ import LessonAnnotations from "./LessonAnnotations";
 import LessonLearningExperience from "./LessonLearningExperience";
 import LessonTable, { type LessonTableBlock } from "./LessonTable";
 import MarkdownLessonBlock from "./MarkdownLessonContent";
-import SanitizedLessonHeading from "./SanitizedLessonHeading";
 
 // admin-table-paste-v1
 // markdown-lesson-formatting-v1
@@ -94,7 +91,6 @@ type Chapter = {
   slug: string;
   summary?: string;
   coverImage?: SanityImage;
-  chapterImage?: SanityImage;
   lessons: Lesson[];
 };
 
@@ -150,11 +146,6 @@ const client = createClient({
 
 const freshClient = client.withConfig({ useCdn: false });
 
-function sanityImageUrl(url: string | undefined, width: number): string | undefined {
-  if (!url || !url.includes("cdn.sanity.io") || url.includes("?")) return url;
-  return `${url}?w=${width}&q=75&auto=format&fit=max`;
-}
-
 const portalQuery = `
   *[_type == "grade" && isActive != false] | order(order asc, gradeNumber asc) {
     _id,
@@ -183,12 +174,6 @@ const portalQuery = `
             "slug": slug.current,
             "summary": coalesce(summary, description),
             coverImage { alt, "asset": asset->{url} },
-            chapterImage {
-              alt,
-              crop,
-              hotspot,
-              "asset": asset->{url}
-            },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
               | order(order asc, title asc) {
                 _id,
@@ -311,14 +296,7 @@ const portableTextComponents: PortableTextComponents = {
     normal: ({ children, value }) => (
       <MarkdownLessonBlock value={value as never}>{children}</MarkdownLessonBlock>
     ),
-    h1: ({ children, value }) => <SanitizedLessonHeading style="h1" value={value as never}>{children}</SanitizedLessonHeading>,
-    h2: ({ children, value }) => <SanitizedLessonHeading style="h2" value={value as never}>{children}</SanitizedLessonHeading>,
-    h3: ({ children, value }) => <SanitizedLessonHeading style="h3" value={value as never}>{children}</SanitizedLessonHeading>,
-    h4: ({ children, value }) => <SanitizedLessonHeading style="h4" value={value as never}>{children}</SanitizedLessonHeading>,
-    h5: ({ children, value }) => <SanitizedLessonHeading style="h5" value={value as never}>{children}</SanitizedLessonHeading>,
-    h6: ({ children, value }) => <SanitizedLessonHeading style="h6" value={value as never}>{children}</SanitizedLessonHeading>,
   },
-  // sanitized-sanity-heading-v1
   marks: {
     underline: ({ children }) => <span className="portable-underline">{children}</span>,
     highlight: ({ children }) => <mark className="portable-highlight">{children}</mark>,
@@ -346,7 +324,7 @@ const portableTextComponents: PortableTextComponents = {
       if (!url) return null;
       return (
         <figure className={styles.portableImage}>
-          <img src={sanityImageUrl(url, 1200)} alt={image.alt || "Foto e mësimit"} loading="lazy" decoding="async" />
+          <img src={url} alt={image.alt || "Foto e mësimit"} loading="lazy" />
           {image.caption && <figcaption>{image.caption}</figcaption>}
         </figure>
       );
@@ -471,18 +449,11 @@ function ModeChooser({ mode, onChange }: { mode: ContentMode; onChange: (mode: C
 export default function ClassicLearningPortal({
   isAdmin = false,
   isAuthenticated = false,
-  initialGrades,
 }: {
   isAdmin?: boolean;
   isAuthenticated?: boolean;
-  initialGrades?: unknown;
 }) {
-  // The server hands over plain published JSON; narrow it once, here.
-  const seededGrades = useMemo(
-    () => (Array.isArray(initialGrades) && initialGrades.length ? initialGrades as Grade[] : null),
-    [initialGrades],
-  );
-  const [grades, setGrades] = useState<Grade[]>(() => seededGrades || []);
+  const [grades, setGrades] = useState<Grade[]>([]);
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
@@ -496,7 +467,7 @@ export default function ClassicLearningPortal({
   const [revealed, setRevealed] = useState(false);
   const [finished, setFinished] = useState(false);
   const [ratings, setRatings] = useState<RatingStats>(emptyRatings);
-  const [loading, setLoading] = useState(() => !seededGrades);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const selectedGradeRef = useRef<Grade | null>(null);
   const selectedSubjectRef = useRef<Subject | null>(null);
@@ -564,26 +535,8 @@ export default function ClassicLearningPortal({
   }, []);
 
   useEffect(() => {
-    // With server data on screen the first refresh runs without the blocking
-    // loader, so a publish landing between the render and hydration still shows
-    // up without ever hiding the portal behind a spinner.
-    void fetchPortal(!seededGrades);
-  }, [fetchPortal, seededGrades]);
-
-  useEffect(() => {
-    // Restore the last opened grade straight from the server payload instead of
-    // waiting for the background refresh to come back.
-    if (!seededGrades || selectedGradeRef.current) return;
-    if (window.location.hash === "#klasat") {
-      window.localStorage.removeItem(SELECTED_GRADE_KEY);
-      return;
-    }
-    const savedId = window.localStorage.getItem(SELECTED_GRADE_KEY);
-    const restored = savedId ? seededGrades.find((grade) => grade._id === savedId) || null : null;
-    if (!restored) return;
-    selectedGradeRef.current = restored;
-    setSelectedGrade(restored);
-  }, [seededGrades]);
+    void fetchPortal();
+  }, [fetchPortal]);
 
   useEffect(() => {
     let stopped = false;
@@ -1186,7 +1139,7 @@ export default function ClassicLearningPortal({
                   </span>
                   {showFrontImage && (
                     <span className={styles.flashImage}>
-                      <img src={sanityImageUrl(card.image?.asset?.url, 900)} alt={card.image?.alt || card.front} loading="lazy" decoding="async" />
+                      <img src={card.image?.asset?.url} alt={card.image?.alt || card.front} />
                     </span>
                   )}
                   <strong>{card.front}</strong>
@@ -1197,7 +1150,7 @@ export default function ClassicLearningPortal({
                   <span className="answer-question">{card.front}</span>
                   {showBackImage && (
                     <span className={styles.flashImage}>
-                      <img src={sanityImageUrl(card.image?.asset?.url, 900)} alt={card.image?.alt || card.front} loading="lazy" decoding="async" />
+                      <img src={card.image?.asset?.url} alt={card.image?.alt || card.front} />
                     </span>
                   )}
                   <span className="answer">{card.back}</span>
@@ -1271,9 +1224,8 @@ export default function ClassicLearningPortal({
           coverImage={imageUrl ? (
             <img
               className={styles.coverImage}
-              src={sanityImageUrl(imageUrl, 1200)}
+              src={imageUrl}
               alt={selectedLesson.coverImage?.alt || selectedLesson.title}
-              decoding="async"
             />
           ) : null}
           onStartFlashcards={() => void startTest({
@@ -1491,28 +1443,8 @@ export default function ClassicLearningPortal({
             <div className="chapter-list">
               {selectedSubject.chapters.map((chapter, index) => {
                 const flashcardCount = getChapterFlashcardCount(chapter);
-
-                const chapterImageSource = chapter.chapterImage?.asset?.url || "";
-
-                const chapterImageUrl = chapterImageSource ? chapterImageSource + "?w=300&fit=max&auto=format" : "";
-
-                const chapterImageAlt = chapter.chapterImage?.alt || chapter.title;
-
                 return (
-                  <article className="chapter-row chapter-row-illustrated" key={chapter._id}>
-                    <figure className="chapter-illustration">
-                      {chapterImageUrl ? (
-                        <img
-                          className="chapter-illustration-image"
-                          src={chapterImageUrl}
-                          alt={chapterImageAlt}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span className="chapter-illustration-placeholder" aria-hidden="true">✚</span>
-                      )}
-                    </figure>
+                  <article className="chapter-row" key={chapter._id}>
                     <span className="chapter-number">{String(index + 1).padStart(2, "0")}</span>
                     <div className="chapter-copy">
                       <h3>{chapter.title}</h3>
@@ -1520,7 +1452,7 @@ export default function ClassicLearningPortal({
                       <span className="chapter-count-mobile">{chapter.lessons.length} mësime · {flashcardCount} kartela</span>
                     </div>
                     <span className="chapter-count">{chapter.lessons.length} mësime · {flashcardCount} kartela</span>
-                    <button className={[classic.openButton, "chapter-open-button"].join(" ")} onClick={() => chooseChapter(chapter)} type="button">
+                    <button className={classic.openButton} onClick={() => chooseChapter(chapter)} type="button">
                       {contentMode === "lessons" ? "Hape kapitullin" : "Hape flashcards"}
                       <span>→</span>
                     </button>
