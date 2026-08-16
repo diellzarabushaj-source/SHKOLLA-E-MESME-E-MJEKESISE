@@ -16,7 +16,7 @@ import "./adobe-sticky-toast.css";
 
 // adobe-sticky-popover-v1
 
-// highlight-removal-option-v1
+// highlight-removal-option-v2
 
 // annotation-mobile-safety-v2
 
@@ -545,12 +545,34 @@ export default function LessonAnnotations({
   async function removeHighlightsFromSelection() {
     if (!selection) return;
 
-    const matchingHighlights = annotations.filter((annotation) =>
-      annotation.kind === "highlight"
-      && annotation.blockKey === selection.blockKey
-      && annotation.startOffset < selection.endOffset
-      && annotation.endOffset > selection.startOffset
-    );
+    const article = articleRef.current;
+    const blocks = article ? assignBlockKeys(article, body) : null;
+    const selectedBlock = blocks?.get(selection.blockKey) || null;
+
+    const matchingHighlights = annotations.filter((annotation) => {
+      if (annotation.kind !== "highlight") return false;
+
+      if (blocks && selectedBlock) {
+        const resolved = resolveAnnotationRange(annotation, blocks);
+        if (resolved && resolved.element === selectedBlock) {
+          const liveStart = rangeOffset(
+            selectedBlock,
+            resolved.range.startContainer,
+            resolved.range.startOffset,
+          );
+          const liveEnd = rangeOffset(
+            selectedBlock,
+            resolved.range.endContainer,
+            resolved.range.endOffset,
+          );
+          return liveStart < selection.endOffset && liveEnd > selection.startOffset;
+        }
+      }
+
+      return annotation.blockKey === selection.blockKey
+        && annotation.startOffset < selection.endOffset
+        && annotation.endOffset > selection.startOffset;
+    });
 
     if (!matchingHighlights.length) {
       setNotice("Nuk ka highlighting në pjesën e zgjedhur.");

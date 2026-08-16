@@ -10,6 +10,7 @@ import {
 } from "react";
 import styles from "./LessonLearningExperience.module.css";
 import qa from "./LessonLearningExperienceQA.module.css";
+import { isLessonOutlineHeading } from "./LessonHeadingPolicy";
 
 type LessonHeading = {
   id: string;
@@ -65,10 +66,13 @@ function preferredScrollBehavior(): ScrollBehavior {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 }
 
-function headingCode(heading: LessonHeading, index: number): string {
-  const explicit = heading.label.match(/^(?:([A-ZÇË]|[IVXLCDM]+)[.)]|(\d+(?:\.\d+)*))\s*/i);
-  return explicit?.[1] || explicit?.[2] || String(index + 1).padStart(2, "0");
+function outlineLabel(value: string): string {
+  return value
+    .replace(/^(?:(?:\d+(?:\.\d+){0,5})\.?|(?:[A-ZÇË]|[IVXLCDM]{1,7})[.)])\s+/i, "")
+    .trim();
 }
+
+// bullet-outline-navigation-v1
 
 export default function LessonLearningExperience({
   lessonId,
@@ -98,12 +102,33 @@ export default function LessonLearningExperience({
     if (!article) return;
 
     const used = new Set<string>();
-    const next = Array.from(article.querySelectorAll<HTMLElement>("h2,h3,h4"))
+    const next = Array.from(article.querySelectorAll<HTMLElement>("h1,h2,h3,h4"))
       .filter((heading) => !heading.closest("[data-learning-chrome]"))
       .map((heading, index): LessonHeading | null => {
         const label = (heading.textContent || "").replace(/\s+/g, " ").trim();
         if (!label) return null;
-        const level = Number(heading.tagName.slice(1)) as 2 | 3 | 4;
+
+        const source = heading.dataset.headingSource || "sanity";
+        if (!isLessonOutlineHeading(label, source)) {
+          heading.dataset.learningRejectedHeading = "true";
+          heading.setAttribute("role", "presentation");
+          heading.removeAttribute("aria-level");
+          heading.removeAttribute("data-learning-heading");
+          heading.removeAttribute("data-learning-level");
+          heading.removeAttribute("tabindex");
+          return null;
+        }
+
+        delete heading.dataset.learningRejectedHeading;
+        const tagLevel = Number(heading.tagName.slice(1));
+        const level = (tagLevel === 1 ? 2 : tagLevel) as 2 | 3 | 4;
+        if (tagLevel === 1) {
+          heading.setAttribute("role", "heading");
+          heading.setAttribute("aria-level", "2");
+        } else {
+          if (heading.getAttribute("role") === "presentation") heading.removeAttribute("role");
+          heading.removeAttribute("aria-level");
+        }
         const base = heading.id || safeId(label, index);
         let id = base;
         let suffix = 2;
@@ -205,6 +230,14 @@ export default function LessonLearningExperience({
   }, [completed, loadedStorageKey, storageKey, visited]);
 
   const outline = useMemo(() => headings, [headings]);
+  const activePrimaryHeading = useMemo(() => {
+    let primary = "";
+    for (const heading of outline) {
+      if (heading.level === 2) primary = heading.id;
+      if (heading.id === activeHeading) return primary || heading.id;
+    }
+    return outline.find((heading) => heading.level === 2)?.id || "";
+  }, [activeHeading, outline]);
   const visitedCount = headings.filter((heading) => visited.has(heading.id)).length;
   const sectionProgress = headings.length ? Math.round((visitedCount / headings.length) * 100) : readingProgress;
   const rawProgress = Math.max(readingProgress, sectionProgress);
@@ -234,19 +267,23 @@ export default function LessonLearningExperience({
     setVisited(new Set(headings.map((heading) => heading.id)));
   }
 
-  const outlineItems = outline.map((heading, index) => {
+  const outlineItems = outline.map((heading) => {
     const levelClass = heading.level === 3 ? qa.outlineLevel3 : heading.level === 4 ? qa.outlineLevel4 : qa.outlineLevel2;
+    const isCurrent = activeHeading === heading.id;
+    const isPrimaryActive = heading.level === 2 && activePrimaryHeading === heading.id;
     return (
       <button
-        className={`${qa.outlineButton} ${levelClass} ${activeHeading === heading.id ? styles.activeSection : ""}`}
+        className={`${qa.outlineButton} ${levelClass} ${isPrimaryActive ? styles.activeSection : ""}`}
         data-level={heading.level}
+        data-section-active={isPrimaryActive ? "true" : undefined}
+        style={isCurrent && heading.level > 2 ? { background: "transparent", borderLeftColor: "transparent", transition: "none" } : undefined}
         key={heading.id}
         onClick={() => jumpTo(heading.id)}
         type="button"
-        aria-current={activeHeading === heading.id ? "location" : undefined}
+        aria-current={isCurrent ? "location" : undefined}
       >
-        <span className={styles.sectionCode} aria-hidden="true">{headingCode(heading, index)}</span>
-        <span>{heading.label}</span>
+        <span className={qa.outlineBullet} aria-hidden="true" />
+        <span>{outlineLabel(heading.label)}</span>
       </button>
     );
   });

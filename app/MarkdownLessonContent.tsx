@@ -45,6 +45,7 @@ const SCHEME_ARROW = /(?:→|⇒|⟶|➜|↔|⟷)/;
 const SCHEME_EQUALITY = /^\s*[^=\n]{1,90}\s=\s[^=\n]{1,280}\s*$/;
 
 // all-lessons-rich-formatting-v1
+// conservative-heading-inference-v1
 
 function sourceText(value: PortableBlockValue): string {
   return (value.children || []).map((child) => child.text || "").join("").replace(/\r\n?/g, "\n");
@@ -187,7 +188,7 @@ function looksLikeStandaloneTitle(value: string): boolean {
   const text = normalizedHeading(value);
   if (text.length < 3 || text.length > 88) return false;
   if (/^[a-zçë]/.test(text)) return false;
-  if (/[.!?;,]$/.test(text)) return false;
+  if (/[.!?;,:]$/.test(text)) return false;
   if (/https?:|www\.|@/.test(text)) return false;
   if (CALLOUT_PREFIX.test(text) || isDefinition(text) || isSchemeLine(text)) return false;
   const words = text.split(/\s+/).filter(Boolean);
@@ -209,13 +210,10 @@ function inferredHeadingDecision(line: string, nextLine = "", context: HeadingCo
   if (SECTION_HEADING.test(value) || LETTER_HEADING.test(value)) return { level: 2, reason: "section" };
   if (isUpperHeading(value)) return { level: 2, reason: "uppercase" };
 
-  if (LEARNING_SUBHEADING.test(value) && value.length <= 105 && !/[.!?;]$/.test(value)) {
+  if (LEARNING_SUBHEADING.test(value) && value.length <= 105 && !/[.!?;:]$/.test(value) && !SENTENCE_VERB.test(value)) {
     return { level: context.currentLevel && context.currentLevel >= 3 ? 4 : 3, reason: "label" };
   }
 
-  if (/^[^:]{3,85}:$/.test(value) && nextLine.trim()) {
-    return { level: context.currentLevel && context.currentLevel >= 3 ? 4 : 3, reason: "colon" };
-  }
 
   const separated = context.previousBlank || context.nextBlank;
   if (context.allowGenericPhrase && separated && looksLikeStandaloneTitle(value)) {
@@ -266,7 +264,7 @@ function shouldParse(raw: string, style?: string): boolean {
   return Boolean(
     explicitHeadingDecision(style) ||
     markdownHeadingDecision(raw) ||
-    inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true }) ||
+    inferredHeadingDecision(raw, "", { allowGenericPhrase: false, currentLevel: 2, previousBlank: true, nextBlank: true }) ||
     calloutKind(raw) ||
     isDefinition(raw) ||
     isSchemeLine(raw) ||
@@ -402,7 +400,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
 
     const nextLine = nextNonEmpty(index + 1);
     const inferred = inferredHeadingDecision(trimmed, nextLine, {
-      allowGenericPhrase: true,
+      allowGenericPhrase: false,
       currentLevel,
       previousBlank: index === 0 || !lines[index - 1].trim(),
       nextBlank: index === lines.length - 1 || !lines[index + 1].trim(),
@@ -422,7 +420,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       while (index < lines.length && lines[index].trim()) {
         const candidate = lines[index].trim();
         const candidateHeading = inferredHeadingDecision(candidate, nextNonEmpty(index + 1), {
-          allowGenericPhrase: true,
+          allowGenericPhrase: false,
           currentLevel,
           previousBlank: false,
           nextBlank: index === lines.length - 1 || !lines[index + 1].trim(),
@@ -471,7 +469,7 @@ function renderMarkdown(raw: string, blockKey: string): ReactNode[] {
       if (current.includes("|") && index + 1 < lines.length && isTableDivider(lines[index + 1])) break;
       if (isSchemeLine(current)) break;
       const candidateHeading = inferredHeadingDecision(current, nextNonEmpty(index + 1), {
-        allowGenericPhrase: true,
+        allowGenericPhrase: false,
         currentLevel,
         previousBlank: false,
         nextBlank: index === lines.length - 1 || !lines[index + 1].trim(),
@@ -499,7 +497,7 @@ export default function MarkdownLessonBlock({ value, children }: MarkdownLessonB
     if (isSchemeLine(raw)) return renderScheme([raw], key);
     const markdownHeading = markdownHeadingDecision(raw);
     if (markdownHeading) return renderHeading(markdownHeading.text, key, markdownHeading.decision);
-    const inferred = inferredHeadingDecision(raw, "", { allowGenericPhrase: true, currentLevel: 2, previousBlank: true, nextBlank: true });
+    const inferred = inferredHeadingDecision(raw, "", { allowGenericPhrase: false, currentLevel: 2, previousBlank: true, nextBlank: true });
     if (inferred) return renderHeading(raw, key, inferred, children);
     return renderLearningParagraph(raw, key, children);
   }
