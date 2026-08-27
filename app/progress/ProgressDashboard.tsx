@@ -209,6 +209,7 @@ function trendLabel(current: number, previous: number): {
   };
 }
 
+// Keep the native dashboard as the fast, resilient layer; Metabase augments it below.
 export default function ProgressDashboard({
   username,
   labels,
