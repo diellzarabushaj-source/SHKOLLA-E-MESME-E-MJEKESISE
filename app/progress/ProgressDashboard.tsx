@@ -315,6 +315,13 @@ export default function ProgressDashboard({
     100,
     Math.round((accuracy * 0.45) + (masteryRate * 0.35) + (Math.min(streak, 7) / 7 * 20)),
   );
+  const focusSubject = [...subjects]
+    .filter((subject) => subject.due > 0 || subject.reviewedCards > 0)
+    .sort((a, b) => {
+      const aPriority = (a.due * 1000) + (a.reviewedCards ? 100 - a.accuracy : 0);
+      const bPriority = (b.due * 1000) + (b.reviewedCards ? 100 - b.accuracy : 0);
+      return bPriority - aPriority;
+    })[0] || null;
 
   const timestampCandidates = [
     data.reviews[0]?.reviewed_at,
@@ -397,6 +404,31 @@ export default function ProgressDashboard({
             <small>{formatDuration(lessonSeconds)} brenda mësimeve</small>
           </article>
         </section>
+
+        {focusSubject && (
+          <section className={styles.focusCard} aria-labelledby="focus-title">
+            <div className={styles.focusLead}>
+              <span className={styles.focusIcon} aria-hidden="true">◎</span>
+              <div>
+                <span className={styles.eyebrow}>Fokusi i rekomanduar</span>
+                <h2 id="focus-title">{focusSubject.title}</h2>
+                <p>
+                  {focusSubject.due > 0
+                    ? `${focusSubject.due} kartela janë gati për përsëritje. Saktësia aktuale është ${focusSubject.accuracy}%.`
+                    : `Saktësia aktuale është ${focusSubject.accuracy}%. Një sesion i shkurtër këtu do ta forcojë progresin.`}
+                </p>
+              </div>
+            </div>
+            <div className={styles.focusMetrics}>
+              <div><strong>{focusSubject.due}</strong><span>për përsëritje</span></div>
+              <div><strong>{focusSubject.accuracy}%</strong><span>saktësi</span></div>
+              <div><strong>{focusSubject.mastered}</strong><span>mastered</span></div>
+            </div>
+            <Link className={styles.focusAction} href="/#klasat">
+              Vazhdo me këtë fokus <span aria-hidden="true">→</span>
+            </Link>
+          </section>
+        )}
 
         {!data.progress.length && !data.sessions.length && !data.lessons.length ? (
           <section className={styles.emptyState}>
