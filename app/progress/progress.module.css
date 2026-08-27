@@ -283,6 +283,104 @@
   background: color-mix(in srgb, var(--danger) 4%, var(--panel));
 }
 
+.focusCard {
+  margin-top: 16px;
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) auto auto;
+  align-items: center;
+  gap: 22px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: 21px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, var(--panel)), color-mix(in srgb, var(--primary) 5%, var(--panel)));
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.focusLead {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.focusIcon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.focusLead h2 {
+  margin: 5px 0 5px;
+  font-size: clamp(20px, 2.4vw, 29px);
+  letter-spacing: -.035em;
+}
+
+.focusLead p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.focusMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.focusMetrics > div {
+  min-width: 78px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  text-align: center;
+}
+
+.focusMetrics strong,
+.focusMetrics span {
+  display: block;
+}
+
+.focusMetrics strong {
+  font-size: 20px;
+  letter-spacing: -.035em;
+}
+
+.focusMetrics span {
+  margin-top: 3px;
+  color: var(--muted-2);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.focusAction {
+  min-height: 44px;
+  padding: 0 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  border-radius: 13px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
 .analyticsGrid {
   margin-top: 18px;
   display: grid;
@@ -851,6 +949,19 @@
     width: 115px;
   }
 
+  .focusCard {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .focusMetrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .focusAction {
+    justify-self: start;
+  }
+
   .analyticsGrid,
   .recentGrid {
     grid-template-columns: 1fr;
@@ -944,6 +1055,40 @@
   .kpiGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px;
+  }
+
+  .focusCard {
+    padding: 17px 15px;
+    gap: 16px;
+    border-radius: 18px;
+  }
+
+  .focusLead {
+    align-items: flex-start;
+  }
+
+  .focusIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  .focusMetrics {
+    gap: 6px;
+  }
+
+  .focusMetrics > div {
+    min-width: 0;
+    padding: 10px 7px;
+  }
+
+  .focusMetrics strong {
+    font-size: 17px;
+  }
+
+  .focusAction {
+    width: 100%;
   }
 
   .kpiCard {
