@@ -10,7 +10,9 @@ Platformë e klasës për mësim me flashcards, e organizuar në:
 
 - Next.js
 - Sanity Content Lake
+- Neon/Postgres
 - Vercel
+- Metabase për analytics të progresit
 
 ## Sanity Studio
 
@@ -53,3 +55,30 @@ Domain-i aktual production:
 ```text
 https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app
 ```
+
+## Dashboard-i i progresit + Metabase
+
+Faqja `/progress` përdor të dhënat reale që ruhen në Neon për:
+
+- kohën aktive;
+- mësimet e hapura/përfunduara;
+- study sessions;
+- review events;
+- spaced-repetition status;
+- saktësinë, mastery, streak dhe kartelat për përsëritje.
+
+Dashboard-i native funksionon edhe pa Metabase. Për analytics të avancuar, Metabase integrohet si **Guest embed** me JWT të nënshkruar në server dhe parameter të kyçur `user_id`.
+
+Konfigurimi i plotë, SQL views, Docker stack dhe checklist-a e sigurisë:
+
+`docs/METABASE_PROGRESS_DASHBOARD.md`
+
+Environment variables të Next.js:
+
+```env
+METABASE_SITE_URL=https://analytics.example.com
+METABASE_PROGRESS_DASHBOARD_ID=123
+METABASE_EMBED_SECRET=server-only-secret
+```
+
+Mos e ekspozo `METABASE_EMBED_SECRET` me prefiks `NEXT_PUBLIC_`.

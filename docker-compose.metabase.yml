@@ -1,0 +1,43 @@
+name: school-progress-metabase
+
+services:
+  metabase-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metabase
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: ${METABASE_APP_DB_PASSWORD:?Set METABASE_APP_DB_PASSWORD}
+    volumes:
+      - metabase_app_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metabase -d metabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  metabase:
+    image: ${METABASE_IMAGE:-metabase/metabase:v0.63.15.x}
+    restart: unless-stopped
+    depends_on:
+      metabase-db:
+        condition: service_healthy
+    ports:
+      - "${METABASE_PORT:-3001}:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${METABASE_APP_DB_PASSWORD:?Set METABASE_APP_DB_PASSWORD}
+      MB_DB_HOST: metabase-db
+      MB_SITE_URL: ${METABASE_SITE_URL:-http://localhost:3001}
+      JAVA_TIMEZONE: Europe/Belgrade
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  metabase_app_db:

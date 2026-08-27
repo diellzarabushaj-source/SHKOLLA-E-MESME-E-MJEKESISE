@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   fetchProgressDashboard,
   type ActivitySessionRow,
@@ -11,13 +10,8 @@ import {
   type ReviewEventRow,
   type StudySessionRow,
 } from "@/lib/progress/client";
+import MetabaseProgressAnalytics from "./MetabaseProgressAnalytics";
 import styles from "./progress.module.css";
-import performanceStyles from "./performance.module.css";
-
-const MetabaseLearningDashboard = dynamic(
-  () => import("./MetabaseLearningDashboard"),
-  { ssr: false },
-);
 
 type DashboardData = {
   progress: CardProgressRow[];
@@ -27,13 +21,34 @@ type DashboardData = {
   activity: ActivitySessionRow[];
 };
 
-type DailyActivity = {
+export type ProgressContentLabels = {
+  grades: Record<string, string>;
+  subjects: Record<string, string>;
+  chapters: Record<string, string>;
+  lessons: Record<string, string>;
+};
+
+type MetabaseConfig = {
+  siteUrl: string | null;
+  dashboardId: string | null;
+};
+
+type DailyPoint = {
   key: string;
   label: string;
   fullLabel: string;
-  count: number;
+  reviews: number;
   successful: number;
-  height: number;
+};
+
+type SubjectSummary = {
+  id: string;
+  title: string;
+  reviewedCards: number;
+  mastered: number;
+  due: number;
+  sessions: number;
+  accuracy: number;
 };
 
 const ratingLabels = {
@@ -48,7 +63,6 @@ function formatDate(value: string | null): string {
   return new Intl.DateTimeFormat("sq-AL", {
     day: "2-digit",
     month: "short",
-    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
@@ -79,57 +93,130 @@ function dateKey(value: Date): string {
   return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
 }
 
-function weeklyPerformance(data: DashboardData | null) {
+function shortId(value: string): string {
+  return value.length > 22 ? `${value.slice(0, 19)}…` : value;
+}
+
+function labelFor(
+  labels: Record<string, string>,
+  id: string,
+): string {
+  return labels[id] || shortId(id);
+}
+
+function buildDailySeries(reviews: ReviewEventRow[], days = 14): DailyPoint[] {
   const today = startOfDay(new Date());
-  const start = addDays(today, -6);
-  const end = addDays(today, 1);
-  const days: DailyActivity[] = Array.from({ length: 7 }, (_, index) => {
-    const date = addDays(start, index);
+  const firstDay = addDays(today, -(days - 1));
+  const points: DailyPoint[] = Array.from({ length: days }, (_, index) => {
+    const date = addDays(firstDay, index);
     return {
       key: dateKey(date),
-      label: new Intl.DateTimeFormat("sq-AL", { weekday: "short" }).format(date).replace(".", ""),
-      fullLabel: new Intl.DateTimeFormat("sq-AL", { weekday: "long", day: "2-digit", month: "short" }).format(date),
-      count: 0,
+      label: new Intl.DateTimeFormat("sq-AL", {
+        weekday: "short",
+      }).format(date).replace(".", ""),
+      fullLabel: new Intl.DateTimeFormat("sq-AL", {
+        day: "2-digit",
+        month: "short",
+      }).format(date),
+      reviews: 0,
       successful: 0,
-      height: 4,
     };
   });
 
-  if (!data) return { days, reviewed: 0, accuracy: 0, sessions: 0 };
-  const byDate = new Map(days.map((day) => [day.key, day]));
-  for (const review of data.reviews) {
-    const reviewedAt = new Date(review.reviewed_at);
-    if (reviewedAt < start || reviewedAt >= end) continue;
-    const day = byDate.get(dateKey(reviewedAt));
-    if (!day) continue;
-    day.count += 1;
-    if (review.rating === "good" || review.rating === "easy") day.successful += 1;
+  const byDay = new Map(points.map((point) => [point.key, point]));
+  for (const review of reviews) {
+    const point = byDay.get(dateKey(new Date(review.reviewed_at)));
+    if (!point) continue;
+    point.reviews += 1;
+    if (review.rating === "good" || review.rating === "easy") {
+      point.successful += 1;
+    }
   }
+  return points;
+}
 
-  const reviewed = days.reduce((sum, day) => sum + day.count, 0);
-  const successful = days.reduce((sum, day) => sum + day.successful, 0);
-  const max = Math.max(1, ...days.map((day) => day.count));
-  for (const day of days) day.height = day.count ? Math.max(18, Math.round((day.count / max) * 100)) : 4;
+function currentStreak(data: DashboardData): number {
+  const activeDays = new Set<string>();
+  data.reviews.forEach((row) => activeDays.add(dateKey(new Date(row.reviewed_at))));
+  data.sessions.forEach((row) => activeDays.add(dateKey(new Date(row.started_at))));
+  data.activity
+    .filter((row) => Number(row.active_seconds || 0) > 0)
+    .forEach((row) => activeDays.add(dateKey(new Date(row.started_at))));
 
+  if (!activeDays.size) return 0;
+  const today = startOfDay(new Date());
+  const yesterday = addDays(today, -1);
+  let cursor = activeDays.has(dateKey(today))
+    ? today
+    : activeDays.has(dateKey(yesterday))
+      ? yesterday
+      : null;
+
+  if (!cursor) return 0;
+  let streak = 0;
+  while (activeDays.has(dateKey(cursor))) {
+    streak += 1;
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
+}
+
+function subjectSummaries(
+  data: DashboardData,
+  labels: ProgressContentLabels,
+): SubjectSummary[] {
+  const subjectIds = new Set<string>([
+    ...data.progress.map((row) => row.subject_id),
+    ...data.sessions.map((row) => row.subject_id),
+  ]);
+
+  return Array.from(subjectIds).map((subjectId) => {
+    const cards = data.progress.filter((row) => row.subject_id === subjectId);
+    const sessions = data.sessions.filter((row) => row.subject_id === subjectId);
+    const reviews = data.reviews.filter((review) => {
+      const card = data.progress.find((row) => row.flashcard_id === review.flashcard_id);
+      return card?.subject_id === subjectId;
+    });
+    const successful = reviews.filter(
+      (row) => row.rating === "good" || row.rating === "easy",
+    ).length;
+
+    return {
+      id: subjectId,
+      title: labelFor(labels.subjects, subjectId),
+      reviewedCards: cards.length,
+      mastered: cards.filter((row) => row.status === "mastered").length,
+      due: cards.filter((row) => new Date(row.due_at).getTime() <= Date.now()).length,
+      sessions: sessions.filter((row) => row.completed_at).length,
+      accuracy: reviews.length ? Math.round((successful / reviews.length) * 100) : 0,
+    };
+  }).sort((a, b) => {
+    if (b.reviewedCards !== a.reviewedCards) return b.reviewedCards - a.reviewedCards;
+    return a.title.localeCompare(b.title, "sq");
+  });
+}
+
+function trendLabel(current: number, previous: number): {
+  text: string;
+  positive: boolean;
+} {
+  if (!previous && !current) return { text: "Pa aktivitet", positive: true };
+  if (!previous) return { text: "+100% vs java e kaluar", positive: true };
+  const delta = Math.round(((current - previous) / previous) * 100);
   return {
-    days,
-    reviewed,
-    accuracy: reviewed ? Math.round((successful / reviewed) * 100) : 0,
-    sessions: data.sessions.filter((session) => session.completed_at && new Date(session.completed_at) >= start).length,
+    text: `${delta >= 0 ? "+" : ""}${delta}% vs java e kaluar`,
+    positive: delta >= 0,
   };
 }
 
-type MetabaseDashboardConfig = {
-  instanceUrl: string;
-  dashboardId: number;
-};
-
 export default function ProgressDashboard({
   username,
+  labels,
   metabase,
 }: {
   username: string;
-  metabase: MetabaseDashboardConfig | null;
+  labels: ProgressContentLabels;
+  metabase: MetabaseConfig;
 }) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -148,12 +235,28 @@ export default function ProgressDashboard({
     }
   }
 
-  useEffect(() => { void loadDashboard(); }, []);
+  useEffect(() => {
+    void loadDashboard();
+  }, []);
 
-  const performance = useMemo(() => weeklyPerformance(data), [data]);
+  const daily = useMemo(
+    () => buildDailySeries(data?.reviews || []),
+    [data?.reviews],
+  );
+  const subjects = useMemo(
+    () => data ? subjectSummaries(data, labels) : [],
+    [data, labels],
+  );
 
   if (loading) {
-    return <main className={styles.page}><div className={styles.loadingCard}><span className={styles.loader} />Duke ngarkuar progresin privat...</div></main>;
+    return (
+      <main className={styles.page}>
+        <div className={styles.loadingCard}>
+          <span className={styles.loader} />
+          Duke përgatitur dashboard-in tënd…
+        </div>
+      </main>
+    );
   }
 
   if (error || !data) {
@@ -163,94 +266,337 @@ export default function ProgressDashboard({
           <span className={styles.eyebrow}>Gabim</span>
           <h1>Progresi nuk u ngarkua</h1>
           <p>{error}</p>
-          <button className={styles.primaryButton} onClick={() => void loadDashboard()}>Provo përsëri</button>
+          <button className={styles.primaryButton} onClick={() => void loadDashboard()}>
+            Provo përsëri
+          </button>
         </section>
       </main>
     );
   }
 
-  const completedSessions = data.sessions.filter((session) => session.completed_at);
-  const totalReviewed = data.progress.length;
-  const learned = data.progress.filter((row) => row.last_rating === "good" || row.last_rating === "easy").length;
+  const successfulReviews = data.reviews.filter(
+    (row) => row.rating === "good" || row.rating === "easy",
+  ).length;
+  const accuracy = data.reviews.length
+    ? Math.round((successfulReviews / data.reviews.length) * 100)
+    : 0;
   const mastered = data.progress.filter((row) => row.status === "mastered").length;
-  const due = data.progress.filter((row) => new Date(row.due_at).getTime() <= Date.now()).length;
-  const lessonsRead = data.lessons.filter((lesson) => Boolean(lesson.completed_at)).length;
-  const lessonsOpened = data.lessons.length;
-  const activeSeconds = data.activity.reduce((sum, item) => sum + Number(item.active_seconds || 0), 0);
-  const lessonSeconds = data.lessons.reduce((sum, item) => sum + Number(item.active_seconds || 0), 0);
-  const recentSessions = data.sessions.slice(0, 8);
-  const recentReviews = data.reviews.slice(0, 8);
+  const masteryRate = data.progress.length
+    ? Math.round((mastered / data.progress.length) * 100)
+    : 0;
+  const due = data.progress.filter(
+    (row) => new Date(row.due_at).getTime() <= Date.now(),
+  ).length;
+  const activeSeconds = data.activity.reduce(
+    (sum, row) => sum + Number(row.active_seconds || 0),
+    0,
+  );
+  const lessonSeconds = data.lessons.reduce(
+    (sum, row) => sum + Number(row.active_seconds || 0),
+    0,
+  );
+  const lessonsCompleted = data.lessons.filter((row) => row.completed_at).length;
+  const streak = currentStreak(data);
+  const lastSevenReviews = daily.slice(-7).reduce((sum, point) => sum + point.reviews, 0);
+  const previousSevenReviews = daily.slice(0, 7).reduce((sum, point) => sum + point.reviews, 0);
+  const velocityTrend = trendLabel(lastSevenReviews, previousSevenReviews);
+  const maxDailyReviews = Math.max(1, ...daily.map((point) => point.reviews));
+  const ratingCounts = {
+    again: data.reviews.filter((row) => row.rating === "again").length,
+    hard: data.reviews.filter((row) => row.rating === "hard").length,
+    good: data.reviews.filter((row) => row.rating === "good").length,
+    easy: data.reviews.filter((row) => row.rating === "easy").length,
+  };
+  const recentSessions = data.sessions.slice(0, 6);
+  const recentReviews = data.reviews.slice(0, 6);
+  const totalCompletedSessions = data.sessions.filter((row) => row.completed_at).length;
+  const heroProgress = Math.min(
+    100,
+    Math.round((accuracy * 0.45) + (masteryRate * 0.35) + (Math.min(streak, 7) / 7 * 20)),
+  );
+
+  const timestampCandidates = [
+    data.reviews[0]?.reviewed_at,
+    data.sessions[0]?.started_at,
+    data.lessons[0]?.updated_at,
+  ].filter((value): value is string => typeof value === "string");
+  const latestActivity = timestampCandidates.sort().at(-1) || null;
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <div>
-          <span className={styles.eyebrow}>Progres privat</span>
-          <h1>Progresi i @{username}</h1>
-          <p>Koha llogaritet vetëm kur faqja është e dukshme dhe nxënësi është aktiv. Çdo rezultat izolohet sipas llogarisë.</p>
-          <div className={styles.actions}>
-            <Link className={styles.primaryButton} href="/">Vazhdo mësimin</Link>
-            <button className={styles.secondaryButton} onClick={() => void loadDashboard()}>Rifresko</button>
+      <div className={styles.shell}>
+        <section className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <div className={styles.heroTopline}>
+              <span className={styles.eyebrow}>Dashboard i progresit</span>
+              <span className={styles.liveBadge}><i /> Të dhëna reale</span>
+            </div>
+            <h1>Përshëndetje, {username}</h1>
+            <p>
+              Këtu e sheh ritmin e mësimit, kartelat që duhen përsëritur dhe
+              temat ku po përparon më shpejt.
+            </p>
+            <div className={styles.actions}>
+              <Link className={styles.primaryButton} href="/">Vazhdo mësimin</Link>
+              <button className={styles.secondaryButton} onClick={() => void loadDashboard()}>
+                Rifresko të dhënat
+              </button>
+            </div>
           </div>
-        </div>
-        <div className={styles.privacyBox}><span aria-hidden="true">🔒</span><div><strong>I izoluar sipas llogarisë</strong><small>Sesioni përcakton user-in</small></div></div>
-      </section>
 
-      {metabase ? (
-        <MetabaseLearningDashboard
-          instanceUrl={metabase.instanceUrl}
-          dashboardId={metabase.dashboardId}
-        />
-      ) : null}
-
-      <section className={performanceStyles.performanceCard} aria-labelledby="performance-title">
-        <span className={performanceStyles.glow} aria-hidden="true" />
-        <span className={performanceStyles.surface} aria-hidden="true" />
-        <div className={performanceStyles.content}>
-          <header className={performanceStyles.header}>
-            <div className={performanceStyles.titleGroup}><span className={performanceStyles.icon} aria-hidden="true">↗</span><div><span>Analiza javore</span><h2 id="performance-title">Performanca e mësimit</h2></div></div>
-            <span className={performanceStyles.liveBadge}><i aria-hidden="true" /> Live</span>
-          </header>
-          <div className={performanceStyles.metricGrid}>
-            <article className={performanceStyles.metricCard}><span>Kartela këtë javë</span><strong>{performance.reviewed}</strong><small>{performance.sessions} sesione</small></article>
-            <article className={performanceStyles.metricCard}><span>Saktësi Mirë / Lehtë</span><strong>{performance.accuracy}%</strong><small>Të dhëna reale</small></article>
-          </div>
-          <div className={performanceStyles.chart} aria-label="Vlerësimet për shtatë ditët e fundit">
-            {performance.days.map((day) => (
-              <div className={performanceStyles.chartColumn} key={day.key}>
-                <span className={performanceStyles.barValue}>{day.count}</span>
-                <div className={performanceStyles.barTrack} role="img" aria-label={`${day.fullLabel}: ${day.count} kartela`}><span className={performanceStyles.barFill} style={{ height: `${day.height}%` }} /></div>
-                <span className={performanceStyles.dayLabel}>{day.label}</span>
+          <div className={styles.heroStatus}>
+            <div
+              className={styles.statusRing}
+              style={{ "--progress": `${heroProgress * 3.6}deg` } as CSSProperties}
+              aria-label={`Indeksi i progresit: ${heroProgress}%`}
+            >
+              <div>
+                <strong>{heroProgress}%</strong>
+                <span>ritëm</span>
               </div>
-            ))}
-          </div>
-          <footer className={performanceStyles.footer}><div className={performanceStyles.period}><span>7 ditët e fundit</span><small>{performance.sessions} sesione të përfunduara</small></div><a className={performanceStyles.detailsButton} href="#performance-details">Shiko detajet →</a></footer>
-        </div>
-      </section>
-
-      <section className={styles.statGrid} id="performance-details" aria-label="Përmbledhja e progresit">
-        <article><span>Koha aktive në aplikacion</span><strong>{formatDuration(activeSeconds)}</strong></article>
-        <article><span>Koha aktive në mësime</span><strong>{formatDuration(lessonSeconds)}</strong></article>
-        <article><span>Mësime të lexuara</span><strong>{lessonsRead}</strong><small>nga {lessonsOpened} të hapura</small></article>
-        <article><span>Flashcards të ditura</span><strong>{learned}</strong><small>{mastered} të zotëruara</small></article>
-        <article><span>Për përsëritje tani</span><strong>{due}</strong></article>
-        <article><span>Vlerësime gjithsej</span><strong>{data.reviews.length}</strong></article>
-      </section>
-
-      {!totalReviewed && !data.sessions.length && !data.lessons.length ? (
-        <section className={styles.emptyState}><span aria-hidden="true">📚</span><h2>Ende nuk ke progres të sinkronizuar</h2><p>Hape një mësim ose fillo flashcards. Progresi regjistrohet automatikisht.</p><Link className={styles.primaryButton} href="/">Fillo mësimin</Link></section>
-      ) : (
-        <section className={styles.twoColumns}>
-          <div className={styles.section}>
-            <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Historiku</span><h2>Sesionet e fundit</h2></div><span>{completedSessions.length} të përfunduara</span></div>
-            <div className={styles.list}>{recentSessions.map((session) => <article key={session.id}><div><strong>{session.lesson_id}</strong><span>{formatDate(session.started_at)}</span></div><div className={styles.pills}><i className={styles.again}>{session.again_count} përsëri</i><i className={styles.good}>{session.good_count} mirë</i><i className={styles.easy}>{session.easy_count} lehtë</i></div></article>)}</div>
-          </div>
-          <div className={styles.section}>
-            <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Aktiviteti</span><h2>Vlerësimet e fundit</h2></div></div>
-            <div className={styles.list}>{recentReviews.map((review) => <article key={review.id}><div><strong>{review.lesson_id}</strong><span>{formatDate(review.reviewed_at)}</span></div><i className={styles[review.rating]}>{ratingLabels[review.rating]}</i></article>)}</div>
+            </div>
+            <div className={styles.statusLabel}>
+              <span>Aktiviteti i fundit</span>
+              <strong>{formatDate(latestActivity)}</strong>
+            </div>
           </div>
         </section>
-      )}
+
+        <section className={styles.kpiGrid} aria-label="Treguesit kryesorë">
+          <article className={styles.kpiCard}>
+            <span>Saktësia</span>
+            <strong>{accuracy}%</strong>
+            <small>{successfulReviews} përgjigje Mirë / Lehtë</small>
+          </article>
+          <article className={styles.kpiCard}>
+            <span>Streak aktual</span>
+            <strong>{streak} <em>ditë</em></strong>
+            <small>{streak >= 7 ? "Ritëm shumë i mirë" : "Syno 7 ditë rresht"}</small>
+          </article>
+          <article className={styles.kpiCard}>
+            <span>Kartela këtë javë</span>
+            <strong>{lastSevenReviews}</strong>
+            <small className={velocityTrend.positive ? styles.positive : styles.negative}>
+              {velocityTrend.text}
+            </small>
+          </article>
+          <article className={`${styles.kpiCard} ${due > 0 ? styles.attentionCard : ""}`}>
+            <span>Për përsëritje tani</span>
+            <strong>{due}</strong>
+            <small>{due ? "Prioriteti yt i radhës" : "Asgjë e vonuar"}</small>
+          </article>
+          <article className={styles.kpiCard}>
+            <span>Mastery</span>
+            <strong>{masteryRate}%</strong>
+            <small>{mastered} nga {data.progress.length} kartela të ndjekura</small>
+          </article>
+          <article className={styles.kpiCard}>
+            <span>Koha aktive</span>
+            <strong>{formatDuration(activeSeconds)}</strong>
+            <small>{formatDuration(lessonSeconds)} brenda mësimeve</small>
+          </article>
+        </section>
+
+        {!data.progress.length && !data.sessions.length && !data.lessons.length ? (
+          <section className={styles.emptyState}>
+            <span className={styles.emptyMark}>↗</span>
+            <h2>Dashboard-i është gati</h2>
+            <p>
+              Hape një mësim ose fillo një test me flashcards. Aktiviteti do të
+              shfaqet automatikisht këtu.
+            </p>
+            <Link className={styles.primaryButton} href="/">Fillo mësimin</Link>
+          </section>
+        ) : (
+          <>
+            <section className={styles.analyticsGrid}>
+              <article className={styles.chartCard}>
+                <header className={styles.cardHeader}>
+                  <div>
+                    <span className={styles.eyebrow}>14 ditët e fundit</span>
+                    <h2>Ritmi i përsëritjeve</h2>
+                  </div>
+                  <div className={styles.headerMetric}>
+                    <strong>{lastSevenReviews}</strong>
+                    <span>këtë javë</span>
+                  </div>
+                </header>
+
+                <div className={styles.barChart} aria-label="Kartelat e vlerësuara për 14 ditë">
+                  {daily.map((point) => {
+                    const height = point.reviews
+                      ? Math.max(12, Math.round((point.reviews / maxDailyReviews) * 100))
+                      : 3;
+                    return (
+                      <div className={styles.barColumn} key={point.key}>
+                        <span className={styles.barValue}>{point.reviews || ""}</span>
+                        <div
+                          className={styles.barTrack}
+                          title={`${point.fullLabel}: ${point.reviews} kartela`}
+                        >
+                          <span
+                            className={styles.barFill}
+                            style={{ height: `${height}%` }}
+                          />
+                        </div>
+                        <span className={styles.barLabel}>{point.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className={styles.chartLegend}>
+                  <span><i className={styles.legendPrimary} /> Kartela të vlerësuara</span>
+                  <span>{data.reviews.length} vlerësime gjithsej</span>
+                </div>
+              </article>
+
+              <article className={styles.distributionCard}>
+                <header className={styles.cardHeader}>
+                  <div>
+                    <span className={styles.eyebrow}>Cilësia e kujtesës</span>
+                    <h2>Shpërndarja e përgjigjeve</h2>
+                  </div>
+                  <div className={styles.headerMetric}>
+                    <strong>{accuracy}%</strong>
+                    <span>saktësi</span>
+                  </div>
+                </header>
+
+                <div className={styles.ratingList}>
+                  {(Object.keys(ratingCounts) as Array<keyof typeof ratingCounts>).map((rating) => {
+                    const count = ratingCounts[rating];
+                    const percentage = data.reviews.length
+                      ? Math.round((count / data.reviews.length) * 100)
+                      : 0;
+                    return (
+                      <div className={styles.ratingRow} key={rating}>
+                        <div className={styles.ratingMeta}>
+                          <span className={styles[rating]}>{ratingLabels[rating]}</span>
+                          <strong>{count} <small>{percentage}%</small></strong>
+                        </div>
+                        <div className={styles.ratingTrack}>
+                          <span
+                            className={`${styles.ratingFill} ${styles[`${rating}Fill`]}`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+            </section>
+
+            <section className={styles.insightStrip} aria-label="Përmbledhja e aktivitetit">
+              <div><span>Mësime të përfunduara</span><strong>{lessonsCompleted}</strong></div>
+              <div><span>Sesione të përfunduara</span><strong>{totalCompletedSessions}</strong></div>
+              <div><span>Kartela të zotëruara</span><strong>{mastered}</strong></div>
+              <div><span>Lëndë me aktivitet</span><strong>{subjects.length}</strong></div>
+            </section>
+
+            <section className={styles.sectionCard}>
+              <div className={styles.sectionHeading}>
+                <div>
+                  <span className={styles.eyebrow}>Pamje sipas lëndës</span>
+                  <h2>Ku je më i fortë dhe ku duhet fokus</h2>
+                </div>
+                <span>{subjects.length} lëndë të ndjekura</span>
+              </div>
+
+              <div className={styles.subjectTable}>
+                <div className={styles.subjectHeader} aria-hidden="true">
+                  <span>Lënda</span>
+                  <span>Kartela</span>
+                  <span>Mastered</span>
+                  <span>Saktësia</span>
+                  <span>Për përsëritje</span>
+                </div>
+                {subjects.map((subject) => (
+                  <div className={styles.subjectRow} key={subject.id}>
+                    <div className={styles.subjectName}>
+                      <i className={styles.subjectDot} />
+                      <div>
+                        <strong>{subject.title}</strong>
+                        <small>{subject.sessions} sesione të përfunduara</small>
+                      </div>
+                    </div>
+                    <span data-label="Kartela">{subject.reviewedCards}</span>
+                    <span data-label="Mastered">{subject.mastered}</span>
+                    <span data-label="Saktësia">{subject.accuracy}%</span>
+                    <span
+                      data-label="Për përsëritje"
+                      className={subject.due ? styles.dueValue : undefined}
+                    >
+                      {subject.due}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.recentGrid}>
+              <article className={styles.sectionCard}>
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Historiku</span>
+                    <h2>Sesionet e fundit</h2>
+                  </div>
+                </div>
+                <div className={styles.activityList}>
+                  {recentSessions.map((session) => {
+                    const known = session.good_count + session.easy_count;
+                    const scored = session.again_count + session.hard_count + known;
+                    const score = scored ? Math.round((known / scored) * 100) : 0;
+                    return (
+                      <div className={styles.activityRow} key={session.id}>
+                        <span className={styles.activityIcon}>S</span>
+                        <div className={styles.activityMain}>
+                          <strong>{labelFor(labels.lessons, session.lesson_id)}</strong>
+                          <span>{formatDate(session.started_at)}</span>
+                        </div>
+                        <div className={styles.sessionScore}>
+                          <strong>{score}%</strong>
+                          <span>{session.total_cards} kartela</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {!recentSessions.length && <p className={styles.muted}>Ende nuk ka sesione.</p>}
+                </div>
+              </article>
+
+              <article className={styles.sectionCard}>
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Aktiviteti</span>
+                    <h2>Vlerësimet e fundit</h2>
+                  </div>
+                </div>
+                <div className={styles.activityList}>
+                  {recentReviews.map((review) => (
+                    <div className={styles.activityRow} key={review.id}>
+                      <span className={styles.activityIcon}>F</span>
+                      <div className={styles.activityMain}>
+                        <strong>{labelFor(labels.lessons, review.lesson_id)}</strong>
+                        <span>{formatDate(review.reviewed_at)}</span>
+                      </div>
+                      <span className={`${styles.ratingBadge} ${styles[review.rating]}`}>
+                        {ratingLabels[review.rating]}
+                      </span>
+                    </div>
+                  ))}
+                  {!recentReviews.length && <p className={styles.muted}>Ende nuk ka vlerësime.</p>}
+                </div>
+              </article>
+            </section>
+          </>
+        )}
+
+        <MetabaseProgressAnalytics
+          siteUrl={metabase.siteUrl}
+          dashboardId={metabase.dashboardId}
+        />
+      </div>
     </main>
   );
 }
