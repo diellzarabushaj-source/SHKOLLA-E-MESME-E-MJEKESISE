@@ -31,9 +31,6 @@ jobs:
       - name: Install Metabase SDK
         run: pnpm add @metabase/embedding-sdk-react@0.63.1 --save-exact
 
-      - name: Typecheck
-        run: pnpm exec tsc --noEmit
-
       - name: Commit package and lockfile
         run: |
           git config user.name "github-actions[bot]"
@@ -45,3 +42,6 @@ jobs:
             git commit -m "Install Metabase embedding SDK"
             git push origin HEAD:feat/metabase-dashboard
           fi
+
+      - name: Typecheck with repository lifecycle
+        run: pnpm typecheck
