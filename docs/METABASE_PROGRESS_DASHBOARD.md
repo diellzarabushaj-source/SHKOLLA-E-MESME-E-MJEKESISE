@@ -176,3 +176,11 @@ Kontrollo këto raste:
 ## Shënim për deployment
 
 Vercel hoston aplikacionin Next.js, por Metabase është service server-side me state dhe application database të vet. Prandaj Metabase duhet të hostohet veçmas (ose të përdoret Metabase Cloud), ndërsa `METABASE_SITE_URL` e lidh portalin me atë instance.
+
+
+## Production contract
+
+- `/progress` duhet të mbetet funksional edhe kur Metabase është offline ose i pakonfiguruar.
+- Metabase përdoret vetëm si shtresë analitike; aplikacioni vazhdon të jetë burimi i vetëm i shkrimit të progresit.
+- Çdo guest embed duhet të filtrohet me parameter-in e kyçur `user_id`, i nënshkruar nga sesioni i serverit.
+- Production deploy duhet të konsiderohet i vlefshëm vetëm pasi Vercel build të jetë READY.
