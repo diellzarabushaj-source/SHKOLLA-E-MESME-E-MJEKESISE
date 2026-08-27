@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@metabase/embedding-sdk-react':
+        specifier: 0.63.1
+        version: 0.63.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@neondatabase/auth':
         specifier: 0.4.2-beta
         version: 0.4.2-beta(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.4.3))(jose@6.1.2)(kysely@0.28.17)(nanostores@1.4.0))(@better-auth/utils@0.3.0)(@daveyplate/better-auth-tanstack@1.3.6(@tanstack/query-core@5.101.2)(@tanstack/react-query@5.101.2(react@19.2.7))(better-auth@1.4.18(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@instantdb/react@1.0.49(react@19.2.7))(@tanstack/react-query@5.101.2(react@19.2.7))(@triplit/client@1.0.50(typescript@5.9.3)(uuidv7@0.4.4))(@triplit/react@1.0.51(react@19.2.7)(typescript@5.9.3)(uuidv7@0.4.4))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(better-call@1.1.8(zod@4.4.3))(nanostores@1.4.0)(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1546,6 +1549,13 @@ packages:
     peerDependenciesMeta:
       markdown-it:
         optional: true
+
+  '@metabase/embedding-sdk-react@0.63.1':
+    resolution: {integrity: sha512-Hl4aVlOL0SRFXljHiZKUeXaOeEGP07izbayebVBCqsdTkLR4mfx+vn7As5AW9QlQCbZhlYZvf1kV81V1RsH6FQ==}
+    hasBin: true
+    peerDependencies:
+      react: '>=18 <=19'
+      react-dom: '>=18 <=19'
 
   '@module-federation/dts-plugin@2.7.0':
     resolution: {integrity: sha512-mVKeGUf/7iqRMAFfikhsr2zXtA70WuzJdS1bPqqoeLQNRGXBLDjedcDG26RpIlsvuZcmIOqgN5Z6qw7Bh/HZUg==}
@@ -3559,6 +3569,7 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+    deprecated: v4 is no longer maintained, upgrade to v5
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -7340,6 +7351,11 @@ snapshots:
       '@types/markdown-it': 14.1.2
     optionalDependencies:
       markdown-it: 14.3.0
+
+  '@metabase/embedding-sdk-react@0.63.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   '@module-federation/dts-plugin@2.7.0(typescript@5.9.3)':
     dependencies:
