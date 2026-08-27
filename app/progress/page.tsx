@@ -25,5 +25,11 @@ export default async function ProgressPage() {
     );
   }
 
-  return <ProgressDashboard username={username} />;
+  const instanceUrl = process.env.METABASE_INSTANCE_URL?.trim() || "";
+  const dashboardId = Number.parseInt(process.env.METABASE_DASHBOARD_ID || "", 10);
+  const metabase = instanceUrl && Number.isInteger(dashboardId) && dashboardId > 0
+    ? { instanceUrl, dashboardId }
+    : null;
+
+  return <ProgressDashboard username={username} metabase={metabase} />;
 }
