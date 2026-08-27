@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   fetchProgressDashboard,
   type ActivitySessionRow,
@@ -12,6 +13,11 @@ import {
 } from "@/lib/progress/client";
 import styles from "./progress.module.css";
 import performanceStyles from "./performance.module.css";
+
+const MetabaseLearningDashboard = dynamic(
+  () => import("./MetabaseLearningDashboard"),
+  { ssr: false },
+);
 
 type DashboardData = {
   progress: CardProgressRow[];
@@ -113,7 +119,18 @@ function weeklyPerformance(data: DashboardData | null) {
   };
 }
 
-export default function ProgressDashboard({ username }: { username: string }) {
+type MetabaseDashboardConfig = {
+  instanceUrl: string;
+  dashboardId: number;
+};
+
+export default function ProgressDashboard({
+  username,
+  metabase,
+}: {
+  username: string;
+  metabase: MetabaseDashboardConfig | null;
+}) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -178,6 +195,13 @@ export default function ProgressDashboard({ username }: { username: string }) {
         </div>
         <div className={styles.privacyBox}><span aria-hidden="true">🔒</span><div><strong>I izoluar sipas llogarisë</strong><small>Sesioni përcakton user-in</small></div></div>
       </section>
+
+      {metabase ? (
+        <MetabaseLearningDashboard
+          instanceUrl={metabase.instanceUrl}
+          dashboardId={metabase.dashboardId}
+        />
+      ) : null}
 
       <section className={performanceStyles.performanceCard} aria-labelledby="performance-title">
         <span className={performanceStyles.glow} aria-hidden="true" />
