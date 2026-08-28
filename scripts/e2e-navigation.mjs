@@ -184,7 +184,7 @@ async function waitForPortal(page) {
 
 async function expectHome(page, label) {
   await waitForPortal(page);
-  await page.locator("section.hero").waitFor({ state: "visible", timeout: 15_000 });
+  await page.locator("#main-content section.hero").waitFor({ state: "visible", timeout: 15_000 });
   const url = new URL(page.url());
   assert(url.pathname === "/", `${label}: expected homepage pathname, got ${url.pathname}`);
   assert(!url.search, `${label}: homepage still contains a learning-flow query: ${url.search}`);
