@@ -134,3 +134,74 @@
 @media (prefers-reduced-motion: reduce) {
   .logout { transition: none; }
 }
+
+/* Header account controls refinement v2. */
+
+.link,
+.logout,
+.user {
+  min-height: 44px;
+  border-radius: 11px;
+  font-weight: 760;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+}
+
+.link {
+  padding-inline: 13px;
+}
+
+.primary {
+  box-shadow: 0 9px 22px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.user {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+}
+
+.logout:focus-visible,
+.link:focus-visible,
+.user:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 42%, transparent);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover,
+  .logout:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary) 24%, var(--line));
+  }
+
+  .primary:hover {
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+}
+
+@media (max-width: 760px) {
+  .controls {
+    gap: 5px;
+  }
+
+  .link,
+  .logout,
+  .user {
+    min-height: 44px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .logout {
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 390px) {
+  .logout {
+    min-width: 44px;
+  }
+}
