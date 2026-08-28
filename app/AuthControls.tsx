@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Space, Tag } from "antd";
+import { Button, Tag } from "antd";
 import { type FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { signOutAction } from "./auth/actions";
@@ -38,19 +38,19 @@ export default function AuthControls({ username: initialUsername }: { username: 
 
   if (!username) {
     return (
-      <Space className={styles.controls} size={8} aria-label="Llogaria">
+      <div className={styles.controls} aria-label="Llogaria">
         <Button className={styles.link} type="text" href="/auth/sign-in">Kyçu</Button>
         <Button className={`${styles.link} ${styles.primary} ${styles.register}`} type="primary" href="/auth/sign-up">
           Regjistrohu
         </Button>
-      </Space>
+      </div>
     );
   }
 
   const label = username.startsWith("@") ? username : `@${username}`;
 
   return (
-    <Space className={`${styles.controls} ${styles.account}`} size={8} aria-label="Llogaria e kyçur">
+    <div className={`${styles.controls} ${styles.account}`} aria-label="Llogaria e kyçur">
       <Tag className={styles.user} color="processing" title={username}>
         <span className={styles.dot} aria-hidden="true" />
         {label}
@@ -70,6 +70,6 @@ export default function AuthControls({ username: initialUsername }: { username: 
         </Button>
         {signOutError && <span className={styles.logoutError} role="alert">{signOutError}</span>}
       </form>
-    </Space>
+    </div>
   );
 }
