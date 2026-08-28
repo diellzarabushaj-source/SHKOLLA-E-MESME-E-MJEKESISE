@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth/server";
 import { isCurrentUserAdmin } from "@/lib/admin/server";
 import { fetchPortalGrades, type PortalGrades } from "@/lib/sanity/portal";
+import { metabaseServerConfig } from "@/lib/metabase/server";
 import ProgressDashboard, { type ProgressContentLabels } from "./ProgressDashboard";
 import styles from "./progress.module.css";
 
@@ -64,23 +65,6 @@ function buildContentLabels(grades: PortalGrades | null): ProgressContentLabels 
   return labels;
 }
 
-function normalizedMetabaseUrl(value: string | undefined): string | null {
-  if (!value?.trim()) return null;
-
-  try {
-    const parsed = new URL(value.trim());
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
-    return parsed.toString().replace(/\/$/, "");
-  } catch {
-    return null;
-  }
-}
-
-function normalizedDashboardId(value: string | undefined): string | null {
-  const candidate = value?.trim() || "";
-  return /^\d+$/.test(candidate) && Number(candidate) > 0 ? candidate : null;
-}
-
 export default async function ProgressPage() {
   const [{ data: session }, grades] = await Promise.all([
     auth.getSession(),
@@ -109,21 +93,11 @@ export default async function ProgressPage() {
     );
   }
 
-  const metabaseSiteUrl = normalizedMetabaseUrl(
-    process.env.METABASE_SITE_URL || process.env.METABASE_INSTANCE_URL,
-  );
-  const metabaseDashboardId = normalizedDashboardId(
-    process.env.METABASE_PROGRESS_DASHBOARD_ID || process.env.METABASE_DASHBOARD_ID,
-  );
-  const metabaseEnabled = Boolean(
-    metabaseSiteUrl
-    && metabaseDashboardId
-    && process.env.METABASE_EMBED_SECRET?.trim(),
-  );
+  const metabaseConfig = metabaseServerConfig();
   const metabase = {
-    enabled: metabaseEnabled,
-    siteUrl: metabaseSiteUrl,
-    dashboardId: metabaseDashboardId,
+    enabled: metabaseConfig.enabled,
+    siteUrl: metabaseConfig.siteUrl,
+    dashboardId: metabaseConfig.dashboardIdText,
   };
 
   return (

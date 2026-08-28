@@ -56,14 +56,18 @@ Ato përfshijnë:
 
 Metabase duhet të lidhet me Neon përmes një roli read-only, jo me user-in e aplikacionit.
 
-```sql
-CREATE ROLE metabase_analytics LOGIN PASSWORD 'REPLACE_ME';
+Source file: `database/metabase-readonly-role.sql`.
 
-GRANT CONNECT ON DATABASE neondb TO metabase_analytics;
-GRANT USAGE ON SCHEMA analytics TO metabase_analytics;
-GRANT SELECT ON ALL TABLES IN SCHEMA analytics TO metabase_analytics;
-ALTER DEFAULT PRIVILEGES IN SCHEMA analytics
-  GRANT SELECT ON TABLES TO metabase_analytics;
+Production database e ka tashmë rolin `metabase_analytics` me:
+- `NOLOGIN` derisa të ekzistojë host-i Metabase;
+- `USAGE` vetëm në schema `analytics`;
+- `SELECT` në analytics views;
+- pa `INSERT` / `UPDATE` / `DELETE`.
+
+Kur host-i Metabase të jetë gati, krijo password-in në secret store të hostit dhe aktivizo login-in pa e futur secret-in në git:
+
+```sql
+ALTER ROLE metabase_analytics LOGIN PASSWORD 'SET_FROM_SECRET_STORE';
 ```
 
 ## Dashboard-i “Progresi im”

@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/server";
+import { metabaseServerConfig } from "@/lib/metabase/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -30,10 +31,11 @@ function signJwt(payload: Record<string, unknown>, secret: string): string {
 }
 
 export async function POST(request: Request) {
-  const secret = process.env.METABASE_EMBED_SECRET?.trim();
-  const configuredDashboardId = Number(process.env.METABASE_PROGRESS_DASHBOARD_ID);
+  const config = metabaseServerConfig();
+  const secret = config.embedSecret;
+  const configuredDashboardId = config.dashboardId;
 
-  if (!secret || !Number.isSafeInteger(configuredDashboardId) || configuredDashboardId <= 0) {
+  if (!secret || !configuredDashboardId) {
     return NextResponse.json(
       { error: "METABASE_NOT_CONFIGURED" },
       { status: 503, headers: noStoreHeaders },
