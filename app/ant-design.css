@@ -95,13 +95,108 @@
   border-color: var(--line);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .medical-portal-ant-app .ant-btn,
-  .medical-portal-ant-app :where(.hero-cta, .open-button, .refresh-button, .icon-button, .ghost-button, .reveal-button) {
-    transition: none;
+/* Final polish v4: tighter rhythm, clearer hierarchy, calmer surfaces. */
+.medical-portal-ant-app :where(
+  .subject-card,
+  .chapter-row,
+  .workflow-grid article,
+  .system-card,
+  [class*="gradeCard"],
+  [class*="lessonRow"],
+  [class*="deckCard"],
+  [class*="kpiCard"],
+  [class*="chartCard"],
+  [class*="sectionCard"]
+) {
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    background-color .18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .medical-portal-ant-app :where(
+    .subject-card,
+    .chapter-row,
+    [class*="gradeCard"],
+    [class*="lessonRow"],
+    [class*="deckCard"]
+  ):hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 26%, var(--line));
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--text) 3%, transparent),
+      0 16px 38px color-mix(in srgb, var(--text) 6%, transparent);
   }
 }
 
+.medical-portal-ant-app :where(
+  .subject-card h3,
+  .chapter-row h3,
+  .workflow-grid h3,
+  [class*="gradeCard"] h3,
+  [class*="lessonRow"] h3,
+  [class*="deckCard"] h3
+) {
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+}
+
+.medical-portal-ant-app :where(
+  .subject-card p,
+  .chapter-row p,
+  .workflow-grid p,
+  [class*="gradeCard"] p,
+  [class*="lessonRow"] p,
+  [class*="deckCard"] p
+) {
+  line-height: 1.62;
+}
+
+.medical-portal-ant-app :where(
+  .ant-btn,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector,
+  .hero-cta,
+  .open-button,
+  .primary-action,
+  .secondary-action
+) {
+  min-height: 44px;
+}
+
+.medical-portal-ant-app :where(
+  .ant-btn,
+  .hero-cta,
+  .open-button,
+  .primary-action,
+  .secondary-action
+):active {
+  transform: translateY(1px);
+}
+
+.medical-portal-ant-app :where(
+  .ant-btn,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector
+):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 42%, transparent);
+  outline-offset: 2px;
+}
+
+.medical-portal-ant-app :where(
+  [class*="kpiCard"],
+  [class*="statusRing"],
+  [class*="focusMetrics"],
+  [class*="consistencyScore"],
+  [class*="planEstimate"]
+) strong {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.025em;
+}
 
 @media (max-width: 700px) {
   .medical-portal-ant-app {
@@ -109,5 +204,45 @@
     max-width: 100%;
     min-width: 0;
     overflow-x: clip;
+  }
+
+  .medical-portal-ant-app :where(
+    .subject-card,
+    .chapter-row,
+    [class*="gradeCard"],
+    [class*="lessonRow"],
+    [class*="deckCard"]
+  ) {
+    transform: none;
+  }
+
+  .medical-portal-ant-app :where(
+    .subject-card p,
+    .chapter-row p,
+    .workflow-grid p,
+    [class*="gradeCard"] p,
+    [class*="lessonRow"] p
+  ) {
+    line-height: 1.58;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .medical-portal-ant-app .ant-btn,
+  .medical-portal-ant-app :where(
+    .hero-cta,
+    .open-button,
+    .refresh-button,
+    .icon-button,
+    .ghost-button,
+    .reveal-button,
+    .subject-card,
+    .chapter-row,
+    [class*="gradeCard"],
+    [class*="lessonRow"],
+    [class*="deckCard"]
+  ) {
+    transition: none;
+    transform: none;
   }
 }
