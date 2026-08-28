@@ -21,7 +21,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(230px, 276px) minmax(0, 1fr);
+  grid-template-columns: minmax(248px, 292px) minmax(0, 1fr);
   gap: clamp(26px, 3vw, 48px);
   align-items: start;
 }
@@ -31,23 +31,23 @@
   top: 94px;
   min-height: min(760px, calc(100vh - 112px));
   max-height: calc(100vh - 112px);
-  padding: 25px 25px 20px 0;
+  padding: 28px 28px 22px 0;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--line);
 }
 
 .context {
-  padding: 0 10px 22px;
+  padding: 2px 12px 26px;
   border-bottom: 1px solid var(--line);
 }
 
 .context > span,
 .kicker {
   color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-size: 0.76rem;
+  font-weight: 720;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
 }
 
@@ -63,17 +63,18 @@
 .context p {
   margin: 0;
   color: color-mix(in srgb, var(--accent) 82%, var(--text));
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1.5;
+  font-size: 0.86rem;
+  font-weight: 680;
+  line-height: 1.48;
+  letter-spacing: -0.005em;
 }
 
 .outline {
   min-height: 0;
-  margin: 14px 0;
-  padding-right: 6px;
+  margin: 18px 0;
+  padding-right: 8px;
   display: grid;
-  gap: 3px;
+  gap: 6px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -89,21 +90,23 @@
 .mobileOutline nav button {
   width: 100%;
   min-width: 0;
-  padding: 10px 10px;
+  min-height: 48px;
+  padding: 11px 14px;
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 8px;
-  align-items: start;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
   border: 0;
-  border-left: 3px solid transparent;
-  border-radius: 0 10px 10px 0;
+  border-left: 2px solid transparent;
+  border-radius: 12px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   font: inherit;
-  font-size: 0.82rem;
-  font-weight: 680;
-  line-height: 1.42;
+  font-size: 0.92rem;
+  font-weight: 610;
+  line-height: 1.38;
+  letter-spacing: -0.01em;
   text-align: left;
   transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
 }
@@ -115,14 +118,25 @@
 .mobileOutline nav button:focus-visible,
 .mobileOutline nav .activeSection {
   border-left-color: var(--accent);
-  background: color-mix(in srgb, var(--primary) 12%, var(--panel));
+  background: color-mix(in srgb, var(--primary) 9%, var(--panel));
   color: var(--text);
   outline: none;
 }
 
 .sectionCode {
-  color: var(--accent);
-  font-weight: 820;
+  width: 9px;
+  height: 9px;
+  margin-left: 5px;
+  display: block;
+  align-self: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--accent);
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  opacity: 0.82;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
 .sidebarProgress {
@@ -331,12 +345,12 @@
 
 @media (max-width: 1080px) {
   .layout {
-    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-columns: 236px minmax(0, 1fr);
     gap: 28px;
   }
 
   .sidebar {
-    padding-right: 18px;
+    padding-right: 22px;
   }
 
   .hero {
@@ -363,8 +377,8 @@
     padding: 14px 2px;
     color: var(--text);
     cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 850;
+    font-size: 0.88rem;
+    font-weight: 720;
   }
 
   .mobileOutline nav {
