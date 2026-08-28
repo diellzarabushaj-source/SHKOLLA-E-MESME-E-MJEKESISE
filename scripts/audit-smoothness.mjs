@@ -121,7 +121,7 @@ requireText("Safe Portable Text rendering", richMarks, [
   'rel: "noreferrer noopener"',
 ]);
 requireText("Theme and logout isolation", themeToggle, ['type="button"', "localStorage.setItem"]);
-requireText("Logout action", authControls, ['type="submit"', "signOutAction"]);
+requireText("Logout action", authControls, ['htmlType="submit"', "signOutAction"]);
 requireText("Root UI mounting", layout, ['<ThemeToggle />', '<NavigationSafety />', 'import "./theme-hitbox-fix.css"']);
 requireText("Safe PWA registration", pwaRegistrar, [
   "const nextRegistration = await navigator.serviceWorker.register",
