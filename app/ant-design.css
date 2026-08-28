@@ -101,3 +101,13 @@
     transition: none;
   }
 }
+
+
+@media (max-width: 700px) {
+  .medical-portal-ant-app {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+}
