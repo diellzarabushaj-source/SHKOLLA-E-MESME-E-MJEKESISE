@@ -251,3 +251,161 @@ table td {
     transform: none;
   }
 }
+
+
+/* Precision pass v2 — preserve all existing theme tokens and content. */
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 28%, transparent);
+  color: var(--text);
+}
+
+.hero h1,
+.section-heading h2,
+.workflow-section h2,
+.subject-hero h1,
+.chapter-hero h1 {
+  font-weight: 820;
+  letter-spacing: -0.045em;
+}
+
+.hero p,
+.subject-card p,
+.chapter-row p,
+.workflow-grid p {
+  font-weight: 450;
+}
+
+.stats-strip {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text) 2%, transparent),
+    0 12px 30px color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.stats-strip strong {
+  font-weight: 790;
+  letter-spacing: -0.035em;
+}
+
+.stats-strip span {
+  font-weight: 560;
+}
+
+.section-heading h2,
+.workflow-section h2 {
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.subject-card {
+  min-height: 330px;
+}
+
+.subject-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text) 3%, transparent),
+    0 18px 42px color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.subject-top > span,
+.eyebrow,
+.card-kicker {
+  font-weight: 780;
+}
+
+.subject-meta {
+  font-weight: 520;
+}
+
+.subject-meta b {
+  font-weight: 720;
+}
+
+.search-box {
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.search-box:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 52%, var(--line));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+:where(
+  .hero-cta,
+  .open-button,
+  .refresh-button,
+  .icon-button,
+  .ghost-button,
+  .primary-button,
+  .secondary-button,
+  .reveal-button,
+  .rating-actions button,
+  .finish-actions button,
+  .primary-action,
+  .secondary-action
+):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 48%, transparent);
+  outline-offset: 3px;
+}
+
+:where(
+  .hero-cta,
+  .open-button,
+  .refresh-button,
+  .icon-button,
+  .ghost-button,
+  .primary-button,
+  .secondary-button,
+  .reveal-button,
+  .rating-actions button,
+  .finish-actions button,
+  .primary-action,
+  .secondary-action
+) {
+  min-height: 44px;
+}
+
+.medical-portal-ant-app .ant-btn {
+  min-height: 44px;
+}
+
+.medical-portal-ant-app :where(.ant-input, .ant-input-affix-wrapper) {
+  min-height: 44px;
+}
+
+.medical-portal-ant-app :where(.ant-input, .ant-input-affix-wrapper, .ant-select-selector) {
+  border-radius: var(--radius-control);
+}
+
+.medical-portal-ant-app :where(.ant-card, .ant-modal-content) {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text) 2%, transparent),
+    0 18px 44px color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+footer {
+  font-weight: 520;
+  letter-spacing: -0.006em;
+}
+
+@media (max-width: 720px) {
+  .hero h1 {
+    letter-spacing: -0.04em;
+  }
+
+  .section-heading h2,
+  .workflow-section h2,
+  .subject-hero h1,
+  .chapter-hero h1 {
+    letter-spacing: -0.035em;
+  }
+
+  .stats-strip strong {
+    font-size: clamp(24px, 8vw, 30px);
+  }
+
+  .subject-card:hover {
+    transform: none;
+  }
+}
