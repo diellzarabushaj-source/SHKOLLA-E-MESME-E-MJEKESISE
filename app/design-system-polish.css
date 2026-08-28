@@ -409,3 +409,377 @@ footer {
     transform: none;
   }
 }
+
+/* Final institutional polish v3 — SuperDesign source of truth, Stripe quality bar, Impeccable audit pass. */
+
+:root {
+  --ui-radius-control: 12px;
+  --ui-radius-compact: 16px;
+  --ui-radius-surface: 20px;
+  --ui-radius-feature: 24px;
+  --ui-shadow-quiet:
+    0 1px 0 color-mix(in srgb, var(--text) 2.5%, transparent),
+    0 10px 28px color-mix(in srgb, var(--text) 4%, transparent);
+  --ui-shadow-raised:
+    0 1px 0 color-mix(in srgb, var(--text) 3%, transparent),
+    0 18px 44px color-mix(in srgb, var(--text) 7%, transparent);
+  --ui-shell: 1440px;
+  --ui-reading-measure: 66ch;
+}
+
+/* Keep the product shell calm, dense and consistent. */
+.medical-portal-ant-app :where(
+  [class*="gradeSection"],
+  [class*="lessonPage"]
+) {
+  width: min(100%, var(--ui-shell));
+  margin-inline: auto;
+}
+
+.medical-portal-ant-app :where(
+  [class*="gradeCard"],
+  [class*="portalHero"],
+  [class*="lessonHero"],
+  [class*="lessonRow"],
+  [class*="modeChooser"],
+  [class*="deckCard"],
+  [class*="audioCard"],
+  [class*="lessonStudyBar"],
+  [class*="lessonNavButton"]
+) {
+  border-color: var(--line);
+  box-shadow: var(--ui-shadow-quiet);
+}
+
+.medical-portal-ant-app :where(
+  [class*="gradeCard"],
+  [class*="deckCard"],
+  [class*="lessonRow"]
+) {
+  border-radius: var(--ui-radius-surface);
+}
+
+.medical-portal-ant-app :where(
+  [class*="portalHero"],
+  [class*="lessonHero"]
+) {
+  border-radius: var(--ui-radius-feature);
+}
+
+.medical-portal-ant-app :where(
+  [class*="gradeOpen"],
+  [class*="lessonOpen"],
+  [class*="primaryAction"],
+  [class*="secondaryAction"],
+  [class*="startStudy"],
+  [class*="chapterTestButton"],
+  [class*="subjectOpen"],
+  [class*="openButton"]
+) {
+  min-height: 44px;
+  border-radius: var(--ui-radius-control);
+  font-weight: 760;
+  letter-spacing: -0.01em;
+}
+
+/* Information hierarchy: compact metadata, strong values, readable content. */
+.medical-portal-ant-app :where(
+  [class*="sectionHeading"] h2,
+  [class*="portalHero"] h1,
+  [class*="lessonHero"] h1,
+  [class*="gradeCard"] h3,
+  [class*="lessonCopy"] h3,
+  [class*="deckCard"] h3
+) {
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.medical-portal-ant-app :where(
+  [class*="sectionHeading"] p,
+  [class*="portalHero"] p,
+  [class*="lessonHero"] p,
+  [class*="gradeCard"] p,
+  [class*="lessonCopy"] p,
+  [class*="deckCard"] p
+) {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.medical-portal-ant-app :where(
+  [class*="gradeMeta"],
+  [class*="lessonCount"],
+  [class*="portalStats"] span,
+  [class*="modeLabel"],
+  [class*="audioCopy"] small
+) {
+  font-weight: 560;
+  letter-spacing: 0.01em;
+}
+
+.medical-portal-ant-app :where(
+  [class*="portalStats"] strong,
+  [class*="gradeMeta"] b,
+  [class*="resultScore"] strong
+) {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Prevent marketing-style oversizing inside the learning product. */
+.medical-portal-ant-app [class*="gradeCard"] {
+  min-height: 286px;
+  padding: clamp(22px, 2.2vw, 28px);
+}
+
+.medical-portal-ant-app [class*="gradeNumber"] {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  font-size: 23px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.medical-portal-ant-app [class*="gradeCard"] h3 {
+  margin-top: 24px;
+  font-size: clamp(25px, 2.2vw, 30px);
+}
+
+.medical-portal-ant-app [class*="portalHero"] {
+  gap: clamp(22px, 4vw, 46px);
+  padding: clamp(26px, 4vw, 46px);
+}
+
+.medical-portal-ant-app [class*="portalHero"] h1 {
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1;
+}
+
+.medical-portal-ant-app [class*="portalStats"] {
+  border-radius: var(--ui-radius-compact);
+  box-shadow: none;
+}
+
+.medical-portal-ant-app [class*="portalStats"] div {
+  padding: 18px 14px;
+}
+
+.medical-portal-ant-app [class*="portalStats"] strong {
+  font-size: clamp(23px, 2.5vw, 28px);
+  font-weight: 790;
+}
+
+.medical-portal-ant-app [class*="lessonRow"] {
+  padding: 18px 20px;
+}
+
+.medical-portal-ant-app [class*="lessonBody"] {
+  max-width: var(--ui-reading-measure);
+  font-size: clamp(16px, 1.15vw, 17px);
+  line-height: 1.78;
+}
+
+.medical-portal-ant-app [class*="lessonBody"] :where(p, li) {
+  max-width: var(--ui-reading-measure);
+}
+
+.medical-portal-ant-app [class*="lessonBody"] :where(h2, h3) {
+  text-wrap: balance;
+}
+
+.medical-portal-ant-app [class*="modeChooser"] {
+  padding: 12px 14px;
+  border-radius: var(--ui-radius-compact);
+}
+
+.medical-portal-ant-app [class*="deckCard"] {
+  padding: 20px;
+}
+
+/* Forms, buttons and interactive states share one predictable rhythm. */
+.medical-portal-ant-app :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"]
+):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  outline-offset: 3px;
+}
+
+.medical-portal-ant-app :where(button, [role="button"]):active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.medical-portal-ant-app :where(
+  [class*="gradeOpen"],
+  [class*="lessonOpen"],
+  [class*="primaryAction"],
+  [class*="secondaryAction"],
+  [class*="startStudy"]
+) {
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+/* Stripe-level restraint: quiet default surfaces, elevation only on intent. */
+@media (hover: hover) and (pointer: fine) {
+  .medical-portal-ant-app :where(
+    [class*="gradeCard"],
+    [class*="deckCard"],
+    [class*="lessonRow"],
+    [class*="lessonNavButton"]
+  ):hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 34%, var(--line));
+    box-shadow: var(--ui-shadow-raised);
+  }
+
+  .medical-portal-ant-app :where(
+    [class*="gradeOpen"],
+    [class*="primaryAction"],
+    [class*="startStudy"]
+  ):hover {
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+}
+
+/* Tablet: preserve useful density instead of collapsing too early. */
+@media (max-width: 1120px) and (min-width: 721px) {
+  .medical-portal-ant-app [class*="gradeGrid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .medical-portal-ant-app [class*="gradeCard"]:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .medical-portal-ant-app [class*="portalHero"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] div {
+    border-bottom: 0;
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] div:nth-child(2n) {
+    border-right: 1px solid var(--line);
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] div:last-child {
+    border-right: 0;
+  }
+}
+
+/* Mobile: one-hand navigation, no overflow, no tiny controls. */
+@media (max-width: 720px) {
+  .medical-portal-ant-app [class*="gradeSection"] {
+    padding-inline: 14px;
+    padding-block: 48px 68px;
+  }
+
+  .medical-portal-ant-app [class*="gradeGrid"] {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .medical-portal-ant-app [class*="gradeCard"] {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .medical-portal-ant-app [class*="gradeNumber"] {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    font-size: 21px;
+  }
+
+  .medical-portal-ant-app [class*="gradeCard"] h3 {
+    margin-top: 20px;
+  }
+
+  .medical-portal-ant-app [class*="portalHero"],
+  .medical-portal-ant-app [class*="lessonHero"] {
+    padding: 20px 18px;
+    border-radius: 20px;
+  }
+
+  .medical-portal-ant-app [class*="portalHero"] h1,
+  .medical-portal-ant-app [class*="lessonHero"] h1 {
+    font-size: clamp(34px, 10vw, 44px);
+    letter-spacing: -0.038em;
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .medical-portal-ant-app [class*="lessonRow"] {
+    padding: 15px;
+    border-radius: 16px;
+  }
+
+  .medical-portal-ant-app :where(
+    [class*="gradeOpen"],
+    [class*="lessonOpen"],
+    [class*="primaryAction"],
+    [class*="secondaryAction"],
+    [class*="startStudy"],
+    [class*="modeButtons"] button
+  ) {
+    min-height: 48px;
+  }
+
+  .medical-portal-ant-app [class*="lessonBody"] {
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px;
+    line-height: 1.72;
+  }
+}
+
+@media (max-width: 390px) {
+  .medical-portal-ant-app [class*="portalActions"] {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .medical-portal-ant-app :where(
+    [class*="primaryAction"],
+    [class*="secondaryAction"],
+    [class*="gradeOpen"],
+    [class*="lessonOpen"]
+  ) {
+    width: 100%;
+  }
+
+  .medical-portal-ant-app [class*="portalStats"] div {
+    min-width: 0;
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .medical-portal-ant-app *,
+  .medical-portal-ant-app *::before,
+  .medical-portal-ant-app *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
