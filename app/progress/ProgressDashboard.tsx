@@ -165,32 +165,64 @@ function subjectSummaries(
   data: DashboardData,
   labels: ProgressContentLabels,
 ): SubjectSummary[] {
-  const subjectIds = new Set<string>([
-    ...data.progress.map((row) => row.subject_id),
-    ...data.sessions.map((row) => row.subject_id),
-  ]);
+  const now = Date.now();
+  const cardsById = new Map(data.progress.map((row) => [row.flashcard_id, row]));
+  const stats = new Map<string, {
+    reviewedCards: number;
+    mastered: number;
+    due: number;
+    sessions: number;
+    reviews: number;
+    successful: number;
+  }>();
 
-  return Array.from(subjectIds).map((subjectId) => {
-    const cards = data.progress.filter((row) => row.subject_id === subjectId);
-    const sessions = data.sessions.filter((row) => row.subject_id === subjectId);
-    const reviews = data.reviews.filter((review) => {
-      const card = data.progress.find((row) => row.flashcard_id === review.flashcard_id);
-      return card?.subject_id === subjectId;
-    });
-    const successful = reviews.filter(
-      (row) => row.rating === "good" || row.rating === "easy",
-    ).length;
-
-    return {
-      id: subjectId,
-      title: labelFor(labels.subjects, subjectId),
-      reviewedCards: cards.length,
-      mastered: cards.filter((row) => row.status === "mastered").length,
-      due: cards.filter((row) => new Date(row.due_at).getTime() <= Date.now()).length,
-      sessions: sessions.filter((row) => row.completed_at).length,
-      accuracy: reviews.length ? Math.round((successful / reviews.length) * 100) : 0,
+  const ensure = (subjectId: string) => {
+    const existing = stats.get(subjectId);
+    if (existing) return existing;
+    const created = {
+      reviewedCards: 0,
+      mastered: 0,
+      due: 0,
+      sessions: 0,
+      reviews: 0,
+      successful: 0,
     };
-  }).sort((a, b) => {
+    stats.set(subjectId, created);
+    return created;
+  };
+
+  for (const card of data.progress) {
+    const subject = ensure(card.subject_id);
+    subject.reviewedCards += 1;
+    if (card.status === "mastered") subject.mastered += 1;
+    if (new Date(card.due_at).getTime() <= now) subject.due += 1;
+  }
+
+  for (const session of data.sessions) {
+    if (session.completed_at) ensure(session.subject_id).sessions += 1;
+  }
+
+  for (const review of data.reviews) {
+    const subjectId = cardsById.get(review.flashcard_id)?.subject_id;
+    if (!subjectId) continue;
+    const subject = ensure(subjectId);
+    subject.reviews += 1;
+    if (review.rating === "good" || review.rating === "easy") {
+      subject.successful += 1;
+    }
+  }
+
+  return Array.from(stats.entries()).map(([subjectId, subject]) => ({
+    id: subjectId,
+    title: labelFor(labels.subjects, subjectId),
+    reviewedCards: subject.reviewedCards,
+    mastered: subject.mastered,
+    due: subject.due,
+    sessions: subject.sessions,
+    accuracy: subject.reviews
+      ? Math.round((subject.successful / subject.reviews) * 100)
+      : 0,
+  })).sort((a, b) => {
     if (b.reviewedCards !== a.reviewedCards) return b.reviewedCards - a.reviewedCards;
     return a.title.localeCompare(b.title, "sq");
   });
@@ -207,6 +239,62 @@ function trendLabel(current: number, previous: number): {
     text: `${delta >= 0 ? "+" : ""}${delta}% vs java e kaluar`,
     positive: delta >= 0,
   };
+}
+
+function median(values: number[]): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildConsistencySeries(data: DashboardData, days = 28) {
+  const today = startOfDay(new Date());
+  const firstDay = addDays(today, -(days - 1));
+  const points = Array.from({ length: days }, (_, index) => {
+    const date = addDays(firstDay, index);
+    return {
+      key: dateKey(date),
+      fullLabel: new Intl.DateTimeFormat("sq-AL", {
+        day: "2-digit",
+        month: "short",
+      }).format(date),
+      reviews: 0,
+      sessions: 0,
+      activeSeconds: 0,
+      score: 0,
+    };
+  });
+  const byDay = new Map(points.map((point) => [point.key, point]));
+
+  for (const review of data.reviews) {
+    const point = byDay.get(dateKey(new Date(review.reviewed_at)));
+    if (point) point.reviews += 1;
+  }
+  for (const session of data.sessions) {
+    if (!session.completed_at) continue;
+    const point = byDay.get(dateKey(new Date(session.completed_at)));
+    if (point) point.sessions += 1;
+  }
+  for (const activity of data.activity) {
+    const point = byDay.get(dateKey(new Date(activity.started_at)));
+    if (point) point.activeSeconds += Number(activity.active_seconds || 0);
+  }
+
+  const scored = points.map((point) => ({
+    ...point,
+    score: point.reviews + (point.sessions * 3) + Math.floor(point.activeSeconds / 300),
+  }));
+  const maxScore = Math.max(1, ...scored.map((point) => point.score));
+
+  return scored.map((point) => ({
+    ...point,
+    level: point.score === 0
+      ? 0
+      : Math.max(1, Math.min(4, Math.ceil((point.score / maxScore) * 4))),
+  }));
 }
 
 // Keep the native dashboard as the fast, resilient layer; Metabase augments it below.
@@ -247,6 +335,10 @@ export default function ProgressDashboard({
   const subjects = useMemo(
     () => data ? subjectSummaries(data, labels) : [],
     [data, labels],
+  );
+  const consistency = useMemo(
+    () => data ? buildConsistencySeries(data) : [],
+    [data],
   );
 
   if (loading) {
@@ -322,6 +414,31 @@ export default function ProgressDashboard({
       const bPriority = (b.due * 1000) + (b.reviewedCards ? 100 - b.accuracy : 0);
       return bPriority - aPriority;
     })[0] || null;
+  const now = Date.now();
+  const dueSoon = data.progress.filter((row) => {
+    const dueAt = new Date(row.due_at).getTime();
+    return dueAt > now && dueAt <= now + 24 * 60 * 60 * 1000;
+  }).length;
+  const fragileCards = data.progress.filter(
+    (row) => row.lapses >= 2 || row.last_rating === "again" || row.last_rating === "hard",
+  ).length;
+  const responseTimes = data.reviews
+    .map((row) => Number(row.response_time_ms || 0))
+    .filter((value) => Number.isFinite(value) && value > 0 && value <= 180_000);
+  const secondsPerCard = Math.max(
+    12,
+    Math.min(75, Math.round((median(responseTimes) || 25_000) / 1000)),
+  );
+  const recommendedCards = due > 0
+    ? Math.min(40, due)
+    : Math.min(20, data.progress.filter((row) => row.status !== "mastered").length);
+  const estimatedMinutes = recommendedCards
+    ? Math.max(3, Math.ceil((recommendedCards * secondsPerCard) / 60))
+    : 0;
+  const activeDaysLastSeven = consistency
+    .slice(-7)
+    .filter((point) => point.score > 0).length;
+  const consistencyGoal = Math.min(100, Math.round((activeDaysLastSeven / 5) * 100));
 
   const timestampCandidates = [
     data.reviews[0]?.reviewed_at,
@@ -427,6 +544,102 @@ export default function ProgressDashboard({
             <Link className={styles.focusAction} href="/#klasat">
               Vazhdo me këtë fokus <span aria-hidden="true">→</span>
             </Link>
+          </section>
+        )}
+
+        {!!(data.progress.length || data.sessions.length || data.lessons.length) && (
+          <section className={styles.planGrid} aria-label="Plani dhe konsistenca e mësimit">
+            <article className={styles.studyPlanCard}>
+              <header className={styles.planHeader}>
+                <div>
+                  <span className={styles.eyebrow}>Plani i sotëm</span>
+                  <h2>Një sesion i fokusuar, pa humbur kohë</h2>
+                </div>
+                <div className={styles.planEstimate}>
+                  <strong>{estimatedMinutes || "—"}</strong>
+                  <span>{estimatedMinutes ? "min të parashikuara" : "pa detyra urgjente"}</span>
+                </div>
+              </header>
+
+              <div className={styles.planSteps}>
+                <div className={due > 0 ? styles.planStepPriority : styles.planStep}>
+                  <span className={styles.planStepIndex}>01</span>
+                  <div>
+                    <strong>{due > 0 ? `${Math.min(due, 40)} kartela për përsëritje` : "Rifreskim i lehtë"}</strong>
+                    <span>{due > 0 ? "Nis me kartelat që janë due tani." : "Nuk ke kartela të vonuara për momentin."}</span>
+                  </div>
+                </div>
+                <div className={styles.planStep}>
+                  <span className={styles.planStepIndex}>02</span>
+                  <div>
+                    <strong>{fragileCards} kartela të brishta</strong>
+                    <span>Përsërit ato me lapses ose vlerësime Përsëri / Vështirë.</span>
+                  </div>
+                </div>
+                <div className={styles.planStep}>
+                  <span className={styles.planStepIndex}>03</span>
+                  <div>
+                    <strong>{focusSubject?.title || "Vazhdo lëndën aktive"}</strong>
+                    <span>{dueSoon} kartela të tjera hyjnë në përsëritje brenda 24 orëve.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.planFooter}>
+                <div>
+                  <span>Objektivi i sesionit</span>
+                  <strong>{recommendedCards || 0} kartela</strong>
+                </div>
+                <div>
+                  <span>Ritmi yt median</span>
+                  <strong>~{secondsPerCard}s / kartelë</strong>
+                </div>
+                <Link className={styles.planAction} href="/#klasat">
+                  Fillo sesionin <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </article>
+
+            <article className={styles.consistencyCard}>
+              <header className={styles.consistencyHeader}>
+                <div>
+                  <span className={styles.eyebrow}>Konsistenca</span>
+                  <h2>28 ditët e fundit</h2>
+                </div>
+                <div className={styles.consistencyScore}>
+                  <strong>{activeDaysLastSeven}/7</strong>
+                  <span>ditë aktive</span>
+                </div>
+              </header>
+
+              <div className={styles.heatmap} aria-label="Aktiviteti i 28 ditëve të fundit">
+                {consistency.map((point) => (
+                  <span
+                    key={point.key}
+                    className={styles[`heatLevel${point.level}`]}
+                    title={`${point.fullLabel}: ${point.reviews} përsëritje, ${point.sessions} sesione, ${formatDuration(point.activeSeconds)} aktive`}
+                  />
+                ))}
+              </div>
+
+              <div className={styles.consistencyGoal}>
+                <div className={styles.goalCopy}>
+                  <span>Synimi javor</span>
+                  <strong>{activeDaysLastSeven >= 5 ? "Objektivi u arrit" : `${5 - activeDaysLastSeven} ditë aktive për objektivin`}</strong>
+                </div>
+                <div className={styles.goalTrack} aria-label={`Progresi i objektivit javor: ${consistencyGoal}%`}>
+                  <span style={{ width: `${consistencyGoal}%` }} />
+                </div>
+              </div>
+
+              <div className={styles.heatLegend}>
+                <span>Më pak</span>
+                {[0, 1, 2, 3, 4].map((level) => (
+                  <i key={level} className={styles[`heatLevel${level}`]} />
+                ))}
+                <span>Më shumë</span>
+              </div>
+            </article>
           </section>
         )}
 
