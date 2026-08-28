@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth/server";
+import { isCurrentUserAdmin } from "@/lib/admin/server";
 import { fetchPortalGrades, type PortalGrades } from "@/lib/sanity/portal";
 import ProgressDashboard, { type ProgressContentLabels } from "./ProgressDashboard";
 import styles from "./progress.module.css";
@@ -87,6 +88,7 @@ export default async function ProgressPage() {
   ]);
 
   const username = session?.user?.name || null;
+  const isAdmin = await isCurrentUserAdmin(session?.user || null);
 
   if (!session?.user || !username) {
     return (
@@ -107,14 +109,21 @@ export default async function ProgressPage() {
     );
   }
 
-  const metabaseEnabled = Boolean(process.env.METABASE_EMBED_SECRET?.trim());
+  const metabaseSiteUrl = normalizedMetabaseUrl(
+    process.env.METABASE_SITE_URL || process.env.METABASE_INSTANCE_URL,
+  );
+  const metabaseDashboardId = normalizedDashboardId(
+    process.env.METABASE_PROGRESS_DASHBOARD_ID || process.env.METABASE_DASHBOARD_ID,
+  );
+  const metabaseEnabled = Boolean(
+    metabaseSiteUrl
+    && metabaseDashboardId
+    && process.env.METABASE_EMBED_SECRET?.trim(),
+  );
   const metabase = {
-    siteUrl: metabaseEnabled
-      ? normalizedMetabaseUrl(process.env.METABASE_SITE_URL)
-      : null,
-    dashboardId: metabaseEnabled
-      ? normalizedDashboardId(process.env.METABASE_PROGRESS_DASHBOARD_ID)
-      : null,
+    enabled: metabaseEnabled,
+    siteUrl: metabaseSiteUrl,
+    dashboardId: metabaseDashboardId,
   };
 
   return (
@@ -122,6 +131,7 @@ export default async function ProgressPage() {
       username={username}
       labels={buildContentLabels(grades)}
       metabase={metabase}
+      isAdmin={isAdmin}
     />
   );
 }
