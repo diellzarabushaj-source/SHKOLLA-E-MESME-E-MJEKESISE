@@ -1511,3 +1511,278 @@
     min-height: 640px;
   }
 }
+
+/* Institutional dashboard refinement v2 — compact, theme-safe, decision-first. */
+
+.hero,
+.kpiCard,
+.focusCard,
+.studyPlanCard,
+.consistencyCard,
+.chartCard,
+.distributionCard,
+.sectionCard,
+.insightStrip,
+.metabaseSection,
+.loginCard,
+.loadingCard,
+.emptyState {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text) 2.5%, transparent),
+    0 14px 38px color-mix(in srgb, var(--text) 4.5%, transparent);
+}
+
+.hero {
+  min-height: 300px;
+  padding: clamp(28px, 4vw, 48px);
+  grid-template-columns: minmax(0, 1.4fr) minmax(250px, .6fr);
+  gap: clamp(28px, 4vw, 44px);
+  border-radius: 24px;
+}
+
+.hero h1,
+.loginCard h1 {
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.hero p,
+.loginCard p,
+.emptyState p,
+.metabaseHeader p {
+  line-height: 1.62;
+}
+
+.heroStatus {
+  min-height: 196px;
+  padding: 21px;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2%, transparent);
+}
+
+.statusRing {
+  width: 142px;
+  padding: 8px;
+}
+
+.kpiGrid {
+  gap: 10px;
+}
+
+.kpiCard {
+  min-height: 132px;
+  padding: 17px;
+  border-radius: 16px;
+}
+
+.kpiCard > span {
+  font-size: 10px;
+  letter-spacing: .07em;
+}
+
+.kpiCard > strong {
+  margin: 11px 0 8px;
+  font-size: clamp(27px, 2.6vw, 36px);
+}
+
+.focusCard,
+.studyPlanCard,
+.consistencyCard {
+  border-radius: 18px;
+}
+
+.focusCard {
+  padding: 18px 20px;
+  gap: 18px;
+}
+
+.focusMetrics > div,
+.planStep,
+.planStepPriority,
+.planEstimate,
+.consistencyScore {
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2%, transparent);
+}
+
+.chartCard,
+.distributionCard,
+.sectionCard,
+.metabaseSection {
+  border-radius: 20px;
+}
+
+.subjectTable {
+  border-radius: 14px;
+}
+
+.subjectHeader {
+  min-height: 40px;
+}
+
+.subjectRow {
+  min-height: 68px;
+  transition: background-color 150ms ease;
+}
+
+.subjectRow:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-soft) 42%, transparent);
+}
+
+.activityRow {
+  transition: background-color 150ms ease;
+}
+
+.primaryButton,
+.secondaryButton,
+.focusAction,
+.planAction {
+  border-radius: 12px;
+  font-weight: 780;
+  letter-spacing: -.008em;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.focusAction:focus-visible,
+.planAction:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 42%, transparent);
+  outline-offset: 3px;
+}
+
+.metabaseFrame {
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2.5%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kpiCard,
+  .focusCard,
+  .studyPlanCard,
+  .consistencyCard,
+  .chartCard,
+  .distributionCard,
+  .sectionCard {
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .kpiCard:hover,
+  .studyPlanCard:hover,
+  .consistencyCard:hover,
+  .chartCard:hover,
+  .distributionCard:hover,
+  .sectionCard:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 26%, var(--line));
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--text) 3%, transparent),
+      0 18px 44px color-mix(in srgb, var(--text) 6%, transparent);
+  }
+
+  .subjectRow:hover,
+  .activityRow:hover {
+    background: color-mix(in srgb, var(--primary) 4%, var(--panel));
+  }
+}
+
+@media (max-width: 920px) {
+  .hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .heroStatus {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-content: start;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .statusLabel {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-inline: 12px;
+  }
+
+  .hero {
+    padding: 22px 17px;
+    border-radius: 20px;
+  }
+
+  .hero h1,
+  .loginCard h1 {
+    font-size: clamp(36px, 11vw, 44px);
+  }
+
+  .heroStatus {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    padding: 15px;
+  }
+
+  .statusRing {
+    width: 88px;
+  }
+
+  .kpiCard {
+    min-height: 118px;
+    padding: 14px;
+  }
+
+  .kpiCard > strong {
+    font-size: 28px;
+  }
+
+  .chartCard,
+  .distributionCard,
+  .sectionCard,
+  .metabaseSection {
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpiCard {
+    min-height: 104px;
+  }
+
+  .insightStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .insightStrip > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .insightStrip > div:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subjectRow,
+  .activityRow,
+  .kpiCard,
+  .focusCard,
+  .studyPlanCard,
+  .consistencyCard,
+  .chartCard,
+  .distributionCard,
+  .sectionCard {
+    transition: none;
+    transform: none;
+  }
+}
