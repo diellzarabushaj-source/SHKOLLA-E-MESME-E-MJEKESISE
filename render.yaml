@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+projects:
+  - name: school-progress-analytics
+    environments:
+      - name: production
+        services:
+          - type: web
+            name: school-progress-metabase
+            runtime: docker
+            plan: 1c-2g
+            region: frankfurt
+            dockerfilePath: ./infra/metabase/Dockerfile
+            dockerContext: ./infra/metabase
+            healthCheckPath: /api/health
+            autoDeployTrigger: off
+            envVars:
+              - key: PORT
+                value: "10000"
+              - key: MB_JETTY_PORT
+                value: "10000"
+              - key: MB_JETTY_HOST
+                value: "0.0.0.0"
+              - key: MB_SITE_URL
+                fromService:
+                  type: web
+                  name: school-progress-metabase
+                  envVarKey: RENDER_EXTERNAL_URL
+              - key: MB_SITE_NAME
+                value: "Shkolla e Mesme e Mjekësisë · Analytics"
+              - key: MB_DB_TYPE
+                value: postgres
+              - key: MB_DB_CONNECTION_URI
+                sync: false
+              - key: MB_ENCRYPTION_SECRET_KEY
+                generateValue: true
+              - key: MB_ENABLE_EMBEDDING_SIMPLE
+                value: "true"
+              - key: MB_EMBEDDING_SECRET_KEY
+                sync: false
+              - key: MB_ENABLE_PUBLIC_SHARING
+                value: "false"
+              - key: MB_CHECK_FOR_UPDATES
+                value: "true"
+              - key: JAVA_TIMEZONE
+                value: Europe/Belgrade
+              - key: JAVA_TOOL_OPTIONS
+                value: "-Xmx1536m -XX:+ExitOnOutOfMemoryError"
