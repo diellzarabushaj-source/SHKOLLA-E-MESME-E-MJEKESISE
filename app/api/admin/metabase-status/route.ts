@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { requireAdminUser } from "@/lib/admin/server";
+import { metabaseServerConfig } from "@/lib/metabase/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,22 +15,6 @@ const requiredViews = [
   "progress_weekly",
 ] as const;
 
-function metabaseSiteUrl(): string {
-  return (
-    process.env.METABASE_SITE_URL
-    || process.env.METABASE_INSTANCE_URL
-    || ""
-  ).trim().replace(/\/$/, "");
-}
-
-function dashboardId(): string {
-  return (
-    process.env.METABASE_PROGRESS_DASHBOARD_ID
-    || process.env.METABASE_DASHBOARD_ID
-    || ""
-  ).trim();
-}
-
 export async function GET() {
   try {
     await requireAdminUser();
@@ -41,12 +26,11 @@ export async function GET() {
     );
   }
 
-  const siteUrl = metabaseSiteUrl();
-  const configuredDashboardId = dashboardId();
+  const config = metabaseServerConfig();
+  const siteUrl = config.siteUrl;
   const siteConfigured = Boolean(siteUrl);
-  const dashboardConfigured = /^\d+$/.test(configuredDashboardId)
-    && Number(configuredDashboardId) > 0;
-  const embedSecretConfigured = Boolean(process.env.METABASE_EMBED_SECRET?.trim());
+  const dashboardConfigured = Boolean(config.dashboardId);
+  const embedSecretConfigured = Boolean(config.embedSecret);
 
   let analyticsViews: string[] = [];
   let analyticsReady = false;
