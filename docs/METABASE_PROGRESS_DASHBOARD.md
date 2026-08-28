@@ -99,6 +99,31 @@ Endpoint-i i portalit nënshkruan vetëm dashboard-in e konfiguruar:
 
 Request-i që provon një dashboard ID tjetër refuzohet me 403.
 
+
+## Production hosting prepared
+
+Metabase now has a deployment Blueprint at the repository root:
+
+- `render.yaml`
+- `infra/metabase/Dockerfile`
+- `infra/metabase/README.md`
+- `database/metabase-application-db.sql`
+
+The Blueprint uses a Frankfurt Docker web service with 1 CPU / 2 GB RAM, maps Metabase to port 10000, checks `/api/health`, automatically maps Render's public HTTPS URL into `MB_SITE_URL`, enables modular guest embedding, disables public sharing, and keeps all secrets outside git.
+
+Deploy Blueprint:
+
+`https://dashboard.render.com/blueprint/new?repo=https://github.com/diellzarabushaj-source/SHKOLLA-E-MESME-E-MJEKESISE`
+
+The dedicated Neon application database is already prepared in production:
+
+- database: `metabase_app`
+- owner: `metabase_app_owner`
+- owner login: disabled until a hosting secret is created
+- `PUBLIC CONNECT`: revoked
+
+The analytics source remains the separate main database with read-only role `metabase_analytics`.
+
 ## Konfigurimi i Metabase
 
 1. Nise/hostoje Metabase.
