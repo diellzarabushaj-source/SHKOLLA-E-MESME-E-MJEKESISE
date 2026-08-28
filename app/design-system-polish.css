@@ -253,7 +253,7 @@ table td {
 }
 
 
-/* Precision pass v2 — preserve all existing theme tokens and content. */
+/* Precision pass v2 — preserve all existing theme tokens and content. Production sync. */
 
 ::selection {
   background: color-mix(in srgb, var(--primary) 28%, transparent);
