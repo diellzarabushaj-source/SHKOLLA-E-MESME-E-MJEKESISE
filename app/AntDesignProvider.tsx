@@ -46,7 +46,7 @@ export default function AntDesignProvider({ children }: Readonly<{ children: Rea
         borderRadius: 12,
         borderRadiusLG: 20,
         controlHeight: 44,
-        fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontFamily: 'var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         fontSize: 14,
         motion: true,
       },
