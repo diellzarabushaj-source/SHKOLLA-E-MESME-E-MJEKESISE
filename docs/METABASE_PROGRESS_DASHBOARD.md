@@ -1,45 +1,60 @@
 # Metabase Progress Dashboard
 
-Ky integrim e mban faqen `/progress` të shpejtë me dashboard-in native të Next.js dhe shton Metabase si shtresë të avancuar analitike.
+Ky është kontrakti i vetëm production për analitikën e progresit.
+
+## Gjendja reale
+
+- Next.js dashboard-i native lexon progresin direkt nga Neon dhe mbetet gjithmonë funksional.
+- Schema `analytics` është krijuar në Neon dhe është source-of-truth për Metabase.
+- Metabase përdor **Guest embedding** me JWT të nënshkruar server-side.
+- Çdo embed filtrohet me `user_id` të kyçur; browser-i nuk vendos kurrë user-in që nënshkruhet.
+- Një instance Metabase duhet të jetë hostuar veçmas ose në Metabase Cloud. Vercel hoston vetëm portalin Next.js.
 
 ## Arkitektura
 
 ```text
 Browser
-  ├─ /progress
-  │   ├─ /api/progress ───────────────> Neon/Postgres (të dhënat e user-it)
-  │   └─ <metabase-dashboard>
-  │        └─ POST /api/metabase-guest-token
-  │             └─ signed JWT + locked user_id
-  │
-Metabase (service i ndarë)
-  ├─ application DB (Postgres i vet)
-  └─ read-only source ────────────────> Neon/Postgres / schema analytics
+  └─ /progress
+      ├─ /api/progress ─────────────────────> Neon / public progress tables
+      └─ <metabase-dashboard>
+           └─ POST /api/metabase-guest-token
+                └─ JWT: dashboard + locked user_id
+
+Metabase service
+  ├─ application DB e Metabase
+  └─ read-only data source ─────────────────> Neon / analytics schema
 ```
 
-Parimi kryesor: **browser-i nuk vendos kurrë `user_id` që nënshkruhet**. Endpoint-i `/api/metabase-guest-token` e merr user-in nga sesioni i autentikuar dhe nënshkruan vetëm dashboard-in e konfiguruar.
+## Analytics layer në Neon
 
-## 1. Krijo analytics views në Neon
+Source file: `database/metabase-progress-analytics.sql`
 
-Ekzekuto:
-
-```bash
-psql "$DATABASE_URL" -f database/metabase-progress-analytics.sql
-```
-
-Krijohen vetëm views në schema `analytics`:
+Views:
 
 - `analytics.progress_overview`
 - `analytics.progress_daily`
+- `analytics.progress_weekly`
+- `analytics.progress_ratings`
 - `analytics.progress_subjects`
 - `analytics.progress_lessons`
 - `analytics.progress_cards`
 
-Aplikacioni vazhdon të shkruajë vetëm në tabelat ekzistuese të progresit.
+Ato përfshijnë:
 
-## 2. Krijo një database role vetëm për lexim
+- accuracy dhe mastery
+- current streak
+- kartela due tani dhe brenda 24 orëve
+- fragile cards
+- active time / active days
+- daily dhe weekly learning velocity
+- Again / Hard / Good / Easy distribution
+- performance sipas lëndës
+- completion dhe engagement sipas mësimit
+- response time
 
-Përdor një password të fortë dhe mos e përdor user-in e aplikacionit.
+## Database user për Metabase
+
+Metabase duhet të lidhet me Neon përmes një roli read-only, jo me user-in e aplikacionit.
 
 ```sql
 CREATE ROLE metabase_analytics LOGIN PASSWORD 'REPLACE_ME';
@@ -47,72 +62,29 @@ CREATE ROLE metabase_analytics LOGIN PASSWORD 'REPLACE_ME';
 GRANT CONNECT ON DATABASE neondb TO metabase_analytics;
 GRANT USAGE ON SCHEMA analytics TO metabase_analytics;
 GRANT SELECT ON ALL TABLES IN SCHEMA analytics TO metabase_analytics;
+ALTER DEFAULT PRIVILEGES IN SCHEMA analytics
+  GRANT SELECT ON TABLES TO metabase_analytics;
 ```
 
-Nëse database-i nuk quhet `neondb`, zëvendëso emrin.
+## Dashboard-i “Progresi im”
 
-Metabase data source duhet të ketë qasje te schema `analytics`, jo privilegje shkrimi në tabelat operative.
+Përdor blueprint-in e saktë te:
 
-## 3. Nise Metabase
+`docs/METABASE_DASHBOARD_BLUEPRINT.md`
 
-Kopjo variablat shembull në një file lokal që **nuk futet në git**:
+Çdo question/card duhet të ketë filterin `user_id`.
 
-```bash
-cp .env.metabase.example .env.metabase
-```
+### Filteri i detyrueshëm
 
-Pastaj:
-
-```bash
-docker compose --env-file .env.metabase -f docker-compose.metabase.yml up -d
-```
-
-Stack-u përdor një Postgres të veçantë për application database të Metabase. Mos përdor H2 për production.
-
-> Default-i i këtij repo është `metabase/metabase:v0.63.15.x`. Kontrollo release-t e Metabase dhe përditëso `METABASE_IMAGE` kur del një point release më i ri i sigurisë.
-
-## 4. Lidhe Metabase me Neon
-
-Në Metabase:
-
-1. **Admin → Databases → Add database → PostgreSQL**
-2. Fut host/database/user/password të role-it `metabase_analytics`.
-3. Kufizo schema-n te `analytics` nëse konfigurimi yt e lejon.
-4. Bëj sync të schema-s.
-
-## 5. Krijo dashboard-in “Progresi im”
-
-Rekomandimi i kartave:
-
-| Karta | Burimi | Vizualizimi |
-|---|---|---|
-| Saktësia | `progress_overview.accuracy_pct` | Number |
-| Mastery | `progress_overview.mastery_pct` | Progress / Number |
-| Për përsëritje | `progress_overview.due_cards` | Number |
-| Koha aktive | `progress_overview.active_seconds` | Number |
-| Aktiviteti ditor | `progress_daily` | Line/Bar |
-| Saktësia ditore | `progress_daily.accuracy_pct` | Line |
-| Performanca sipas lëndës | `progress_subjects` | Table/Bar |
-| Mësimet | `progress_lessons` | Table |
-| Statusi i kartelave | `progress_cards.status` | Donut/Bar |
-
-### Filtri i detyrueshëm
-
-Krijo një dashboard parameter me slug saktësisht:
+Dashboard parameter slug:
 
 ```text
 user_id
 ```
 
-Lidhe këtë filter me fushën `user_id` në **çdo kartë** të dashboard-it.
+Lidhe me `user_id` në **çdo** card/question dhe në Guest embed vendose **Locked**.
 
-Kur e publikon si Guest embed:
-
-- vendose parameter-in `user_id` si **Locked**;
-- mos e bëj Editable;
-- mos publiko një variant të dytë pa këtë kufizim.
-
-Endpoint-i i aplikacionit nënshkruan:
+Endpoint-i i portalit nënshkruan vetëm dashboard-in e konfiguruar:
 
 ```json
 {
@@ -121,25 +93,26 @@ Endpoint-i i aplikacionit nënshkruan:
 }
 ```
 
-Kjo është barriera që kufizon çdo embed te user-i i sesionit aktual.
+Request-i që provon një dashboard ID tjetër refuzohet me 403.
 
-## 6. Aktivizo Guest embedding
+## Konfigurimi i Metabase
 
-Në Metabase OSS:
-
-1. **Admin → Embedding**
-2. Aktivizo **Guest embeds**
-3. Hape dashboard-in → **Share → Embed → Guest**
-4. Vendose `user_id` **Locked**
-5. Publish
-6. Kopjo ID-në numerike të dashboard-it
-7. Kopjo embedding secret nga Admin → Embedding
+1. Nise/hostoje Metabase.
+2. Admin → Databases → Add database → PostgreSQL.
+3. Lidhe me Neon duke përdorur rolin read-only.
+4. Lejo schema `analytics`.
+5. Bëj schema sync.
+6. Admin → Embedding → aktivizo modular/guest embedding.
+7. Krijo dashboard-in “Progresi im” sipas blueprint-it.
+8. Share → Embed → Guest.
+9. Vendose `user_id` si **Locked**.
+10. Publish dhe kopjo numeric dashboard ID + embedding secret.
 
 Mos përdor Public embed për progres privat.
 
-## 7. Vendos variablat në Vercel
+## Vercel environment variables
 
-Vendosi si server environment variables:
+Canonical variables:
 
 ```env
 METABASE_SITE_URL=https://analytics.example.com
@@ -147,40 +120,40 @@ METABASE_PROGRESS_DASHBOARD_ID=123
 METABASE_EMBED_SECRET=your-guest-embedding-secret
 ```
 
-`METABASE_EMBED_SECRET` nuk ka prefiks `NEXT_PUBLIC_` dhe nuk dërgohet në browser.
+Për backward compatibility, aplikacioni pranon edhe:
 
-Pas ndryshimit të env vars, bëj redeploy të Next.js app-it.
+- `METABASE_INSTANCE_URL` si alias të URL-së
+- `METABASE_DASHBOARD_ID` si alias të dashboard ID
 
-## 8. Verifikimi para production
+`METABASE_EMBED_SECRET` është server-only dhe nuk duhet të ketë prefiks `NEXT_PUBLIC_`.
 
-Kontrollo këto raste:
+Pas ndryshimit të env vars duhet redeploy.
+
+## Diagnostika
+
+Për administratorin, `/progress` shfaq statusin e integrimit kur Metabase nuk është aktiv.
+
+Endpoint:
+
+`GET /api/admin/metabase-status`
+
+Kontrollon pa ekspozuar secrets:
+
+- analytics schema
+- site URL
+- dashboard ID
+- embed secret
+- reachability të `/api/health`
+
+Kjo heq silent failure: admini sheh saktë çfarë mungon.
+
+## Verifikimi production
 
 1. User pa login → `/progress` kërkon kyçje.
-2. User i kyçur → dashboard-i native ngarkohet.
-3. Metabase → shfaq vetëm rreshtat e atij user-i.
-4. Ndrysho manualisht `entityId` në request → endpoint-i duhet të kthejë 403.
-5. Hiq `METABASE_EMBED_SECRET` → dashboard-i native duhet të vazhdojë të punojë pa Metabase.
-6. Kontrollo mobile 390px, tablet dhe desktop.
-7. Kontrollo light/dark theme të portalit dhe theme-in e Guest embed.
-8. Kontrollo që Metabase data-source role nuk ka INSERT/UPDATE/DELETE.
-
-## File-t e integrimit
-
-- `app/progress/ProgressDashboard.tsx` — dashboard native i ri.
-- `app/progress/MetabaseProgressAnalytics.tsx` — Guest embed web component.
-- `app/api/metabase-guest-token/route.ts` — JWT endpoint i serverit.
-- `database/metabase-progress-analytics.sql` — views read-only.
-- `docker-compose.metabase.yml` — stack lokal/self-hosted.
-- `.env.metabase.example` — konfigurimi shembull.
-
-## Shënim për deployment
-
-Vercel hoston aplikacionin Next.js, por Metabase është service server-side me state dhe application database të vet. Prandaj Metabase duhet të hostohet veçmas (ose të përdoret Metabase Cloud), ndërsa `METABASE_SITE_URL` e lidh portalin me atë instance.
-
-
-## Production contract
-
-- `/progress` duhet të mbetet funksional edhe kur Metabase është offline ose i pakonfiguruar.
-- Metabase përdoret vetëm si shtresë analitike; aplikacioni vazhdon të jetë burimi i vetëm i shkrimit të progresit.
-- Çdo guest embed duhet të filtrohet me parameter-in e kyçur `user_id`, i nënshkruar nga sesioni i serverit.
-- Production deploy duhet të konsiderohet i vlefshëm vetëm pasi Vercel build të jetë READY.
+2. User i kyçur → native dashboard ngarkohet me të dhënat e tij.
+3. Metabase → vetëm rows me `user_id` e sesionit.
+4. Ndrysho `entityId` në request → 403.
+5. Hiq embed secret → native dashboard vazhdon normalisht; admini sheh “Setup required”.
+6. Metabase offline → native dashboard vazhdon; embed shfaq error të kontrolluar.
+7. Testo 390px, tablet, desktop.
+8. Metabase DB user nuk ka INSERT / UPDATE / DELETE.
