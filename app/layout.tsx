@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Link from "next/link";
 import { currentSessionUser } from "@/lib/admin/server";
@@ -29,6 +30,14 @@ import "./mobile-polish.css";
 import "./theme-hitbox-fix.css";
 import "./grade-card-uiverse.css";
 import "./navigation-active.css";
+import "./design-system-polish.css";
+
+const inter = Inter({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-inter",
+  preload: true,
+});
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://shkolla-e-mesme-e-mjekesise-ct9t.vercel.app",
@@ -109,7 +118,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const username = typeof user?.name === "string" && user.name.trim() ? user.name.trim() : null;
 
   return (
-    <html lang="sq" suppressHydrationWarning>
+    <html lang="sq" className={inter.variable} suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body>
         <AntdRegistry>
