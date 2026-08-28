@@ -10,7 +10,6 @@ declare global {
       isGuest: boolean;
       instanceUrl: string;
       guestEmbedProviderUri: string;
-      locale?: string;
     };
   }
 }
@@ -85,7 +84,6 @@ export default function MetabaseProgressAnalytics({
       isGuest: true,
       instanceUrl: siteUrl,
       guestEmbedProviderUri: "/api/metabase-guest-token",
-      locale: "sq",
     };
 
     const existing = document.querySelector<HTMLScriptElement>(
