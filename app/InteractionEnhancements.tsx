@@ -34,8 +34,8 @@ function isFlashcardLaunchButton(button: HTMLButtonElement): boolean {
   );
 }
 
-function ratingButton(rating: ProgressRating): HTMLButtonElement | null {
-  return document.querySelector<HTMLButtonElement>(`.rating-${rating}`);
+function ratingButton(root: ParentNode, rating: ProgressRating): HTMLButtonElement | null {
+  return root.querySelector<HTMLButtonElement>(`.rating-${rating}`);
 }
 
 export default function InteractionEnhancements() {
@@ -54,20 +54,22 @@ export default function InteractionEnhancements() {
   }, []);
 
   useEffect(() => {
+    const root = document.getElementById("main-content") ?? document.body;
+
     const enhanceButtons = () => {
-      document.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
+      root.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
         button.classList.toggle("flashcard-launch-button", isFlashcardLaunchButton(button));
       });
     };
 
     const syncStudyMode = () => {
-      const studyPage = document.querySelector(".study-page");
+      const studyPage = root.querySelector(".study-page");
       document.body.classList.toggle("flashcard-study-active", Boolean(studyPage));
     };
 
     const enhanceReviewIntervals = async () => {
-      const flashcard = document.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
-      const actions = document.querySelector<HTMLElement>(".rating-actions");
+      const flashcard = root.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
+      const actions = root.querySelector<HTMLElement>(".rating-actions");
       const flashcardId = flashcard?.dataset.progressFlashcardId;
       if (!flashcardId || !actions) return;
       if (actions.dataset.scheduleFor === flashcardId || actions.dataset.scheduleLoading === flashcardId) return;
@@ -77,8 +79,8 @@ export default function InteractionEnhancements() {
 
       try {
         const schedule = await fetchReviewSchedule(flashcardId);
-        const currentCard = document.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
-        const currentActions = document.querySelector<HTMLElement>(".rating-actions");
+        const currentCard = root.querySelector<HTMLElement>(".flashcard[data-progress-flashcard-id]");
+        const currentActions = root.querySelector<HTMLElement>(".rating-actions");
         if (
           requestId !== previewRequestRef.current ||
           currentCard?.dataset.progressFlashcardId !== flashcardId ||
@@ -86,7 +88,7 @@ export default function InteractionEnhancements() {
         ) return;
 
         REVIEW_RATINGS.forEach((rating) => {
-          const label = ratingButton(rating)?.querySelector<HTMLElement>("span");
+          const label = ratingButton(root, rating)?.querySelector<HTMLElement>("span");
           if (label) label.textContent = schedule[rating].label;
         });
         actions.dataset.scheduleFor = flashcardId;
@@ -110,9 +112,9 @@ export default function InteractionEnhancements() {
     };
 
     const observer = new MutationObserver(refresh);
+    // Keep the observer inside the app content so timer/header updates do not trigger rescans.
     // Child changes are enough to detect navigation and flashcard transitions.
-    // Watching characterData made the one-second timer update rescan every button.
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(root, { childList: true, subtree: true });
     refresh();
 
     return () => {
