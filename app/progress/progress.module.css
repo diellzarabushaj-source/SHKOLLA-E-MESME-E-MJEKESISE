@@ -214,7 +214,7 @@
 
 .statusLabel span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .11em;
 }
@@ -359,7 +359,7 @@
 .focusMetrics span {
   margin-top: 3px;
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: .07em;
 }
@@ -447,7 +447,7 @@
 .consistencyScore span {
   margin-top: 5px;
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 720;
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -485,9 +485,9 @@
   border-radius: 10px;
   background: color-mix(in srgb, var(--primary) 10%, var(--panel));
   color: var(--primary);
-  font-size: 9px;
-  font-weight: 950;
-  letter-spacing: .06em;
+  font-size: 10px;
+  font-weight: 820;
+  letter-spacing: .05em;
 }
 
 .planStep strong,
@@ -507,7 +507,7 @@
 .planStepPriority span {
   margin-top: 4px;
   color: var(--muted-2);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
@@ -532,7 +532,7 @@
 
 .planFooter > div span {
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 720;
   text-transform: uppercase;
   letter-spacing: .07em;
@@ -622,14 +622,14 @@
 
 .goalCopy span {
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .07em;
 }
 
 .goalCopy strong {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .goalTrack {
@@ -656,7 +656,7 @@
   justify-content: flex-end;
   gap: 5px;
   color: var(--muted-2);
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .heatLegend i {
@@ -715,7 +715,7 @@
 .headerMetric span {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: .1em;
 }
@@ -743,7 +743,7 @@
 .barValue {
   color: var(--muted-2);
   text-align: center;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 720;
 }
 
@@ -772,7 +772,7 @@
   overflow: hidden;
   color: var(--muted-2);
   text-align: center;
-  font-size: 8px;
+  font-size: 9px;
   text-transform: capitalize;
 }
 
@@ -782,7 +782,7 @@
   justify-content: space-between;
   gap: 14px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .chartLegend span {
@@ -823,8 +823,8 @@
   display: inline-flex;
   align-items: center;
   border-radius: 9px;
-  font-size: 9px;
-  font-weight: 900;
+  font-size: 10px;
+  font-weight: 780;
 }
 
 .ratingMeta strong {
@@ -833,7 +833,7 @@
 
 .ratingMeta small {
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .ratingTrack {
@@ -913,7 +913,7 @@
 
 .insightStrip span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
@@ -932,7 +932,7 @@
 
 .sectionHeading > span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .subjectTable {
@@ -954,8 +954,8 @@
   padding: 0 16px;
   background: var(--bg-soft);
   color: var(--muted-2);
-  font-size: 8px;
-  font-weight: 900;
+  font-size: 10px;
+  font-weight: 780;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
@@ -1002,7 +1002,7 @@
 .subjectName small {
   margin-top: 5px;
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .recentGrid {
@@ -1036,8 +1036,8 @@
   border-radius: 10px;
   background: color-mix(in srgb, var(--primary) 9%, var(--bg-soft));
   color: var(--primary);
-  font-size: 9px;
-  font-weight: 950;
+  font-size: 10px;
+  font-weight: 820;
 }
 
 .activityMain {
@@ -1061,7 +1061,7 @@
 .activityMain span {
   margin-top: 4px;
   color: var(--muted-2);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .sessionScore {
@@ -1075,7 +1075,7 @@
 .sessionScore span {
   margin-top: 3px;
   color: var(--muted-2);
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .ratingBadge {
@@ -1310,7 +1310,7 @@
   .subjectRow > span::before {
     content: attr(data-label);
     color: var(--muted-2);
-    font-size: 8px;
+    font-size: 10px;
     text-transform: uppercase;
   }
 }
@@ -1577,7 +1577,7 @@
 }
 
 .kpiCard > span {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .07em;
 }
 
