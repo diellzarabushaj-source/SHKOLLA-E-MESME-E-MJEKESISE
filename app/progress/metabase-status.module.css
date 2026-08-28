@@ -1,0 +1,103 @@
+.setupCard {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid rgba(16, 35, 63, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 42px rgba(16, 35, 63, 0.08);
+}
+
+.setupHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.setupHeader h2 {
+  margin: 5px 0 8px;
+  color: #10233f;
+  font-size: clamp(1.25rem, 2.8vw, 1.8rem);
+}
+
+.setupHeader p {
+  margin: 0;
+  max-width: 760px;
+  color: #607087;
+  line-height: 1.6;
+}
+
+.kicker {
+  color: #235eaa;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.stateBadge {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #fff4e6;
+  color: #945a12;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.statusGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.ok,
+.missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.ok {
+  background: #edf8f2;
+  color: #246842;
+}
+
+.missing {
+  background: #f7f0ef;
+  color: #8a4e46;
+}
+
+.ok i,
+.missing i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.missingText {
+  margin: 15px 0 0;
+  color: #6d7888;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 720px) {
+  .setupCard {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .setupHeader {
+    display: grid;
+  }
+
+  .stateBadge {
+    justify-self: start;
+  }
+}

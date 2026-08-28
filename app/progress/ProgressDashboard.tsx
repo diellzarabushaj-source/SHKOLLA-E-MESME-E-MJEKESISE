@@ -29,6 +29,7 @@ export type ProgressContentLabels = {
 };
 
 type MetabaseConfig = {
+  enabled: boolean;
   siteUrl: string | null;
   dashboardId: string | null;
 };
@@ -302,10 +303,12 @@ export default function ProgressDashboard({
   username,
   labels,
   metabase,
+  isAdmin,
 }: {
   username: string;
   labels: ProgressContentLabels;
   metabase: MetabaseConfig;
+  isAdmin: boolean;
 }) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -839,8 +842,10 @@ export default function ProgressDashboard({
         )}
 
         <MetabaseProgressAnalytics
+          enabled={metabase.enabled}
           siteUrl={metabase.siteUrl}
           dashboardId={metabase.dashboardId}
+          isAdmin={isAdmin}
         />
       </div>
     </main>
