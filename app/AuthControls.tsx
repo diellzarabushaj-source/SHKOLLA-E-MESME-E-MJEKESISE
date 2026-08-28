@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Button, Space, Tag } from "antd";
 import { type FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { signOutAction } from "./auth/actions";
@@ -38,36 +38,38 @@ export default function AuthControls({ username: initialUsername }: { username: 
 
   if (!username) {
     return (
-      <div className={styles.controls} aria-label="Llogaria">
-        <Link className={styles.link} href="/auth/sign-in">Kyçu</Link>
-        <Link className={`${styles.link} ${styles.primary} ${styles.register}`} href="/auth/sign-up">
+      <Space className={styles.controls} size={8} aria-label="Llogaria">
+        <Button className={styles.link} type="text" href="/auth/sign-in">Kyçu</Button>
+        <Button className={`${styles.link} ${styles.primary} ${styles.register}`} type="primary" href="/auth/sign-up">
           Regjistrohu
-        </Link>
-      </div>
+        </Button>
+      </Space>
     );
   }
 
   const label = username.startsWith("@") ? username : `@${username}`;
 
   return (
-    <div className={`${styles.controls} ${styles.account}`} aria-label="Llogaria e kyçur">
-      <span className={styles.user} title={username}>
+    <Space className={`${styles.controls} ${styles.account}`} size={8} aria-label="Llogaria e kyçur">
+      <Tag className={styles.user} color="processing" title={username}>
         <span className={styles.dot} aria-hidden="true" />
         {label}
-      </span>
+      </Tag>
       <form action={signOutAction} className={styles.logoutForm} onSubmit={handleSignOut}>
-        <button
+        <Button
           className={styles.logout}
-          type="submit"
+          htmlType="submit"
+          type="text"
+          loading={isSigningOut}
           aria-label={isSigningOut ? "Duke dalë nga llogaria" : "Dil nga llogaria"}
           aria-busy={isSigningOut}
           disabled={isSigningOut}
           title={signOutError || undefined}
         >
           {isSigningOut ? "Po del…" : signOutError ? "Provo prapë" : "Dil"}
-        </button>
+        </Button>
         {signOutError && <span className={styles.logoutError} role="alert">{signOutError}</span>}
       </form>
-    </div>
+    </Space>
   );
 }
