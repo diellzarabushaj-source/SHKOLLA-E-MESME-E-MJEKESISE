@@ -23,9 +23,11 @@
     "audit:app": "npm run typecheck && npm run build && npm run audit:navigation && npm run audit:smoothness && npm run audit:annotations && npm run audit:admin-sanity && npm run audit:sanity-runtime"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "1.3.0",
     "@metabase/embedding-sdk-react": "0.63.1",
     "@neondatabase/auth": "0.4.2-beta",
     "@neondatabase/serverless": "1.1.0",
+    "antd": "6.6.1",
     "next": "16.2.10",
     "next-sanity": "13.1.3",
     "react": "19.2.7",

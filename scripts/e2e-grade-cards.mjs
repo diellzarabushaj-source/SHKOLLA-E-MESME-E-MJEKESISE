@@ -73,8 +73,8 @@ async function installSanityFixture(context) {
 }
 
 async function assertGradeCards(page, label) {
-  await page.locator("#klasat").waitFor({ state: "visible", timeout: 20_000 });
-  const cards = page.locator("#klasat article");
+  await page.locator("#main-content #klasat").waitFor({ state: "visible", timeout: 20_000 });
+  const cards = page.locator("#main-content #klasat article");
   await cards.first().waitFor({ state: "visible", timeout: 20_000 });
   assert(await cards.count() === 3, `${label}: expected 3 class cards, found ${await cards.count()}`);
 

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Link from "next/link";
 import { currentSessionUser } from "@/lib/admin/server";
+import AntDesignProvider from "./AntDesignProvider";
 import AuthControls from "./AuthControls";
 import EnhancedTestResults from "./EnhancedTestResults";
 import InteractionEnhancements from "./InteractionEnhancements";
@@ -12,6 +14,7 @@ import PwaRegistrar from "./PwaRegistrar";
 import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
+import "./ant-design.css";
 import "./uiverse.css";
 import "./branding.css";
 import "./action-buttons.css";
@@ -109,6 +112,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="sq" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body>
+        <AntdRegistry>
+          <AntDesignProvider>
         <a className="skip-link" href="#main-content">Kalo direkt te përmbajtja</a>
         <header className="site-header">
           <Link className="brand" href="/" aria-label="Portali Mësimor Mjekësi Pejë - Ballina">
@@ -130,6 +135,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <PwaRegistrar />
         <div id="main-content" tabIndex={-1}>{children}</div>
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Platformë mësimore për nxënësit</span></footer>
+          </AntDesignProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

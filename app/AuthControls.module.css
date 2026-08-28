@@ -94,7 +94,7 @@
 
 @media (max-width: 760px) {
   .controls { gap: 5px; }
-  .register { display: none; }
+  .register { display: none !important; }
 
   .link,
   .logout,

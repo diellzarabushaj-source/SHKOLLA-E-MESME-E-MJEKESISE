@@ -194,7 +194,7 @@ async function expectHome(page, label) {
 
 async function expectClasses(page, label) {
   await waitForPortal(page);
-  await page.locator("#klasat").waitFor({ state: "visible", timeout: 15_000 });
+  await page.locator("#main-content #klasat").waitFor({ state: "visible", timeout: 15_000 });
   const selectedPage = await page.locator("main.inner-page").count();
   assert(selectedPage === 0, `${label}: classes link reopened a saved grade instead of the class selector`);
 }
@@ -211,7 +211,7 @@ async function clickFirstNestedPath(page) {
   }
   await expectClasses(page, "initial class selector");
 
-  const gradeButton = page.locator("#klasat button").first();
+  const gradeButton = page.locator("#main-content #klasat button").first();
   await gradeButton.waitFor({ state: "visible", timeout: 15_000 });
   await gradeButton.click();
   await page.locator("main.inner-page").waitFor({ state: "visible" });

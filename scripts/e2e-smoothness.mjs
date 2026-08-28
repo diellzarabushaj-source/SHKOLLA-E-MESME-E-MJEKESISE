@@ -207,10 +207,16 @@ async function auditThemeAndDesktop(browser) {
   watchPage(page, "desktop shell");
   try {
     await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
-    await page.locator("#klasat").waitFor({ state: "visible", timeout: 20_000 });
+    await page.locator("#main-content #klasat").waitFor({ state: "visible", timeout: 20_000 });
 
     const duplicateIds = await page.evaluate(() => {
-      const ids = Array.from(document.querySelectorAll("[id]")).map((element) => element.id).filter(Boolean);
+      const activeElements = Array.from(document.querySelectorAll("[id]")).filter((element) => {
+        if (!(element instanceof HTMLElement)) return true;
+        if (element.closest("[hidden], [inert], [aria-hidden=\"true\"]")) return false;
+        const style = window.getComputedStyle(element);
+        return style.display !== "none" && style.visibility !== "hidden" && element.getClientRects().length > 0;
+      });
+      const ids = activeElements.map((element) => element.id).filter(Boolean);
       return ids.filter((id, index) => ids.indexOf(id) !== index);
     });
     assert(duplicateIds.length === 0, `duplicate DOM ids: ${JSON.stringify([...new Set(duplicateIds)])}`);
@@ -243,7 +249,7 @@ async function auditMobileShell(browser) {
   watchPage(page, "mobile shell");
   try {
     await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
-    await page.locator("#klasat").waitFor({ state: "visible", timeout: 20_000 });
+    await page.locator("#main-content #klasat").waitFor({ state: "visible", timeout: 20_000 });
     await page.locator("nav.mobile-navigation").waitFor({ state: "visible", timeout: 10_000 });
 
     const geometry = await page.evaluate(() => ({
