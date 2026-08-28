@@ -381,6 +381,291 @@
   box-shadow: 0 10px 22px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
+.planGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, .55fr);
+  gap: 16px;
+}
+
+.studyPlanCard,
+.consistencyCard {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel) 97%, var(--bg-soft));
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.studyPlanCard {
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--primary) 5%, var(--panel)), var(--panel) 58%);
+}
+
+.planHeader,
+.consistencyHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.planHeader h2,
+.consistencyHeader h2 {
+  margin: 6px 0 0;
+  font-size: clamp(22px, 2.7vw, 31px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.planEstimate,
+.consistencyScore {
+  flex: 0 0 auto;
+  min-width: 110px;
+  padding: 11px 13px;
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-soft));
+  text-align: right;
+}
+
+.planEstimate strong,
+.planEstimate span,
+.consistencyScore strong,
+.consistencyScore span {
+  display: block;
+}
+
+.planEstimate strong,
+.consistencyScore strong {
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.planEstimate span,
+.consistencyScore span {
+  margin-top: 5px;
+  color: var(--muted-2);
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.planSteps {
+  margin-top: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.planStep,
+.planStepPriority {
+  min-height: 65px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg-soft) 68%, transparent);
+}
+
+.planStepPriority {
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+}
+
+.planStepIndex {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--primary) 10%, var(--panel));
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .06em;
+}
+
+.planStep strong,
+.planStep span,
+.planStepPriority strong,
+.planStepPriority span {
+  display: block;
+}
+
+.planStep strong,
+.planStepPriority strong {
+  font-size: 11px;
+  letter-spacing: -.01em;
+}
+
+.planStep span,
+.planStepPriority span {
+  margin-top: 4px;
+  color: var(--muted-2);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.planFooter {
+  margin-top: 14px;
+  padding-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(140px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.planFooter > div {
+  min-width: 0;
+}
+
+.planFooter > div span,
+.planFooter > div strong {
+  display: block;
+}
+
+.planFooter > div span {
+  color: var(--muted-2);
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.planFooter > div strong {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.planAction {
+  min-height: 42px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--panel);
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.consistencyCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.consistencyHeader {
+  align-items: center;
+}
+
+.consistencyScore {
+  min-width: 86px;
+  text-align: center;
+}
+
+.heatmap {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.heatmap > span,
+.heatLegend i {
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 6px;
+}
+
+.heatLevel0 {
+  background: color-mix(in srgb, var(--line) 42%, transparent);
+}
+
+.heatLevel1 {
+  background: color-mix(in srgb, var(--primary) 18%, var(--panel));
+}
+
+.heatLevel2 {
+  background: color-mix(in srgb, var(--primary) 35%, var(--panel));
+}
+
+.heatLevel3 {
+  background: color-mix(in srgb, var(--primary) 58%, var(--panel));
+}
+
+.heatLevel4 {
+  background: var(--primary);
+}
+
+.consistencyGoal {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+
+.goalCopy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.goalCopy span {
+  color: var(--muted-2);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.goalCopy strong {
+  font-size: 10px;
+}
+
+.goalTrack {
+  height: 7px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 65%, transparent);
+}
+
+.goalTrack span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  transition: width .35s ease;
+}
+
+.heatLegend {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: var(--muted-2);
+  font-size: 8px;
+}
+
+.heatLegend i {
+  width: 12px;
+  height: 12px;
+  aspect-ratio: auto;
+  border-radius: 4px;
+}
+
 .analyticsGrid {
   margin-top: 18px;
   display: grid;
@@ -962,6 +1247,19 @@
     justify-self: start;
   }
 
+  .planGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .planFooter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .planAction {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
   .analyticsGrid,
   .recentGrid {
     grid-template-columns: 1fr;
@@ -1089,6 +1387,49 @@
 
   .focusAction {
     width: 100%;
+  }
+
+  .studyPlanCard,
+  .consistencyCard {
+    padding: 17px 15px;
+    border-radius: 18px;
+  }
+
+  .planHeader,
+  .consistencyHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .planEstimate,
+  .consistencyScore {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .planSteps {
+    margin-top: 15px;
+  }
+
+  .planFooter {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .planAction {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .heatmap {
+    gap: 5px;
+  }
+
+  .goalCopy {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .kpiCard {
