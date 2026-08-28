@@ -9,7 +9,9 @@ const requiredViews = [
   "progress_daily",
   "progress_lessons",
   "progress_overview",
+  "progress_ratings",
   "progress_subjects",
+  "progress_weekly",
 ] as const;
 
 function metabaseSiteUrl(): string {
