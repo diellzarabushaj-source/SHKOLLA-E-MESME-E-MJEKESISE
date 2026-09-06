@@ -99,7 +99,7 @@ main.inner-page[data-campus-view] { max-width: 1280px; padding-inline: clamp(20p
 [data-campus-view] [data-campus-modes] button[aria-selected="true"] { color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--panel)); box-shadow: none; }
 
 /* The source images and text remain untouched; cards provide a quieter frame. */
-[data-campus-view] .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+[data-campus-view] .subject-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px; }
 [data-campus-view] .subject-card { container-type: inline-size; min-height: 360px; padding: 18px; display: flex; flex-direction: column; border-color: var(--line); border-radius: 20px; background: var(--panel); box-shadow: var(--campus-surface-shadow); transition: transform .3s var(--campus-ease), border-color .2s ease, box-shadow .2s ease; }
 [data-campus-view] .subject-card::before,
 [data-campus-view] .subject-card::after,
@@ -189,7 +189,7 @@ body > .medical-portal-ant-app > footer,
   .site-header .brand small { font-size: 9px; }
   .site-header .header-actions { gap: 8px; }
   .site-header .desktop-navigation { display: none; }
-  .mobile-navigation { left: 12px; right: 12px; bottom: calc(9px + env(safe-area-inset-bottom)); width: auto; max-width: 440px; margin-inline: auto; border: 1px solid var(--line); border-radius: 20px; padding: 6px; background: var(--header); backdrop-filter: blur(16px); box-shadow: 0 8px 32px color-mix(in srgb, var(--text) 12%, transparent); }
+  .mobile-navigation { left: 12px; right: 12px; bottom: calc(9px + env(safe-area-inset-bottom)); width: auto; max-width: 440px; margin-inline: auto; transform: none; border: 1px solid var(--line); border-radius: 20px; padding: 6px; background: var(--header); backdrop-filter: blur(16px); box-shadow: 0 8px 32px color-mix(in srgb, var(--text) 12%, transparent); }
   .mobile-navigation .mobile-navigation-item { min-height: 52px; border-radius: 14px; padding: 6px; transition: background .2s ease, color .2s ease; }
   .mobile-navigation .mobile-navigation-item.is-active { background: color-mix(in srgb, var(--primary) 9%, var(--panel)); color: var(--primary); box-shadow: none; }
   .mobile-navigation .mobile-navigation-icon { background: transparent; box-shadow: none; }
@@ -245,6 +245,42 @@ body > .medical-portal-ant-app > footer,
   .campus-home .stats-strip strong { font-size: 20px; }
   .campus-home .stats-strip span { font-size: 9px; }
   .medical-portal-ant-app [data-campus-grade-hero] { padding: 20px; }
+}
+/* Reading workspace: presentation only; outline/progress behavior stays unchanged. */
+[data-learning-experience] { --reading-radius: 20px; }
+[data-learning-experience] > [role="progressbar"] { top: 76px; height: 3px; background: var(--line); }
+[data-learning-experience] aside[aria-label="Përmbajtja e mësimit"] { padding: 22px 18px; border: 1px solid var(--line); border-radius: var(--reading-radius); background: var(--panel); min-height: 0; top: 98px; box-shadow: var(--campus-surface-shadow); }
+[data-learning-experience] [class*="context"] > span { font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+[data-learning-experience] [class*="context"] > strong { font-size: 20px; line-height: 1.3; letter-spacing: -.025em; }
+[data-learning-experience] nav[aria-label^="Seksionet"] button { min-height: 44px; border-radius: 10px; transition: background .18s ease, color .18s ease; }
+[data-learning-experience] nav[aria-label^="Seksionet"] button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+[data-learning-experience] header[data-learning-chrome] { padding: clamp(22px, 3vw, 38px); border: 1px solid var(--line); border-radius: var(--reading-radius); background: var(--panel); gap: 24px; box-shadow: var(--campus-surface-shadow); }
+[data-learning-experience] header[data-learning-chrome] h1 { max-width: 24ch; margin-block: 16px; font-size: clamp(28px, 3.8vw, 48px); line-height: 1.12; letter-spacing: -.045em; text-wrap: balance; overflow-wrap: anywhere; }
+[data-learning-experience] header[data-learning-chrome] p { max-width: 62ch; font-size: 15px; line-height: 1.75; color: var(--muted); }
+[data-learning-experience] [class*="heroActions"] { align-self: center; gap: 10px; }
+[data-learning-experience] [class*="heroActions"] button { min-height: 48px; border-radius: 12px; font-size: 13px; transition: background .18s ease, box-shadow .18s ease; }
+[data-learning-experience] [class*="heroActions"] button:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+[data-learning-experience] [class*="lessonMeta"] { margin-block: 16px 28px; padding: 15px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-soft); gap: 16px; }
+[data-learning-experience] [class*="lessonMeta"] strong { font-variant-numeric: tabular-nums; }
+[data-learning-experience] [class*="lessonMeta"] button { min-height: 44px; border-radius: 10px; }
+[data-learning-experience] [class*="lessonBody"] { max-width: 760px; font-size: 17px; line-height: 1.85; }
+[data-learning-experience] [class*="lessonBody"] :is(h2, h3, h4) { letter-spacing: -.025em; line-height: 1.3; scroll-margin-top: 112px; }
+[data-learning-experience] [class*="lessonBody"] h2 { margin-top: 2em; padding-top: 20px; border-top: 1px solid var(--line); }
+[data-learning-experience] [class*="lessonBody"] :is(img, video) { border-radius: 16px; }
+[data-learning-experience] details[data-learning-chrome] { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); overflow: clip; }
+[data-learning-experience] details[data-learning-chrome] summary { min-height: 48px; padding: 16px 18px; font-weight: 600; cursor: pointer; }
+[data-learning-experience] details[data-learning-chrome][open] summary { border-bottom: 1px solid var(--line); }
+[data-campus-view] nav[aria-label="Navigimi ndërmjet mësimeve"] button { min-height: 88px; padding: 20px; border-radius: 16px; transition: border-color .18s ease, background .18s ease; }
+[data-campus-view] nav[aria-label="Navigimi ndërmjet mësimeve"] button:hover { border-color: var(--primary); background: var(--bg-soft); }
+@media (max-width: 800px) {
+  [data-learning-experience] > [role="progressbar"] { top: 68px; }
+  [data-learning-experience] header[data-learning-chrome] { padding: 22px; }
+  [data-learning-experience] [class*="lessonBody"] { font-size: 16px; line-height: 1.8; }
+}
+@media (max-width: 540px) {
+  [data-learning-experience] header[data-learning-chrome] { padding: 20px 16px; border-radius: 16px; }
+  [data-learning-experience] [class*="lessonMeta"] { padding: 14px; align-items: stretch; flex-direction: column; }
+  [data-learning-experience] [class*="lessonMeta"] button { width: 100%; }
 }
 @media (hover: none) {
   [data-campus-view] :is(.subject-card, .chapter-row, [data-campus-card]):hover,

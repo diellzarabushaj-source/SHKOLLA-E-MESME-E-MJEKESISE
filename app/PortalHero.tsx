@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, type PointerEvent } from "react";
+import StethoscopeLogo from "./StethoscopeLogo";
 import styles from "./PortalHero.module.css";
 
 /** A decorative, progressively enhanced illustration. Never participates in navigation. */
@@ -41,7 +41,7 @@ export default function PortalHero() {
   }
 
   return (
-    <section className={styles.hero} aria-labelledby="portal-welcome">
+    <section className={`hero ${styles.hero}`} aria-labelledby="portal-welcome">
       <div className={styles.copy}>
         <span className={styles.eyebrow}><i aria-hidden="true" /> Portali i shkollës sonë</span>
         <h1 id="portal-welcome">Mësime dhe<br />flashcards.<em>Të ndara sipas klasës.</em></h1>
@@ -59,7 +59,7 @@ export default function PortalHero() {
             <div className={styles.atlasHeader}><span>PORTALI MËSIMOR</span><span className={styles.cross}>+</span></div>
             <div className={styles.specimen}>
               <span className={styles.specimenRing} />
-              <Image src="/assets/anatomy-heart.webp" alt="" width={256} height={300} sizes="(max-width: 600px) 200px, 256px" className={styles.heart} />
+              <div className={styles.heart}><StethoscopeLogo /></div>
               <span className={styles.annotationOne} /><span className={styles.annotationTwo} />
             </div>
             <div className={styles.atlasFooter}><b>Klasa → Të gjitha lëndët</b><small>Strukturë e qartë</small></div>

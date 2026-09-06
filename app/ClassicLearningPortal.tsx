@@ -1209,7 +1209,7 @@ export default function ClassicLearningPortal({
                   <span><b>{stats.subjectCount}</b> lëndë</span>
                   <span><b>{stats.flashcardCount}</b> flashcards</span>
                 </div>
-                <button className={styles.gradeOpen} onClick={() => chooseGrade(grade)}>Hape {grade.title}</button>
+                <button className={styles.gradeOpen} aria-label={`Hape ${grade.title}`} onClick={() => chooseGrade(grade)}>Hape {grade.title}</button>
               </article>
             );
           })}
