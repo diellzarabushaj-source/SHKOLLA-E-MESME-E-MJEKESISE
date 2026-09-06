@@ -1,0 +1,259 @@
+/* Public learning UI only. The existing light/dark color tokens are authoritative. */
+:root {
+  --campus-ease: cubic-bezier(.22, 1, .36, 1);
+  --campus-surface-shadow: 0 2px 3px color-mix(in srgb, var(--text) 2%, transparent), 0 12px 32px color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.site-header {
+  min-height: 76px;
+  padding-inline: max(24px, calc((100vw - 1176px) / 2));
+  background: var(--header);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.site-header .brand { gap: 12px; }
+.site-header .brand-mark { border-radius: 13px; box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 18%, transparent); }
+.site-header .brand b { font-weight: 720; font-size: 14px; color: var(--text); }
+.site-header .brand small { font-size: 11px; letter-spacing: .015em; }
+.site-header .header-actions { gap: 20px; }
+.site-header .desktop-navigation { gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: var(--bg-soft); box-shadow: none; }
+.site-header .desktop-navigation .tab { display: flex; gap: 7px; width: auto; min-height: 40px; height: 40px; padding: 0 13px; border-radius: 9px; background: transparent; color: var(--muted); box-shadow: none; font-size: 12px; font-weight: 600; transition: background .2s ease, color .2s ease; }
+.site-header .desktop-navigation .tab svg { width: 17px; height: 17px; }
+.site-header .desktop-navigation .tab::after { display: none; }
+.site-header .desktop-navigation .tab:hover { color: var(--text); background: var(--panel); transform: none; }
+.site-header .desktop-navigation .tab.is-active { color: var(--primary); background: var(--panel); box-shadow: 0 1px 5px color-mix(in srgb, var(--text) 7%, transparent); }
+.site-header .desktop-navigation .tab:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.campus-home { position: relative; background: radial-gradient(ellipse at 80% 4%, color-mix(in srgb, var(--primary) 4%, transparent), transparent 45%); }
+.campus-home .stats-strip { width: min(calc(100% - 48px), 1168px); margin: 0 auto; padding: 24px 8px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: var(--campus-surface-shadow); }
+.campus-home .stats-strip > div { min-width: 0; display: flex; align-items: baseline; justify-content: center; gap: 12px; padding: 4px 20px; }
+.campus-home .stats-strip strong { font-size: 30px; font-weight: 650; letter-spacing: -.045em; color: var(--text); font-variant-numeric: tabular-nums; }
+.campus-home .stats-strip span { font-size: 12px; font-weight: 500; color: var(--muted); }
+.campus-home [data-campus-grades] { max-width: 1280px; margin: 0 auto; padding: 72px clamp(24px, 4vw, 56px) 88px; scroll-margin-top: 96px; }
+.campus-home [data-campus-grades] > div:first-child { max-width: none; margin-bottom: 28px; }
+.campus-home [data-campus-grades] h2 { margin: 9px 0 10px; font-size: clamp(32px, 4vw, 42px); font-weight: 650; letter-spacing: -.045em; line-height: 1.15; }
+.campus-home [data-campus-grades] > div:first-child > span { font-size: 10px; font-weight: 650; letter-spacing: .13em; }
+.campus-home [data-campus-grades] > div:first-child > p { font-size: 14px; }
+.medical-portal-ant-app [data-campus-card] {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 304px;
+  padding: 26px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--campus-surface-shadow);
+  transition: transform .3s var(--campus-ease), border-color .25s ease, box-shadow .25s ease;
+}
+.medical-portal-ant-app [data-campus-card]::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--primary) 8%, transparent), transparent 58%); opacity: .55; transition: opacity .3s ease; }
+.medical-portal-ant-app [data-campus-card]::after { content: attr(data-grade); position: absolute; top: 4px; right: 18px; z-index: -1; color: color-mix(in srgb, var(--primary) 7%, var(--panel)); font-size: 110px; font-weight: 700; letter-spacing: -.08em; line-height: 1; pointer-events: none; transition: translate .35s var(--campus-ease); }
+.medical-portal-ant-app [data-campus-card] > span { width: 46px; height: 46px; border: 1px solid color-mix(in srgb, var(--primary) 15%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--primary) 7%, var(--panel)); color: var(--primary); box-shadow: none; font-size: 17px; font-weight: 650; }
+.medical-portal-ant-app [data-campus-card] h3 { margin: 22px 0 9px; font-size: 25px; font-weight: 650; letter-spacing: -.035em; }
+.medical-portal-ant-app [data-campus-card] p { font-size: 14px; line-height: 1.6; }
+.medical-portal-ant-app [data-campus-card] > div { padding-top: 26px; font-size: 11px; justify-content: flex-start; gap: 20px; }
+.medical-portal-ant-app [data-campus-card] > div b { font-size: 14px; font-weight: 650; }
+.medical-portal-ant-app [data-campus-card] > button { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; margin-top: 20px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-soft); color: var(--text); box-shadow: none; font-size: 12px; font-weight: 650; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.medical-portal-ant-app [data-campus-card] > button::after { content: "↗"; color: var(--primary); font-size: 21px; font-weight: 400; transition: transform .25s ease; }
+.medical-portal-ant-app [data-campus-card] > button:hover { background: var(--primary); border-color: var(--primary); color: #fff; transform: none; }
+.medical-portal-ant-app [data-campus-card] > button:hover::after { color: #fff; transform: translate(2px, -2px); }
+.medical-portal-ant-app [data-campus-card]:focus-within { border-color: var(--primary); }
+.medical-portal-ant-app [data-campus-card] > button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .medical-portal-ant-app [data-campus-card]:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--primary) 40%, var(--line)); box-shadow: 0 16px 40px color-mix(in srgb, var(--primary) 10%, transparent); }
+  .medical-portal-ant-app [data-campus-card]:hover::before { opacity: 1; }
+  .medical-portal-ant-app [data-campus-card]:hover::after { translate: -3px 3px; }
+}
+
+/* Every learning screen shares the same proportions and control treatment. */
+main.inner-page[data-campus-view] { max-width: 1280px; padding-inline: clamp(20px, 4vw, 56px); padding-top: 6px; }
+[data-campus-view] [data-campus-breadcrumb] { gap: 8px; margin-top: 22px; margin-bottom: 16px; padding-bottom: 5px; font-size: 12px; scrollbar-width: thin; }
+[data-campus-view] [data-campus-breadcrumb] button { min-height: 40px; padding: 8px 12px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 550; transition: background .18s ease, color .18s ease; }
+[data-campus-view] [data-campus-breadcrumb] button:hover { background: var(--panel); color: var(--primary); border-color: var(--line); }
+[data-campus-view] [data-campus-breadcrumb] > span:last-child { color: var(--text); font-weight: 600; }
+.medical-portal-ant-app [data-campus-grade-hero] { position: relative; isolation: isolate; overflow: hidden; margin-top: 8px; padding: 36px; border-radius: 22px; background: var(--panel); box-shadow: var(--campus-surface-shadow); }
+.medical-portal-ant-app [data-campus-grade-hero]::before { content: ""; position: absolute; z-index: -1; width: 540px; height: 540px; right: -150px; top: -230px; border: 1px solid var(--line); border-radius: 50%; box-shadow: 0 0 0 42px color-mix(in srgb, var(--primary) 3%, transparent), 0 0 0 84px color-mix(in srgb, var(--primary) 2%, transparent); pointer-events: none; }
+.medical-portal-ant-app [data-campus-grade-hero] h1 { margin: 12px 0 16px; font-size: clamp(38px, 5vw, 60px); line-height: 1.05; font-weight: 650; }
+.medical-portal-ant-app [data-campus-grade-hero] p { max-width: 45ch; font-size: 15px; }
+.medical-portal-ant-app [data-campus-grade-hero] [class*="eyebrow"] { font-weight: 650; font-size: 10px; }
+.medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] { min-width: 270px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg-soft); }
+.medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] > div { padding: 19px; }
+.medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] strong { font-size: 27px; font-weight: 650; letter-spacing: -.04em; }
+.medical-portal-ant-app [data-campus-grade-hero] button { min-height: 46px; border-radius: 11px; font-size: 12px; font-weight: 650; box-shadow: none; }
+[data-campus-view] :is(.subjects-section, .chapters-section) { padding-top: 42px; }
+[data-campus-view] .section-heading { align-items: end; gap: 24px; margin-bottom: 24px; }
+[data-campus-view] .section-heading h2 { margin: 8px 0 0; font-size: clamp(27px, 3vw, 36px); line-height: 1.2; font-weight: 650; letter-spacing: -.04em; }
+[data-campus-view] .eyebrow { font-size: 10px; font-weight: 650; letter-spacing: .1em; }
+[data-campus-view] .library-tools { gap: 9px; align-items: center; }
+[data-campus-view] .subjects-section .search-box { width: min(280px, 100%); padding: 0; border: 0; background: transparent; box-shadow: none; }
+[data-campus-view] .subjects-section .search-box input,
+[data-campus-view] .subjects-section .search-box input:focus { width: 100%; min-height: 46px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); box-shadow: none; opacity: 1; transition: border-color .2s ease, box-shadow .2s ease; }
+[data-campus-view] .subjects-section .search-box input::placeholder { color: var(--muted); }
+[data-campus-view] .subjects-section .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent); }
+[data-campus-view] .refresh-button { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 12px; box-shadow: none; }
+[data-campus-view] [data-campus-modes] { margin: 20px 0 28px; padding: 0 0 18px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+[data-campus-view] [data-campus-modes] > span { font-size: 12px; font-weight: 500; }
+[data-campus-view] [data-campus-modes] > div { padding: 4px; border-radius: 12px; background: var(--panel); }
+[data-campus-view] [data-campus-modes] button { min-height: 42px; min-width: 120px; padding: 0 17px; border-radius: 8px; font-size: 12px; font-weight: 600; transform: none; }
+[data-campus-view] [data-campus-modes] button[aria-selected="true"] { color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--panel)); box-shadow: none; }
+
+/* The source images and text remain untouched; cards provide a quieter frame. */
+[data-campus-view] .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+[data-campus-view] .subject-card { container-type: inline-size; min-height: 360px; padding: 18px; display: flex; flex-direction: column; border-color: var(--line); border-radius: 20px; background: var(--panel); box-shadow: var(--campus-surface-shadow); transition: transform .3s var(--campus-ease), border-color .2s ease, box-shadow .2s ease; }
+[data-campus-view] .subject-card::before,
+[data-campus-view] .subject-card::after,
+[data-campus-view] .subject-card h3::after { display: none; }
+[data-campus-view] .subject-card .subject-top { height: 155px; flex-shrink: 0; padding: 17px; border: 1px solid color-mix(in srgb, var(--card-accent) 12%, var(--line)); border-radius: 13px; background: color-mix(in srgb, var(--card-accent) 7%, var(--panel)); box-shadow: none; }
+[data-campus-view] .subject-card .subject-top::before { color: var(--muted); background: var(--panel); border: 1px solid var(--line); font-size: 8px; font-weight: 600; transform: none; letter-spacing: .13em; }
+[data-campus-view] .subject-card .subject-top::after { background: radial-gradient(circle at 65% 50%, color-mix(in srgb, var(--card-accent) 10%, transparent), transparent 55%); opacity: 1; }
+[data-campus-view] .subject-card .subject-top > span { color: var(--muted); font-weight: 550; }
+[data-campus-view] .subject-card .subject-top i { color: var(--card-accent); transform: none; transition: transform .45s var(--campus-ease); }
+[data-campus-view] .subject-card .subject-top i img { object-fit: contain; }
+[data-campus-view] .subject-card h3 { margin: 22px 0 10px; font-size: 23px; line-height: 1.25; font-weight: 650; letter-spacing: -.035em; }
+[data-campus-view] .subject-card > p { margin: 0 0 22px; font-size: 14px; line-height: 1.65; color: var(--muted); }
+[data-campus-view] .subject-card .subject-meta { width: 100%; margin: auto 0 0; padding: 16px 0 0; border-top: 1px solid var(--line); gap: 20px; font-size: 11px; }
+[data-campus-view] .subject-card .subject-meta b { font-size: 14px; font-weight: 600; }
+[data-campus-view] .subject-card button { min-height: 46px; margin-top: 18px; font-size: 12px; font-weight: 600; border-radius: 11px; background: var(--bg-soft); }
+[data-campus-view] .subject-card:hover { transform: translateY(-3px); box-shadow: 0 16px 35px color-mix(in srgb, var(--text) 7%, transparent); }
+[data-campus-view] .subject-card:hover .subject-top { transform: none; box-shadow: none; }
+[data-campus-view] .subject-card:hover .subject-top i { transform: translateY(-3px) rotate(-3deg); }
+[data-campus-view] .subject-card:hover :is(h3, p) { transform: none; }
+@container (max-width: 235px) {
+  [data-campus-view] .subject-card h3 { font-size: 20px; overflow-wrap: anywhere; }
+  [data-campus-view] .subject-card .subject-meta { gap: 10px; }
+}
+
+[data-campus-view] :is(.subject-hero, .chapter-hero) { margin-top: 8px; padding: 32px; border-radius: 22px; background: var(--panel); box-shadow: var(--campus-surface-shadow); gap: 24px; }
+[data-campus-view] :is(.subject-hero, .chapter-hero) h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.16; font-weight: 650; letter-spacing: -.04em; }
+[data-campus-view] :is(.subject-hero, .chapter-hero) p { font-size: 15px; line-height: 1.75; }
+[data-campus-view] :is(.large-icon, .chapter-hero .large-icon) { width: 66px; height: 66px; flex: 0 0 auto; border-radius: 17px; box-shadow: none; font-size: 30px; }
+[data-campus-view] .subject-summary strong { font-weight: 650; }
+[data-campus-view] .chapter-list { gap: 12px; }
+[data-campus-view] .chapter-row { border-radius: 17px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 2px 4px color-mix(in srgb, var(--text) 2%, transparent); }
+[data-campus-view] .chapter-row h3 { font-size: 18px; font-weight: 620; letter-spacing: -.02em; line-height: 1.4; }
+[data-campus-view] .chapter-row p { font-size: 13px; line-height: 1.65; }
+[data-campus-view] .chapter-number { color: var(--accent); font-weight: 550; }
+[data-campus-view] .chapter-row-illustrated .chapter-illustration { width: 90px; height: 100px; }
+[data-campus-view] .chapter-row-illustrated .chapter-illustration-placeholder { width: 68px; height: 68px; border-radius: 18px; font-weight: 400; font-size: 27px; }
+[data-campus-view] .chapter-open-button,
+[data-campus-view] [class*="openButton"] { padding: 0 16px; min-height: 46px; border: 1px solid var(--line); border-radius: 11px; background: var(--bg-soft); color: var(--text); box-shadow: none; font-size: 11px; font-weight: 600; }
+[data-campus-view] .chapter-open-button:hover,
+[data-campus-view] [class*="openButton"]:hover { background: var(--primary); color: #fff; box-shadow: none; transform: none; }
+[data-campus-view] [class*="openButton"] > span,
+[data-campus-view] [class*="openButton"]:hover > span { position: static; color: inherit; transform: none; font-size: 18px; }
+[data-campus-view] [data-campus-lesson] { padding: 22px; border-radius: 16px; box-shadow: 0 2px 4px color-mix(in srgb, var(--text) 2%, transparent); }
+[data-campus-view] [data-campus-lesson] h3 { font-size: 18px; font-weight: 620; line-height: 1.4; }
+[data-campus-view] [data-campus-lesson] [class*="lessonIndex"] { width: 44px; height: 44px; font-size: 14px; font-weight: 550; border-radius: 11px; }
+[data-campus-view] [class*="lessonHero"] { border-radius: 22px; box-shadow: var(--campus-surface-shadow); }
+[data-campus-view] [class*="lessonHero"] h1 { font-weight: 650; line-height: 1.18; letter-spacing: -.035em; }
+[data-campus-view] [class*="lessonNavButton"] { border-radius: 13px; box-shadow: none; }
+[data-campus-view] [class*="lessonBody"] { font-size: 17px; line-height: 1.85; }
+[data-campus-view] [class*="lessonBody"] :is(h2, h3, h4) { font-weight: 650; letter-spacing: -.025em; scroll-margin-top: 100px; }
+[data-campus-view] .flashcard-face { border-radius: 24px; box-shadow: var(--campus-surface-shadow); }
+[data-campus-view] .flashcard-face h2 { font-weight: 650; letter-spacing: -.025em; }
+[data-campus-view] .study-context { border-radius: 16px; box-shadow: none; }
+
+/* Entry transitions are an enhancement: unsupported browsers show the final state. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-campus-view] > :is(section, [data-campus-modes]),
+  [data-campus-view] :is([data-campus-card], .subject-card, .chapter-row, [data-campus-lesson]) { opacity: 1; translate: 0 0; transition: opacity .35s ease, translate .45s var(--campus-ease), transform .3s var(--campus-ease), border-color .2s ease, box-shadow .2s ease; }
+  @starting-style {
+    [data-campus-view] > :is(section, [data-campus-modes]),
+    [data-campus-view] :is([data-campus-card], .subject-card, .chapter-row, [data-campus-lesson]) { opacity: .5; translate: 0 12px; }
+  }
+}
+
+body > .medical-portal-ant-app > footer,
+.medical-portal-ant-app footer { max-width: 1168px; margin: 0 auto; border-top: 1px solid var(--line); padding-inline: 0; padding-block: 26px; color: var(--muted); font-size: 11px; }
+
+@media (max-width: 1100px) {
+  .site-header .header-actions { gap: 12px; }
+  .site-header .desktop-navigation .tab { padding-inline: 10px; }
+  [data-campus-view] .subject-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .medical-portal-ant-app footer { margin-inline: 24px; }
+}
+@media (max-width: 800px) {
+  .site-header .desktop-navigation .nav-label { display: none; }
+  .site-header .desktop-navigation .tab { width: 38px; padding: 0; }
+  .medical-portal-ant-app [data-campus-grade-hero] { padding: 26px; gap: 24px; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] { min-width: 220px; }
+  .campus-home .stats-strip > div { display: grid; justify-items: center; gap: 6px; padding: 0 10px; }
+  [data-campus-view] .section-heading { flex-wrap: wrap; }
+}
+@media (max-width: 700px) {
+  .site-header { min-height: 68px; padding: 10px 16px; gap: 8px; }
+  .site-header .brand-mark { width: 35px; height: 35px; border-radius: 11px; }
+  .site-header .brand { gap: 8px; }
+  .site-header .brand b { font-size: 12px; }
+  .site-header .brand small { font-size: 9px; }
+  .site-header .header-actions { gap: 8px; }
+  .site-header .desktop-navigation { display: none; }
+  .mobile-navigation { left: 12px; right: 12px; bottom: calc(9px + env(safe-area-inset-bottom)); width: auto; max-width: 440px; margin-inline: auto; border: 1px solid var(--line); border-radius: 20px; padding: 6px; background: var(--header); backdrop-filter: blur(16px); box-shadow: 0 8px 32px color-mix(in srgb, var(--text) 12%, transparent); }
+  .mobile-navigation .mobile-navigation-item { min-height: 52px; border-radius: 14px; padding: 6px; transition: background .2s ease, color .2s ease; }
+  .mobile-navigation .mobile-navigation-item.is-active { background: color-mix(in srgb, var(--primary) 9%, var(--panel)); color: var(--primary); box-shadow: none; }
+  .mobile-navigation .mobile-navigation-icon { background: transparent; box-shadow: none; }
+  .mobile-navigation .mobile-navigation-label { font-size: 10px; font-weight: 600; }
+  .campus-home .stats-strip { width: calc(100% - 40px); grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 22px 4px; border-radius: 15px; }
+  .campus-home .stats-strip > div { border: 0; padding: 0 4px; }
+  .campus-home .stats-strip > div + div { border-left: 1px solid var(--line); }
+  .campus-home .stats-strip strong { font-size: 23px; }
+  .campus-home .stats-strip span { font-size: 10px; }
+  .campus-home [data-campus-grades] { padding: 48px 20px 50px; }
+  .campus-home [data-campus-grades] h2 { font-size: 32px; }
+  .campus-home [data-campus-grades] > div:first-child > p { font-size: 13px; line-height: 1.7; }
+  .medical-portal-ant-app [data-campus-card] { min-height: 276px; padding: 24px; }
+  .medical-portal-ant-app [data-campus-card] h3 { margin-top: 18px; font-size: 25px; }
+  .medical-portal-ant-app [data-campus-card] > div { padding-top: 20px; }
+  main.inner-page[data-campus-view] { padding-inline: 18px; }
+  [data-campus-view] [data-campus-breadcrumb] { margin-top: 10px; margin-bottom: 12px; }
+  .medical-portal-ant-app [data-campus-grade-hero] { grid-template-columns: minmax(0, 1fr); padding: 24px; border-radius: 18px; }
+  .medical-portal-ant-app [data-campus-grade-hero] h1 { font-size: 44px; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] { min-width: 0; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); border-radius: 12px; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] > div { min-width: 0; padding: 14px 3px; border: 0; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] > div + div { border-left: 1px solid var(--line); }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] strong { font-size: 22px; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] span { font-size: 9px; }
+  [data-campus-view] :is(.subjects-section, .chapters-section) { padding-top: 30px; }
+  [data-campus-view] .section-heading { gap: 20px; margin-bottom: 20px; }
+  [data-campus-view] .section-heading h2 { font-size: 28px; }
+  [data-campus-view] .library-tools { width: 100%; }
+  [data-campus-view] .subjects-section .search-box { width: 100%; min-width: 0; }
+  [data-campus-view] [data-campus-modes] { gap: 12px; margin-top: 16px; }
+  [data-campus-view] [data-campus-modes] button { min-width: 0; min-height: 44px; }
+  [data-campus-view] .subject-grid { gap: 16px; }
+  [data-campus-view] :is(.subject-hero, .chapter-hero) { padding: 24px; gap: 18px; border-radius: 18px; }
+  [data-campus-view] :is(.subject-hero, .chapter-hero) h1 { font-size: 31px; }
+  [data-campus-view] .chapter-row-illustrated .chapter-illustration { width: 78px; height: 88px; }
+  [data-campus-view] .chapter-row h3 { font-size: 17px; }
+  [data-campus-view] [data-campus-lesson] { padding: 18px; }
+  [data-campus-view] [class*="lessonBody"] { font-size: 16px; line-height: 1.85; }
+  .medical-portal-ant-app footer { margin-inline: 20px; padding-bottom: calc(104px + env(safe-area-inset-bottom)); font-size: 10px; line-height: 1.6; }
+}
+@media (max-width: 540px) {
+  [data-campus-view] .subject-grid { grid-template-columns: minmax(0, 1fr); }
+  [data-campus-view] .subject-card { padding: 18px; min-height: 340px; }
+  [data-campus-view] .subject-card .subject-top { height: 160px; }
+  [data-campus-view] [data-campus-modes] { flex-direction: column; align-items: stretch; }
+  [data-campus-view] [data-campus-modes] > div { width: 100%; }
+}
+@media (max-width: 360px) {
+  .site-header { padding-inline: 12px; }
+  .site-header .header-actions { gap: 4px; }
+  .site-header .brand b { font-size: 11px; }
+  .site-header .brand small { font-size: 8px; }
+  .campus-home .stats-strip strong { font-size: 20px; }
+  .campus-home .stats-strip span { font-size: 9px; }
+  .medical-portal-ant-app [data-campus-grade-hero] { padding: 20px; }
+}
+@media (hover: none) {
+  [data-campus-view] :is(.subject-card, .chapter-row, [data-campus-card]):hover,
+  [data-campus-view] .subject-card:hover .subject-top i { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-campus-view] *, [data-campus-view] *::before, [data-campus-view] *::after,
+  .site-header *, .mobile-navigation * { animation: none !important; transition: none !important; }
+  [data-campus-view] :is([data-campus-card], .subject-card, .chapter-row, [data-campus-lesson]),
+  [data-campus-view] .subject-card:hover .subject-top i { translate: none; transform: none; }
+}
