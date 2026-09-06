@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient, PortableText, type PortableTextComponents } from "next-sanity";
 import styles from "./portal.module.css";
+import PortalHero from "./PortalHero";
 import experience from "./learning-experience.module.css";
 import classic from "./classic-learning.module.css";
 import LessonAdminEditor, { type AdminEditableLesson } from "./LessonAdminEditor";
@@ -425,7 +426,7 @@ function AudioIcon() {
 
 function ModeChooser({ mode, onChange }: { mode: ContentMode; onChange: (mode: ContentMode) => void }) {
   return (
-    <div className={classic.modeChooser} role="tablist" aria-label="Zgjidh mënyrën e mësimit">
+    <div className={classic.modeChooser} data-campus-modes role="tablist" aria-label="Zgjidh mënyrën e mësimit">
       <span className={classic.modeLabel}>Çfarë dëshiron të hapësh?</span>
       <div className={classic.modeButtons}>
         {(["lessons", "flashcards"] as ContentMode[]).map((item) => (
@@ -1067,8 +1068,8 @@ export default function ClassicLearningPortal({
     const showBackImage = card?.image?.asset?.url && card.imageSide !== "front";
 
     return (
-      <main className="inner-page study-page">
-        <div className={styles.hierarchy}>
+      <main data-campus-view className="inner-page study-page">
+        <div className={styles.hierarchy} data-campus-breadcrumb>
           <button type="button" onClick={changeGrade}>Klasat</button><span>/</span>
           <button type="button" onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
           <button type="button" onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
@@ -1197,7 +1198,7 @@ export default function ClassicLearningPortal({
       : null;
 
     return (
-      <main
+      <main data-campus-view
         className={`inner-page ${styles.lessonPage}`}
         data-progress-page="lesson"
         data-progress-grade-id={selectedGrade._id}
@@ -1205,7 +1206,7 @@ export default function ClassicLearningPortal({
         data-progress-chapter-id={selectedChapter._id}
         data-progress-lesson-id={selectedLesson._id}
       >
-        <div className={styles.hierarchy}>
+        <div className={styles.hierarchy} data-campus-breadcrumb>
           <button type="button" onClick={changeGrade}>Klasat</button><span>/</span>
           <button type="button" onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
           <button type="button" onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
@@ -1323,8 +1324,8 @@ export default function ClassicLearningPortal({
     const chapterCards = getChapterFlashcardCount(selectedChapter);
 
     return (
-      <main className="inner-page">
-        <div className={styles.hierarchy}>
+      <main data-campus-view className="inner-page">
+        <div className={styles.hierarchy} data-campus-breadcrumb>
           <button type="button" onClick={changeGrade}>Klasat</button><span>/</span>
           <button type="button" onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
           <button type="button" onClick={goToSubject}>{selectedSubject.title}</button><span>/</span>
@@ -1364,7 +1365,7 @@ export default function ClassicLearningPortal({
             contentMode === "lessons" ? (
               <div className={styles.lessonList}>
                 {selectedChapter.lessons.map((lesson, index) => (
-                  <article className={styles.lessonRow} key={lesson._id}>
+                  <article data-campus-lesson className={styles.lessonRow} key={lesson._id}>
                     <span className={styles.lessonIndex}>{String(index + 1).padStart(2, "0")}</span>
                     <div className={styles.lessonCopy}>
                       <h3>{lesson.title}</h3>
@@ -1409,8 +1410,8 @@ export default function ClassicLearningPortal({
     const subjectStats = getSubjectStats(selectedSubject);
 
     return (
-      <main className="inner-page subject-page">
-        <div className={styles.hierarchy}>
+      <main data-campus-view className="inner-page subject-page">
+        <div className={styles.hierarchy} data-campus-breadcrumb>
           <button type="button" onClick={changeGrade}>Klasat</button><span>/</span>
           <button type="button" onClick={goToGrade}>{selectedGrade.title}</button><span>/</span>
           <span>{selectedSubject.title}</span>
@@ -1472,12 +1473,12 @@ export default function ClassicLearningPortal({
     const gradeStats = getGradeStats(selectedGrade);
 
     return (
-      <main className="inner-page">
-        <div className={styles.hierarchy}>
+      <main data-campus-view className="inner-page">
+        <div className={styles.hierarchy} data-campus-breadcrumb>
           <button type="button" onClick={changeGrade}>Klasat</button><span>/</span><span>{selectedGrade.title}</span>
         </div>
 
-        <section className={styles.portalHero}>
+        <section className={styles.portalHero} data-campus-grade-hero>
           <div>
             <span className={styles.eyebrow}>Klasa aktive</span>
             <h1>{selectedGrade.title}</h1>
@@ -1499,8 +1500,8 @@ export default function ClassicLearningPortal({
           <div className="section-heading">
             <div><span className="eyebrow">Vetëm {selectedGrade.title}</span><h2>Zgjidh lëndën</h2></div>
             <div className="library-tools">
-              <label className="search-box"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Kërko lëndën..." /></label>
-              <button type="button" className="refresh-button" onClick={() => void fetchPortal(true)} title="Rifresko të dhënat">↻</button>
+              <label className="search-box"><span>⌕</span><input aria-label="Kërko lëndën" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Kërko lëndën..." /></label>
+              <button type="button" className="refresh-button" onClick={() => void fetchPortal(true)} title="Rifresko të dhënat" aria-label="Rifresko të dhënat">↻</button>
             </div>
           </div>
 
@@ -1548,30 +1549,17 @@ export default function ClassicLearningPortal({
   }
 
   return (
-    <main>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="status-pill"><i /> Portali i shkollës sonë</span>
-          <h1>Mësime dhe flashcards.<br /><em>Të ndara sipas klasës.</em></h1>
-          <p>Zgjidhe klasën tënde. Klasa ruhet dhe pastaj i sheh të gjitha lëndët e saj.</p>
-          <a className="hero-cta" href="#klasat">Zgjidh klasën <span>→</span></a>
-        </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="orbit one" /><div className="orbit two" />
-          <div className="demo-card first"><span>PORTALI MËSIMOR</span><b>Klasa → Të gjitha lëndët</b><small>Strukturë e qartë</small></div>
-          <div className="demo-card second"><span>ZGJIDH MËNYRËN</span><b>Mësimet ose Flashcards</b><small>Vetëm një buton</small></div>
-          <div className="plus">+</div>
-        </div>
-      </section>
+    <main className="campus-home" data-campus-view>
+      <PortalHero />
 
-      <section className="stats-strip">
+      <section className="stats-strip" aria-label="Portali në shifra">
         <div><strong>3</strong><span>Klasa</span></div>
         <div><strong>{totalStats.subjects}</strong><span>Lëndë</span></div>
         <div><strong>{totalStats.lessons}</strong><span>Mësime</span></div>
         <div><strong>{totalStats.flashcards}</strong><span>Flashcards</span></div>
       </section>
 
-      <section className={styles.gradeSection} id="klasat">
+      <section className={styles.gradeSection} id="klasat" data-campus-grades>
         <div className={styles.sectionHeading}>
           <span className={styles.eyebrow}>Hapi i parë</span>
           <h2>Zgjidh klasën</h2>
@@ -1582,7 +1570,7 @@ export default function ClassicLearningPortal({
           {grades.map((grade) => {
             const stats = getGradeStats(grade);
             return (
-              <article className={styles.gradeCard} key={grade._id}>
+              <article className={styles.gradeCard} key={grade._id} data-campus-card data-grade={grade.gradeNumber}>
                 <span className={styles.gradeNumber}>{grade.gradeNumber}</span>
                 <h3>{grade.title}</h3>
                 <p>{grade.shortDescription}</p>
@@ -1590,7 +1578,7 @@ export default function ClassicLearningPortal({
                   <span><b>{stats.subjectCount}</b> lëndë</span>
                   <span><b>{stats.flashcardCount}</b> flashcards</span>
                 </div>
-                <button type="button" className={styles.gradeOpen} onClick={() => chooseGrade(grade)}>Hape {grade.title}</button>
+                <button type="button" className={styles.gradeOpen} aria-label={`Hape ${grade.title}`} onClick={() => chooseGrade(grade)}>Hape {grade.title}</button>
               </article>
             );
           })}
