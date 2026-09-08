@@ -282,6 +282,60 @@ body > .medical-portal-ant-app > footer,
   [data-learning-experience] [class*="lessonMeta"] { padding: 14px; align-items: stretch; flex-direction: column; }
   [data-learning-experience] [class*="lessonMeta"] button { width: 100%; }
 }
+/* Second pass: quieter reading surfaces and consistent interactive details. */
+[data-learning-experience] header[data-learning-chrome] {
+  position: relative;
+  border-top: 3px solid color-mix(in srgb, var(--primary) 55%, var(--line));
+}
+[data-learning-experience] header[data-learning-chrome] h1 { font-weight: 720; }
+[data-learning-experience] [class*="lessonBody"] {
+  margin-block: 24px 36px;
+  padding: clamp(20px, 3vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--text) 2%, transparent);
+  overflow-wrap: break-word;
+}
+[data-learning-experience] [class*="lessonBody"] > :first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+[data-learning-experience] [class*="lessonBody"] > :last-child { margin-bottom: 0; }
+[data-learning-experience] [class*="lessonBody"] p { margin-block: 0 1.15em; }
+[data-learning-experience] [class*="lessonBody"] li + li { margin-top: .45em; }
+[data-learning-experience] [class*="lessonBody"] li::marker { color: var(--primary); }
+[data-learning-experience] [class*="lessonBody"] blockquote {
+  margin: 24px 0;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--primary);
+  border-radius: 0 12px 12px 0;
+  background: color-mix(in srgb, var(--primary) 4%, var(--panel));
+  color: var(--text);
+  font-style: normal;
+}
+[data-learning-experience] [class*="lessonBody"] a { text-underline-offset: .2em; text-decoration-thickness: 1px; }
+[data-learning-experience] [class*="lessonBody"] figure { margin-inline: 0; }
+[data-learning-experience] [class*="lessonBody"] figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+[data-learning-experience] [class*="lessonStudyBar"] { padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); gap: 18px; }
+[data-learning-experience] [class*="lessonStudyBar"] button { min-height: 46px; border-radius: 12px; }
+[data-campus-view] [data-campus-breadcrumb] { flex-wrap: wrap; row-gap: 8px; line-height: 1.6; }
+[data-campus-view] [data-campus-breadcrumb] button { border-radius: 7px; transition: background .18s ease, color .18s ease; }
+[data-campus-view] [data-campus-breadcrumb] button:hover { background: var(--panel); color: var(--primary); }
+[data-campus-view] :is(.subject-card, .chapter-row, [data-campus-lesson]):focus-within { border-color: var(--primary); }
+[data-campus-view] :is(button, a):focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+[data-campus-view] button:disabled { cursor: not-allowed; }
+@media (hover: hover) and (pointer: fine) {
+  [data-campus-view] [data-campus-card] { transition: border-color .2s ease, box-shadow .2s ease, translate .2s ease; }
+  [data-campus-view] [data-campus-card]:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); box-shadow: 0 14px 32px color-mix(in srgb, var(--primary) 10%, transparent); translate: 0 -3px; }
+}
+@media (max-width: 680px) {
+  [data-learning-experience] [class*="lessonBody"] { padding: 22px 18px; margin-block: 18px 26px; border-radius: 16px; }
+  [data-learning-experience] [class*="lessonBody"] blockquote { padding: 15px; }
+  [data-learning-experience] [class*="lessonStudyBar"] { padding: 18px; flex-wrap: wrap; }
+  [data-campus-view] nav[aria-label="Navigimi ndërmjet mësimeve"] button { padding: 16px; }
+}
+@media (max-width: 380px) {
+  [data-learning-experience] [class*="lessonBody"] { padding-inline: 14px; }
+}
 @media (hover: none) {
   [data-campus-view] :is(.subject-card, .chapter-row, [data-campus-card]):hover,
   [data-campus-view] .subject-card:hover .subject-top i { transform: none; }
