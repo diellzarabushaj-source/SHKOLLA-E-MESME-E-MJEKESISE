@@ -3,7 +3,7 @@ import styles from "./LessonDiagram.module.css";
 export type LessonDiagramBlock = {
   _key?: string;
   _type?: "lessonDiagram";
-  kind?: "linearPosition";
+  kind?: "linearPosition" | "curvedVelocity";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -13,6 +13,8 @@ export type LessonDiagramBlock = {
   startCoordinateLabel?: string;
   endCoordinateLabel?: string;
   intervalLabel?: string;
+  startVectorLabel?: string;
+  endVectorLabel?: string;
 };
 
 function LinearPositionDiagram({ value }: { value: LessonDiagramBlock }) {
@@ -107,6 +109,55 @@ function UniformMotionAxisDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function CurvedVelocityDiagram({ value }: { value: LessonDiagramBlock }) {
+  const point1 = value.startPointLabel || "1";
+  const point2 = value.endPointLabel || "2";
+  const time1 = value.startCoordinateLabel || "t";
+  const time2 = value.endCoordinateLabel || "t + Δt";
+  const arc = value.intervalLabel || "Δs";
+  const velocity1 = value.startVectorLabel || "v₁";
+  const velocity2 = value.endVectorLabel || "v₂";
+
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 340" role="img" aria-labelledby="curved-motion-title curved-motion-desc">
+      <title id="curved-motion-title">{value.title || "Shpejtësia gjatë lëvizjes së lakuar"}</title>
+      <desc id="curved-motion-desc">
+        Trupi lëviz nëpër një trajektore të lakuar nga pozita 1 në pozitën 2 gjatë intervalit Δt. Harku i përshkuar është Δs, ndërsa vektorët e shpejtësisë v₁ dhe v₂ janë tangjentë me trajektoren në pikat përkatëse.
+      </desc>
+
+      <defs>
+        <marker id="velocity-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" className={styles.velocityArrowFill} />
+        </marker>
+      </defs>
+
+      <path
+        d="M180 300 C205 250 210 190 270 150 C320 116 382 126 422 170 C458 211 476 264 532 254 C590 244 618 190 612 132"
+        className={styles.trajectory}
+      />
+
+      <path
+        d="M278 148 C330 118 386 132 425 173 C452 201 465 230 487 246"
+        className={styles.arcHighlight}
+      />
+
+      <circle cx="282" cy="143" r="8" className={styles.point} />
+      <circle cx="503" cy="252" r="8" className={styles.point} />
+
+      <line x1="282" y1="143" x2="365" y2="104" className={styles.velocityVector} markerEnd="url(#velocity-arrow)" />
+      <line x1="503" y1="252" x2="554" y2="309" className={styles.velocityVector} markerEnd="url(#velocity-arrow)" />
+
+      <text x="261" y="127" className={styles.pointLabel}>{point1}</text>
+      <text x="514" y="239" className={styles.pointLabel}>{point2}</text>
+      <text x="332" y="88" className={styles.vectorLabel}>{velocity1}</text>
+      <text x="560" y="318" className={styles.vectorLabel}>{velocity2}</text>
+      <text x="342" y="215" className={styles.intervalLabel}>{arc}</text>
+      <text x="224" y="169" className={styles.coordinate}>{time1}</text>
+      <text x="520" y="278" className={styles.coordinate}>{time2}</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -121,9 +172,11 @@ export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) 
         {value.title ? <strong>{value.title}</strong> : null}
       </header>
       <div className={styles.canvas}>
-        {isUniformMotionFigure(value)
-          ? <UniformMotionAxisDiagram value={value} />
-          : <LinearPositionDiagram value={value} />}
+        {value.kind === "curvedVelocity"
+          ? <CurvedVelocityDiagram value={value} />
+          : isUniformMotionFigure(value)
+            ? <UniformMotionAxisDiagram value={value} />
+            : <LinearPositionDiagram value={value} />}
       </div>
       {value.explanation ? <p className={styles.explanation}>{value.explanation}</p> : null}
       {value.caption ? <figcaption>{value.caption}</figcaption> : null}
