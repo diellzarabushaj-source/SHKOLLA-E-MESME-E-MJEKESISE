@@ -3,7 +3,7 @@ import styles from "./LessonDiagram.module.css";
 export type LessonDiagramBlock = {
   _key?: string;
   _type?: "lessonDiagram";
-  kind?: "linearPosition" | "curvedVelocity";
+  kind?: "linearPosition" | "curvedVelocity" | "hydrostaticPressure" | "hydrostaticParadox";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -158,6 +158,90 @@ function CurvedVelocityDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function HydrostaticPressureDiagram({ value }: { value: LessonDiagramBlock }) {
+  const topForce = value.startVectorLabel || "p₀ΔS";
+  const bottomForce = value.endVectorLabel || "pΔS";
+  const height = value.intervalLabel || "h";
+
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 340" role="img" aria-labelledby="hydrostatic-pressure-title hydrostatic-pressure-desc">
+      <title id="hydrostatic-pressure-title">{value.title || "Element vëllimor i lëngut në ekuilibër"}</title>
+      <desc id="hydrostatic-pressure-desc">
+        Element cilindrik me sipërfaqe ΔS dhe lartësi h brenda lëngut. Në faqen e sipërme vepron shtypja p₀, në faqen e poshtme shtypja p, ndërsa pesha e shtyllës së lëngut vepron poshtë.
+      </desc>
+      <defs>
+        <marker id="pressure-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" className={styles.velocityArrowFill} />
+        </marker>
+        <marker id="height-arrow-start" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
+          <path d="M8,0 L0,4 L8,8" className={styles.intervalStroke} />
+        </marker>
+        <marker id="height-arrow-end" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8" className={styles.intervalStroke} />
+        </marker>
+      </defs>
+
+      <rect x="150" y="62" width="460" height="230" rx="8" fill="none" className={styles.axis} />
+      <rect x="154" y="92" width="452" height="196" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="154" y1="92" x2="606" y2="92" className={styles.guide} />
+
+      <rect x="330" y="130" width="100" height="108" rx="46" fill="var(--medical-color-bg-container, #fff)" className={styles.axis} />
+      <line x1="380" y1="80" x2="380" y2="127" className={styles.velocityVector} markerEnd="url(#pressure-arrow)" />
+      <line x1="380" y1="286" x2="380" y2="241" className={styles.velocityVector} markerEnd="url(#pressure-arrow)" />
+      <text x="398" y="72" className={styles.vectorLabel}>{topForce}</text>
+      <text x="398" y="310" className={styles.vectorLabel}>{bottomForce}</text>
+      <text x="380" y="126" textAnchor="middle" className={styles.coordinate}>ΔS</text>
+      <text x="380" y="263" textAnchor="middle" className={styles.coordinate}>ΔS</text>
+
+      <line x1="486" y1="136" x2="486" y2="232" className={styles.interval} markerStart="url(#height-arrow-start)" markerEnd="url(#height-arrow-end)" />
+      <text x="508" y="190" className={styles.intervalLabel}>{height}</text>
+      <line x1="430" y1="130" x2="500" y2="130" className={styles.guide} />
+      <line x1="430" y1="238" x2="500" y2="238" className={styles.guide} />
+    </svg>
+  );
+}
+
+function HydrostaticParadoxDiagram({ value }: { value: LessonDiagramBlock }) {
+  const height = value.intervalLabel || "h";
+  const base = value.axisLabel || "S";
+
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 330" role="img" aria-labelledby="hydrostatic-paradox-title hydrostatic-paradox-desc">
+      <title id="hydrostatic-paradox-title">{value.title || "Paradoksi hidrostatik"}</title>
+      <desc id="hydrostatic-paradox-desc">
+        Tri enë me forma të ndryshme kanë të njëjtën sipërfaqe fundore S dhe të njëjtën lartësi të lëngut h. Shtypja dhe forca hidrostatike në fund varen nga h dhe S, jo nga forma e enës.
+      </desc>
+
+      <g transform="translate(80 46)">
+        <path d="M55 220 L92 54 L178 54 L215 220 Z" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+        <path d="M55 220 L92 54 M178 54 L215 220 M55 220 L215 220" className={styles.axis} />
+        <line x1="84" y1="78" x2="186" y2="78" className={styles.guide} />
+        <text x="135" y="250" textAnchor="middle" className={styles.coordinate}>{base}</text>
+        <text x="238" y="142" className={styles.intervalLabel}>{height}</text>
+        <text x="135" y="286" textAnchor="middle" className={styles.pointLabel}>a)</text>
+      </g>
+
+      <g transform="translate(280 46)">
+        <rect x="55" y="54" width="160" height="166" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+        <path d="M55 220 L55 54 M215 54 L215 220 M55 220 L215 220" className={styles.axis} />
+        <line x1="55" y1="78" x2="215" y2="78" className={styles.guide} />
+        <text x="135" y="250" textAnchor="middle" className={styles.coordinate}>{base}</text>
+        <text x="238" y="142" className={styles.intervalLabel}>{height}</text>
+        <text x="135" y="286" textAnchor="middle" className={styles.pointLabel}>b)</text>
+      </g>
+
+      <g transform="translate(480 46)">
+        <path d="M55 220 L92 54 L178 54 L215 220 Z" fill="var(--medical-color-primary, #314adc)" opacity="0.08" transform="matrix(-1 0 0 1 270 0)" />
+        <path d="M55 220 L18 54 M252 54 L215 220 M55 220 L215 220" className={styles.axis} />
+        <line x1="18" y1="78" x2="252" y2="78" className={styles.guide} />
+        <text x="135" y="250" textAnchor="middle" className={styles.coordinate}>{base}</text>
+        <text x="276" y="142" className={styles.intervalLabel}>{height}</text>
+        <text x="135" y="286" textAnchor="middle" className={styles.pointLabel}>c)</text>
+      </g>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -174,9 +258,13 @@ export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) 
       <div className={styles.canvas}>
         {value.kind === "curvedVelocity"
           ? <CurvedVelocityDiagram value={value} />
-          : isUniformMotionFigure(value)
-            ? <UniformMotionAxisDiagram value={value} />
-            : <LinearPositionDiagram value={value} />}
+          : value.kind === "hydrostaticPressure"
+            ? <HydrostaticPressureDiagram value={value} />
+            : value.kind === "hydrostaticParadox"
+              ? <HydrostaticParadoxDiagram value={value} />
+              : isUniformMotionFigure(value)
+                ? <UniformMotionAxisDiagram value={value} />
+                : <LinearPositionDiagram value={value} />}
       </div>
       {value.explanation ? <p className={styles.explanation}>{value.explanation}</p> : null}
       {value.caption ? <figcaption>{value.caption}</figcaption> : null}
