@@ -2,6 +2,8 @@ import {chapter} from './chapter'
 import {grade} from './grade'
 import {lesson} from './lesson'
 import {lessonFlashcard} from './lesson-flashcard'
+import {lessonFormula} from './lesson-formula'
+import {lessonFormulaVariable} from './lesson-formula-variable'
 import {lessonTable} from './lesson-table'
 import {lessonTableCell} from './lesson-table-cell'
 import {lessonTableRow} from './lesson-table-row'
@@ -12,6 +14,8 @@ export const schemaTypes = [
   subject,
   chapter,
   lessonFlashcard,
+  lessonFormulaVariable,
+  lessonFormula,
   lessonTableCell,
   lessonTableRow,
   lessonTable,
