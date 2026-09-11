@@ -13,10 +13,26 @@ export type LessonFormulaForm = {
   expression?: string;
 };
 
+export type UnitMathToken = {
+  _key?: string;
+  text?: string;
+  cancelled?: boolean;
+};
+
+export type UnitMathPart = {
+  _key?: string;
+  kind?: "text" | "fraction";
+  text?: string;
+  cancelled?: boolean;
+  numerator?: UnitMathToken[];
+  denominator?: UnitMathToken[];
+};
+
 export type LessonFormulaUnitStep = {
   _key?: string;
   label?: string;
   expression?: string;
+  visualParts?: UnitMathPart[];
   explanation?: string;
 };
 
@@ -33,6 +49,64 @@ export type LessonFormulaBlock = {
   sourceNote?: string;
 };
 
+function MathToken({ token }: { token: UnitMathToken }) {
+  return <span className={token.cancelled ? styles.cancelled : undefined}>{token.text || ""}</span>;
+}
+
+function Fraction({ numerator = [], denominator = [] }: { numerator?: UnitMathToken[]; denominator?: UnitMathToken[] }) {
+  return (
+    <span className={styles.fraction} aria-label="thyesë">
+      <span className={styles.numerator}>
+        {numerator.map((token, index) => <MathToken key={token._key || `${token.text}-${index}`} token={token} />)}
+      </span>
+      <span className={styles.denominator}>
+        {denominator.map((token, index) => <MathToken key={token._key || `${token.text}-${index}`} token={token} />)}
+      </span>
+    </span>
+  );
+}
+
+function UnitVisualExpression({ parts }: { parts?: UnitMathPart[] }) {
+  if (!Array.isArray(parts) || !parts.length) return null;
+
+  return (
+    <span className={styles.visualExpression} role="math">
+      {parts.map((part, index) => {
+        if (part.kind === "fraction") {
+          return <Fraction key={part._key || `fraction-${index}`} numerator={part.numerator} denominator={part.denominator} />;
+        }
+        return (
+          <span key={part._key || `${part.text}-${index}`} className={part.cancelled ? styles.cancelled : undefined}>
+            {part.text || ""}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+function SimpleFractionExpression({ expression }: { expression?: string }) {
+  if (!expression) return <>—</>;
+  const [left, right] = expression.split("=").map((part) => part.trim());
+  if (!left || !right || !right.includes("/") || right.split("/").length !== 2) {
+    return <>{expression}</>;
+  }
+  const [numerator, denominator] = right.split("/").map((part) => part.trim());
+  return (
+    <span className={styles.inlineEquation} role="math">
+      <span>{left}</span><span>=</span>
+      <Fraction numerator={[{text: numerator}]} denominator={[{text: denominator}]} />
+    </span>
+  );
+}
+
+function UnitDisplay({ unit }: { unit?: string }) {
+  if (!unit) return <>—</>;
+  if (!unit.includes("/") || unit.split("/").length !== 2) return <>{unit}</>;
+  const [numerator, denominator] = unit.split("/").map((part) => part.trim());
+  return <Fraction numerator={[{text: numerator}]} denominator={[{text: denominator}]} />;
+}
+
 export default function LessonFormula({ value }: { value: LessonFormulaBlock }) {
   const variables = Array.isArray(value.variables)
     ? value.variables.filter((item) => item?.symbol || item?.meaning || item?.unit)
@@ -41,7 +115,7 @@ export default function LessonFormula({ value }: { value: LessonFormulaBlock }) 
     ? value.formulaForms.filter((item) => item?.label || item?.expression)
     : [];
   const unitLogic = Array.isArray(value.unitLogic)
-    ? value.unitLogic.filter((item) => item?.label || item?.expression || item?.explanation)
+    ? value.unitLogic.filter((item) => item?.label || item?.expression || item?.visualParts || item?.explanation)
     : [];
 
   if (!value.formula) return null;
@@ -70,7 +144,7 @@ export default function LessonFormula({ value }: { value: LessonFormulaBlock }) 
             <div className={styles.variableRow} key={variable._key || `${variable.symbol}-${index}`}>
               <code className={styles.quantitySymbol}>{variable.symbol || "—"}</code>
               <span>{variable.meaning || "—"}</span>
-              <span className={styles.unit}>{variable.unit || "—"}</span>
+              <span className={styles.unit}><UnitDisplay unit={variable.unit} /></span>
             </div>
           ))}
         </div>
@@ -84,7 +158,7 @@ export default function LessonFormula({ value }: { value: LessonFormulaBlock }) 
             {formulaForms.map((item, index) => (
               <div className={styles.logicRow} key={item._key || `${item.label}-${index}`}>
                 <span>{item.label || "Madhësia"}</span>
-                <code className={styles.quantityExpression} role="math">{item.expression || "—"}</code>
+                <code className={styles.quantityExpression}><SimpleFractionExpression expression={item.expression} /></code>
               </div>
             ))}
           </div>
@@ -100,7 +174,11 @@ export default function LessonFormula({ value }: { value: LessonFormulaBlock }) 
               <div className={styles.unitStep} key={item._key || `${item.label}-${index}`}>
                 <div className={styles.unitStepTop}>
                   <strong>{item.label || "Kontrolli"}</strong>
-                  <code className={styles.unitExpression} role="math">{item.expression || "—"}</code>
+                  <code className={styles.unitExpression}>
+                    {Array.isArray(item.visualParts) && item.visualParts.length
+                      ? <UnitVisualExpression parts={item.visualParts} />
+                      : item.expression || "—"}
+                  </code>
                 </div>
                 {item.explanation ? <p>{item.explanation}</p> : null}
               </div>
