@@ -40,13 +40,16 @@
   display: block;
   width: 100%;
   min-height: 190px;
-  max-height: 300px;
+  max-height: 340px;
 }
 
 .axis,
 .tick,
 .guide,
-.interval {
+.interval,
+.trajectory,
+.arcHighlight,
+.velocityVector {
   fill: none;
   vector-effect: non-scaling-stroke;
 }
@@ -72,8 +75,30 @@
   stroke-width: 2;
 }
 
+.trajectory {
+  stroke: color-mix(in srgb, var(--medical-color-text, #172033) 68%, transparent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.arcHighlight {
+  stroke: var(--medical-color-primary, #314adc);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.velocityVector {
+  stroke: var(--medical-color-primary, #314adc);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
 .arrowFill {
   fill: var(--medical-color-text, #172033);
+}
+
+.velocityArrowFill {
+  fill: var(--medical-color-primary, #314adc);
 }
 
 .intervalStroke {
@@ -91,7 +116,8 @@
 .axisText,
 .pointLabel,
 .coordinate,
-.intervalLabel {
+.intervalLabel,
+.vectorLabel {
   fill: var(--medical-color-text, #172033);
   font-family: "Times New Roman", Cambria, Georgia, serif;
 }
@@ -107,7 +133,8 @@
   font-weight: 700;
 }
 
-.intervalLabel {
+.intervalLabel,
+.vectorLabel {
   fill: var(--medical-color-primary, #314adc);
   font-size: 23px;
   font-style: italic;
@@ -141,7 +168,8 @@
 
   .axisText,
   .coordinate,
-  .intervalLabel {
+  .intervalLabel,
+  .vectorLabel {
     font-size: 20px;
   }
 
