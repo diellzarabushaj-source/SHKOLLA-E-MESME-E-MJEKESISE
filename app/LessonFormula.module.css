@@ -142,7 +142,6 @@
   padding-top: 0.12em;
 }
 
-/* Nested fractions are used for a large fraction divided by another fraction. */
 .fraction .fraction {
   min-width: 1.9em;
   margin: 0.02em 0.2em;
@@ -203,7 +202,8 @@
 }
 
 .logicRow,
-.unitStepTop {
+.unitStepTop,
+.unitFormulaRow {
   display: grid;
   grid-template-columns: minmax(105px, 0.8fr) minmax(150px, 1.6fr);
   gap: 0.75rem;
@@ -219,7 +219,8 @@
 }
 
 .quantityExpression,
-.unitExpression {
+.unitExpression,
+.unitFormulaExpression {
   justify-self: start;
   padding: 0;
   background: transparent;
@@ -229,8 +230,62 @@
   font-weight: 700;
 }
 
-.quantityExpression {
+.quantityExpression,
+.unitFormulaExpression {
   font-style: italic;
+}
+
+.unitStep {
+  padding: 0.7rem 0.72rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 4%, var(--medical-color-bg-container, #fff));
+}
+
+.unitFormulaRow {
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.55rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--medical-color-border, #cdd5e1) 55%, transparent);
+}
+
+.unitFormulaRow > strong {
+  width: 100%;
+  padding: 0.32rem 0.55rem;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 11%, transparent);
+  color: var(--medical-color-text, inherit);
+  font-size: 0.82rem;
+}
+
+.unitFormulaValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.2rem;
+}
+
+.unitFormulaValue > span {
+  color: var(--medical-color-text-tertiary, inherit);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.unitFormulaExpression {
+  font-size: 1.08rem;
+}
+
+.unitFormulaExpression .fraction {
+  min-width: 2.2em;
+  font-size: 1.02em;
+}
+
+.unitsCaption {
+  color: var(--medical-color-text-tertiary, inherit);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .unitExpression {
@@ -244,7 +299,6 @@
   letter-spacing: 0.01em;
 }
 
-/* Unit simplification is intentionally more visual than the surrounding text. */
 .unitExpression .visualExpression > .fraction {
   min-width: 2.9em;
   margin-inline: 0.24em;
@@ -263,16 +317,6 @@
 .unitExpression .visualExpression > .fraction .fraction {
   min-width: 2.25em;
   font-size: 0.8em;
-}
-
-.unitStep {
-  padding: 0.7rem 0.72rem;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 4%, var(--medical-color-bg-container, #fff));
-}
-
-.unitStepTop strong {
-  font-size: 0.8rem;
 }
 
 .unitStep p {
@@ -332,9 +376,14 @@
   }
 
   .logicRow,
-  .unitStepTop {
+  .unitStepTop,
+  .unitFormulaRow {
     grid-template-columns: 1fr;
     gap: 0.32rem;
+  }
+
+  .unitFormulaValue {
+    gap: 0.5rem;
   }
 
   .unitExpression {
