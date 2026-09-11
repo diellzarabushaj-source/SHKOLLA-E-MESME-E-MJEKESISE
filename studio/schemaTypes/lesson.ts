@@ -97,8 +97,6 @@ export const lesson = defineType({
       description: 'Titulli i faqes është H1. Brenda mësimit përdor H2 për seksion kryesor, H3 për nënseksion dhe H4 për detaj. Etiketat si “Pra:”, “Skema” ose shpjegimet në kllapa mbeten Normal.',
       type: 'array',
       components: {
-        // Sanity's mixed Portable Text array inference currently resolves the form input
-        // as a primitive-array component. The runtime component is PortableTextInputProps.
         input: PortableTextClipboardPasteInput as unknown as ComponentType<any>,
       },
       of: [
@@ -152,6 +150,10 @@ export const lesson = defineType({
         defineArrayMember({
           type: 'lessonTable',
           title: 'Tabelë',
+        }),
+        defineArrayMember({
+          type: 'lessonFormula',
+          title: 'Formulë',
         }),
       ],
       validation: (rule) => [
