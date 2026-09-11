@@ -115,6 +115,10 @@ function UnitDisplay({ unit }: { unit?: string }) {
   return <Fraction numerator={[{text: unit}]} denominator={[{text: "1"}]} />;
 }
 
+function normalizeLabel(value?: string) {
+  return (value || "").trim().toLocaleLowerCase("sq-AL");
+}
+
 export default function LessonFormula({ value }: { value: LessonFormulaBlock }) {
   const variables = Array.isArray(value.variables)
     ? value.variables.filter((item) => item?.symbol || item?.meaning || item?.unit)
@@ -178,19 +182,33 @@ export default function LessonFormula({ value }: { value: LessonFormulaBlock }) 
           <h4>Thjeshtimi i njësive</h4>
           {value.unitLogicIntro ? <p className={styles.logicHint}>{value.unitLogicIntro}</p> : null}
           <div className={styles.unitSteps}>
-            {unitLogic.map((item, index) => (
-              <div className={styles.unitStep} key={item._key || `${item.label}-${index}`}>
-                <div className={styles.unitStepTop}>
-                  <strong>{item.label || "Kontrolli"}</strong>
-                  <code className={styles.unitExpression}>
-                    {Array.isArray(item.visualParts) && item.visualParts.length
-                      ? <UnitVisualExpression parts={item.visualParts} />
-                      : item.expression || "—"}
-                  </code>
+            {unitLogic.map((item, index) => {
+              const matchingFormula = formulaForms.find((formula) => normalizeLabel(formula.label) === normalizeLabel(item.label));
+
+              return (
+                <div className={styles.unitStep} key={item._key || `${item.label}-${index}`}>
+                  <div className={styles.unitFormulaRow}>
+                    <strong>{item.label || "Kontrolli"}</strong>
+                    <div className={styles.unitFormulaValue}>
+                      <span>Formula</span>
+                      <code className={styles.unitFormulaExpression}>
+                        <SimpleFractionExpression expression={matchingFormula?.expression} />
+                      </code>
+                    </div>
+                  </div>
+
+                  <div className={styles.unitStepTop}>
+                    <span className={styles.unitsCaption}>Njësitë</span>
+                    <code className={styles.unitExpression}>
+                      {Array.isArray(item.visualParts) && item.visualParts.length
+                        ? <UnitVisualExpression parts={item.visualParts} />
+                        : item.expression || "—"}
+                    </code>
+                  </div>
+                  {item.explanation ? <p>{item.explanation}</p> : null}
                 </div>
-                {item.explanation ? <p>{item.explanation}</p> : null}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       ) : null}
