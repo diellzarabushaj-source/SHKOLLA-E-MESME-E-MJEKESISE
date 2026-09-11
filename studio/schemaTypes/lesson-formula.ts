@@ -1,5 +1,74 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
+const unitMathToken = defineArrayMember({
+  name: 'unitMathToken',
+  title: 'Pjesë e njësisë',
+  type: 'object',
+  fields: [
+    defineField({name: 'text', title: 'Teksti', type: 'string', validation: (rule) => rule.required().max(80)}),
+    defineField({name: 'cancelled', title: 'Anulohet / thjeshtohet', type: 'boolean', initialValue: false}),
+  ],
+  preview: {select: {title: 'text'}},
+})
+
+const unitMathPart = defineArrayMember({
+  name: 'unitMathPart',
+  title: 'Pjesë e shprehjes',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'kind',
+      title: 'Lloji',
+      type: 'string',
+      initialValue: 'text',
+      options: {
+        layout: 'radio',
+        list: [
+          {title: 'Tekst / operator', value: 'text'},
+          {title: 'Thyesë', value: 'fraction'},
+        ],
+      },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Teksti',
+      type: 'string',
+      hidden: ({parent}) => parent?.kind === 'fraction',
+      validation: (rule) => rule.max(120),
+    }),
+    defineField({
+      name: 'cancelled',
+      title: 'Anulohet / thjeshtohet',
+      type: 'boolean',
+      initialValue: false,
+      hidden: ({parent}) => parent?.kind === 'fraction',
+    }),
+    defineField({
+      name: 'numerator',
+      title: 'Numëruesi',
+      type: 'array',
+      of: [unitMathToken],
+      hidden: ({parent}) => parent?.kind !== 'fraction',
+      validation: (rule) => rule.max(20),
+    }),
+    defineField({
+      name: 'denominator',
+      title: 'Emëruesi',
+      type: 'array',
+      of: [unitMathToken],
+      hidden: ({parent}) => parent?.kind !== 'fraction',
+      validation: (rule) => rule.max(20),
+    }),
+  ],
+  preview: {
+    select: {kind: 'kind', text: 'text'},
+    prepare({kind, text}) {
+      return {title: kind === 'fraction' ? 'Thyesë' : text || 'Tekst'}
+    },
+  },
+})
+
 export const lessonFormula = defineType({
   name: 'lessonFormula',
   title: 'Formulë',
@@ -87,9 +156,17 @@ export const lessonFormula = defineType({
             }),
             defineField({
               name: 'expression',
-              title: 'Thjeshtimi',
+              title: 'Shprehja tekstuale (fallback)',
               type: 'string',
               validation: (rule) => rule.required().max(400),
+            }),
+            defineField({
+              name: 'visualParts',
+              title: 'Shprehja vizuale me thyesa dhe anulime',
+              description: 'Përdor thyesa të vërteta dhe shëno njësitë që anulohen. Frontend-i i paraqet me vijë mbi simbolin e anuluar.',
+              type: 'array',
+              of: [unitMathPart],
+              validation: (rule) => rule.max(40),
             }),
             defineField({
               name: 'explanation',
