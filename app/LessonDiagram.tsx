@@ -11,7 +11,8 @@ export type LessonDiagramBlock = {
     | "pascalTransmission"
     | "pascalEqualPressure"
     | "communicatingVessels"
-    | "hydraulicPress";
+    | "hydraulicPress"
+    | "surfaceEnergy";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -234,6 +235,47 @@ function HydraulicPressDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function SurfaceEnergyDiagram({ value }: { value: LessonDiagramBlock }) {
+  const ring = [0, 45, 90, 135, 180, 225, 270, 315];
+  const surfaceNeighbors = [
+    [442, 82], [486, 82], [530, 82], [574, 82], [618, 82],
+    [464, 122], [508, 122], [552, 122], [596, 122],
+    [486, 162], [530, 162], [574, 162],
+  ];
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 380" role="img" aria-label="Molekulë në brendi dhe molekulë në sipërfaqen e lirë të lëngut">
+      <ArrowDefs />
+
+      <text x="205" y="42" textAnchor="middle" className={styles.pointLabel}>Molekulë në brendi</text>
+      <circle cx="205" cy="202" r="22" fill="none" className={styles.axis} />
+      {ring.map((deg) => {
+        const a = deg * Math.PI / 180;
+        const cx = 205 + Math.cos(a) * 62;
+        const cy = 202 + Math.sin(a) * 62;
+        return <circle key={`n-${deg}`} cx={cx} cy={cy} r="20" fill="none" className={styles.axis} />;
+      })}
+      {ring.map((deg) => {
+        const a = deg * Math.PI / 180;
+        return <line key={`a-${deg}`} x1="205" y1="202" x2={205 + Math.cos(a) * 44} y2={202 + Math.sin(a) * 44} className={styles.velocityVector} markerEnd="url(#diag-arrow)" />;
+      })}
+      <text x="205" y="316" textAnchor="middle" className={styles.intervalLabel}>R = 0</text>
+
+      <text x="536" y="42" textAnchor="middle" className={styles.pointLabel}>Molekulë në sipërfaqe</text>
+      <line x1="392" y1="61" x2="668" y2="61" className={styles.guide} />
+      {surfaceNeighbors.map(([cx, cy], index) => (
+        <circle key={`s-${index}`} cx={cx} cy={cy} r="20" fill="none" className={styles.axis} />
+      ))}
+      <circle cx="530" cy="82" r="22" fill="var(--medical-color-primary, #314adc)" opacity="0.12" className={styles.axis} />
+      <line x1="530" y1="82" x2="486" y2="122" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="530" y1="82" x2="530" y2="150" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="530" y1="82" x2="574" y2="122" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="530" y1="82" x2="530" y2="230" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="552" y="238" className={styles.vectorLabel}>{value.startVectorLabel || "F"}</text>
+      <text x="530" y="316" textAnchor="middle" className={styles.coordinate}>forcat nuk kompensohen plotësisht</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -247,6 +289,7 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "pascalEqualPressure": return <PascalEqualPressureDiagram value={value} />;
     case "communicatingVessels": return <CommunicatingVesselsDiagram value={value} />;
     case "hydraulicPress": return <HydraulicPressDiagram value={value} />;
+    case "surfaceEnergy": return <SurfaceEnergyDiagram value={value} />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
