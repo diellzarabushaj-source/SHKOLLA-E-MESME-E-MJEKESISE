@@ -9,6 +9,7 @@ export const lessonFormulaVariable = defineType({
       name: 'symbol',
       title: 'Simboli',
       type: 'string',
+      description: 'Përdor simbolin e madhësisë fizike me shkrimin standard ndërkombëtar.',
       validation: (rule) => rule.required().max(40),
     }),
     defineField({
@@ -19,9 +20,9 @@ export const lessonFormulaVariable = defineType({
     }),
     defineField({
       name: 'unit',
-      title: 'Njësia',
+      title: 'Njësia SI',
       type: 'string',
-      description: 'Shëno njësinë vetëm kur ajo jepet në burimin e mësimit. Mos shto informacion nga jashtë librit.',
+      description: 'Përdor simbolin zyrtar SI të njësisë. Njësitë mund të plotësohen nga burime autoritative SI edhe kur libri nuk i jep në atë faqe.',
       validation: (rule) => rule.max(120),
     }),
   ],
