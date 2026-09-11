@@ -16,7 +16,7 @@ export const lessonFormula = defineType({
       name: 'formula',
       title: 'Formula',
       type: 'string',
-      description: 'Shkruaje formulën siç paraqitet në librin burimor.',
+      description: 'Ruaj formulën e librit, duke përdorur simbolet standarde të madhësive fizike.',
       validation: (rule) => rule.required().max(500),
     }),
     defineField({
@@ -34,11 +34,81 @@ export const lessonFormula = defineType({
       validation: (rule) => rule.max(30),
     }),
     defineField({
+      name: 'formulaForms',
+      title: 'Logjika e formulës',
+      description: 'Format e së njëjtës formulë kur izolohet secila madhësi. Përdoren për ta mësuar logjikën e formulës, jo si përmbajtje e re teorike.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'formulaForm',
+          title: 'Formë e formulës',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Çfarë po gjejmë',
+              type: 'string',
+              validation: (rule) => rule.required().max(120),
+            }),
+            defineField({
+              name: 'expression',
+              title: 'Shprehja',
+              type: 'string',
+              validation: (rule) => rule.required().max(300),
+            }),
+          ],
+          preview: {select: {title: 'label', subtitle: 'expression'}},
+        }),
+      ],
+      validation: (rule) => rule.max(30),
+    }),
+    defineField({
+      name: 'unitLogicIntro',
+      title: 'Hyrje për logjikën e njësive',
+      type: 'string',
+      validation: (rule) => rule.max(400),
+    }),
+    defineField({
+      name: 'unitLogic',
+      title: 'Thjeshtimi i njësive',
+      description: 'Trego hap pas hapi si njësitë shumëzohen, pjesëtohen dhe thjeshtohen deri te njësia përfundimtare.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'unitLogicStep',
+          title: 'Hap i njësive',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Madhësia',
+              type: 'string',
+              validation: (rule) => rule.required().max(120),
+            }),
+            defineField({
+              name: 'expression',
+              title: 'Thjeshtimi',
+              type: 'string',
+              validation: (rule) => rule.required().max(400),
+            }),
+            defineField({
+              name: 'explanation',
+              title: 'Shpjegimi i shkurtër',
+              type: 'string',
+              validation: (rule) => rule.max(500),
+            }),
+          ],
+          preview: {select: {title: 'label', subtitle: 'expression'}},
+        }),
+      ],
+      validation: (rule) => rule.max(30),
+    }),
+    defineField({
       name: 'sourceNote',
-      title: 'Shënim nga burimi',
+      title: 'Shënim për burimin',
       type: 'text',
       rows: 2,
-      description: 'Përdore vetëm për sqarime që dalin nga libri, p.sh. kur njësia nuk jepet në këtë pjesë.',
+      description: 'Përdore për të dalluar përmbajtjen e librit nga njësitë ose konventat SI të verifikuara në burime autoritative.',
       validation: (rule) => rule.max(800),
     }),
   ],
