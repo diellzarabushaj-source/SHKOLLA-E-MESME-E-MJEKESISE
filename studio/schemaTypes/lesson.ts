@@ -155,6 +155,10 @@ export const lesson = defineType({
           type: 'lessonFormula',
           title: 'Formulë',
         }),
+        defineArrayMember({
+          type: 'lessonDiagram',
+          title: 'Figurë / diagram',
+        }),
       ],
       validation: (rule) => [
         rule.max(800),
