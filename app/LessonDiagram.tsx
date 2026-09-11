@@ -71,6 +71,46 @@ function LinearPositionDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function UniformMotionAxisDiagram({ value }: { value: LessonDiagramBlock }) {
+  const axis = value.axisLabel || "x";
+  const originLabel = value.startPointLabel || "t = 0";
+  const pathLabel = value.intervalLabel || "s = x";
+
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 280" role="img" aria-labelledby="uniform-motion-title uniform-motion-desc">
+      <title id="uniform-motion-title">{value.title || "Lëvizja e njëtrajtshme përgjatë boshtit Ox"}</title>
+      <desc id="uniform-motion-desc">
+        Origjina e sistemit të koordinatave përputhet me fillimin e lëvizjes në t baras me zero. Trupi lëviz vetëm përgjatë boshtit Ox dhe rruga është s baras me x.
+      </desc>
+
+      <defs>
+        <marker id="motion-axis-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" className={styles.arrowFill} />
+        </marker>
+      </defs>
+
+      <line x1="176" y1="178" x2="682" y2="178" className={styles.axis} markerEnd="url(#motion-axis-arrow)" />
+      <line x1="176" y1="178" x2="102" y2="232" className={styles.axis} markerEnd="url(#motion-axis-arrow)" />
+      <line x1="176" y1="178" x2="176" y2="54" className={styles.axis} markerEnd="url(#motion-axis-arrow)" />
+
+      <text x="704" y="184" className={styles.axisText}>{axis}</text>
+      <text x="82" y="246" className={styles.axisText}>y</text>
+      <text x="166" y="40" className={styles.axisText}>z</text>
+
+      <circle cx="176" cy="178" r="9" className={styles.point} />
+      <circle cx="560" cy="178" r="10" className={styles.point} />
+
+      <text x="176" y="216" textAnchor="middle" className={styles.coordinate}>{originLabel}</text>
+      <text x="370" y="148" textAnchor="middle" className={styles.intervalLabel}>{pathLabel}</text>
+      <text x="560" y="216" textAnchor="middle" className={styles.coordinate}>{value.endCoordinateLabel || "x"}</text>
+    </svg>
+  );
+}
+
+function isUniformMotionFigure(value: LessonDiagramBlock) {
+  return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
+}
+
 export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) {
   if (!value) return null;
 
@@ -81,7 +121,9 @@ export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) 
         {value.title ? <strong>{value.title}</strong> : null}
       </header>
       <div className={styles.canvas}>
-        <LinearPositionDiagram value={value} />
+        {isUniformMotionFigure(value)
+          ? <UniformMotionAxisDiagram value={value} />
+          : <LinearPositionDiagram value={value} />}
       </div>
       {value.explanation ? <p className={styles.explanation}>{value.explanation}</p> : null}
       {value.caption ? <figcaption>{value.caption}</figcaption> : null}
