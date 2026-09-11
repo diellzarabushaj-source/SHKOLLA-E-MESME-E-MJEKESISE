@@ -1,0 +1,151 @@
+.card {
+  margin: 1.45rem 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--medical-color-primary, #314adc) 20%, transparent);
+  border-radius: 16px;
+  background: var(--medical-color-bg-container, #fff);
+  box-shadow: 0 10px 28px rgba(10, 23, 48, 0.06);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.82rem 1rem 0;
+}
+
+.header strong {
+  color: var(--medical-color-text, inherit);
+  font-size: 0.86rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 12%, transparent);
+  color: var(--medical-color-primary, #314adc);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.canvas {
+  padding: 0.7rem 1rem 0.35rem;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  min-height: 190px;
+  max-height: 300px;
+}
+
+.axis,
+.tick,
+.guide,
+.interval {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.axis {
+  stroke: var(--medical-color-text, #172033);
+  stroke-width: 2.2;
+}
+
+.tick {
+  stroke: var(--medical-color-text, #172033);
+  stroke-width: 1.8;
+}
+
+.guide {
+  stroke: color-mix(in srgb, var(--medical-color-text, #172033) 38%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 5;
+}
+
+.interval {
+  stroke: var(--medical-color-primary, #314adc);
+  stroke-width: 2;
+}
+
+.arrowFill {
+  fill: var(--medical-color-text, #172033);
+}
+
+.intervalStroke {
+  fill: none;
+  stroke: var(--medical-color-primary, #314adc);
+  stroke-width: 1.6;
+}
+
+.point {
+  fill: var(--medical-color-primary, #314adc);
+  stroke: var(--medical-color-bg-container, #fff);
+  stroke-width: 3;
+}
+
+.axisText,
+.pointLabel,
+.coordinate,
+.intervalLabel {
+  fill: var(--medical-color-text, #172033);
+  font-family: "Times New Roman", Cambria, Georgia, serif;
+}
+
+.axisText,
+.coordinate {
+  font-size: 24px;
+  font-style: italic;
+}
+
+.pointLabel {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.intervalLabel {
+  fill: var(--medical-color-primary, #314adc);
+  font-size: 23px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.explanation {
+  margin: 0;
+  padding: 0 1rem 0.8rem;
+  color: var(--medical-color-text-secondary, inherit);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.card figcaption {
+  padding: 0.7rem 1rem 0.85rem;
+  border-top: 1px solid color-mix(in srgb, var(--medical-color-border, #cdd5e1) 70%, transparent);
+  color: var(--medical-color-text-tertiary, inherit);
+  font-size: 0.74rem;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .canvas {
+    padding-inline: 0.35rem;
+  }
+
+  .svg {
+    min-height: 165px;
+  }
+
+  .axisText,
+  .coordinate,
+  .intervalLabel {
+    font-size: 20px;
+  }
+
+  .pointLabel {
+    font-size: 19px;
+  }
+}
