@@ -23,6 +23,7 @@ export const lessonDiagram = defineType({
           {title: 'Ligji i Paskalit - presion i barabartë', value: 'pascalEqualPressure'},
           {title: 'Enët komunikuese', value: 'communicatingVessels'},
           {title: 'Presa hidraulike', value: 'hydraulicPress'},
+          {title: 'Energjia e sipërfaqes së lirë - molekulat', value: 'surfaceEnergy'},
         ],
       },
       validation: (rule) => rule.required(),
