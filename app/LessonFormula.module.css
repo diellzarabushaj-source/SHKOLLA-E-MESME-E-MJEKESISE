@@ -1,0 +1,140 @@
+.card {
+  margin: 1.75rem 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--medical-color-primary, #314adc) 26%, transparent);
+  border-radius: 20px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--medical-color-primary, #314adc) 8%, var(--medical-color-bg-container, #fff)), var(--medical-color-bg-container, #fff));
+  box-shadow: 0 14px 36px rgba(10, 23, 48, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem 0;
+}
+
+.header strong {
+  font-size: 0.95rem;
+  color: var(--medical-color-text, inherit);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 14%, transparent);
+  color: var(--medical-color-primary, #314adc);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.formula {
+  padding: 1.15rem 1.2rem 1.25rem;
+  text-align: center;
+  font-family: "Times New Roman", Cambria, Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: var(--medical-color-text, inherit);
+}
+
+.description {
+  margin: 0;
+  padding: 0 1.2rem 1.15rem;
+  color: var(--medical-color-text-secondary, inherit);
+  line-height: 1.7;
+}
+
+.variables {
+  border-top: 1px solid color-mix(in srgb, var(--medical-color-border, #cdd5e1) 80%, transparent);
+}
+
+.tableHeader,
+.variableRow {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.55fr) minmax(180px, 2fr) minmax(110px, 0.9fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.82rem 1.2rem;
+}
+
+.tableHeader {
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 5%, transparent);
+  color: var(--medical-color-text-tertiary, inherit);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.variableRow + .variableRow {
+  border-top: 1px solid color-mix(in srgb, var(--medical-color-border, #cdd5e1) 65%, transparent);
+}
+
+.variableRow code {
+  width: fit-content;
+  min-width: 36px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--medical-color-primary, #314adc) 10%, transparent);
+  color: var(--medical-color-primary, #314adc);
+  font-family: "Times New Roman", Cambria, Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.variableRow span {
+  line-height: 1.55;
+}
+
+.unit {
+  font-weight: 700;
+  color: var(--medical-color-text-secondary, inherit);
+}
+
+.note {
+  margin: 0;
+  padding: 0.9rem 1.2rem 1rem;
+  border-top: 1px dashed color-mix(in srgb, var(--medical-color-border, #cdd5e1) 75%, transparent);
+  color: var(--medical-color-text-tertiary, inherit);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+  .card {
+    margin: 1.35rem 0;
+    border-radius: 16px;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .variableRow {
+    grid-template-columns: 64px 1fr;
+    gap: 0.35rem 0.8rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .unit {
+    grid-column: 2;
+    font-size: 0.85rem;
+  }
+
+  .unit::before {
+    content: "Njësia: ";
+    font-weight: 500;
+    color: var(--medical-color-text-tertiary, inherit);
+  }
+
+  .formula {
+    padding-inline: 1rem;
+  }
+}
