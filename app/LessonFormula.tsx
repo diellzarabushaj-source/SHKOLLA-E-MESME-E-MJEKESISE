@@ -49,10 +49,6 @@ export type LessonFormulaBlock = {
   sourceNote?: string;
 };
 
-function MathToken({ token }: { token: UnitMathToken }) {
-  return <span className={token.cancelled ? styles.cancelled : undefined}>{token.text || ""}</span>;
-}
-
 function Fraction({ numerator = [], denominator = [] }: { numerator?: UnitMathToken[]; denominator?: UnitMathToken[] }) {
   return (
     <span className={styles.fraction} aria-label="thyesë">
@@ -64,6 +60,16 @@ function Fraction({ numerator = [], denominator = [] }: { numerator?: UnitMathTo
       </span>
     </span>
   );
+}
+
+function MathToken({ token }: { token: UnitMathToken }) {
+  const text = token.text || "";
+  const pieces = text.split("/").map((part) => part.trim());
+  const content = pieces.length === 2 && pieces[0] && pieces[1]
+    ? <Fraction numerator={[{text: pieces[0]}]} denominator={[{text: pieces[1]}]} />
+    : text;
+
+  return <span className={token.cancelled ? styles.cancelled : undefined}>{content}</span>;
 }
 
 function UnitVisualExpression({ parts }: { parts?: UnitMathPart[] }) {
@@ -102,9 +108,11 @@ function SimpleFractionExpression({ expression }: { expression?: string }) {
 
 function UnitDisplay({ unit }: { unit?: string }) {
   if (!unit) return <>—</>;
-  if (!unit.includes("/") || unit.split("/").length !== 2) return <>{unit}</>;
-  const [numerator, denominator] = unit.split("/").map((part) => part.trim());
-  return <Fraction numerator={[{text: numerator}]} denominator={[{text: denominator}]} />;
+  if (unit.includes("/") && unit.split("/").length === 2) {
+    const [numerator, denominator] = unit.split("/").map((part) => part.trim());
+    return <Fraction numerator={[{text: numerator}]} denominator={[{text: denominator}]} />;
+  }
+  return <Fraction numerator={[{text: unit}]} denominator={[{text: "1"}]} />;
 }
 
 export default function LessonFormula({ value }: { value: LessonFormulaBlock }) {
