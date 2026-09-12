@@ -13,7 +13,10 @@ export type LessonDiagramBlock = {
     | "communicatingVessels"
     | "hydraulicPress"
     | "surfaceEnergy"
-    | "surfaceTensionFilm";
+    | "surfaceTensionFilm"
+    | "capillaryWetting"
+    | "capillaryLevels"
+    | "capillaryBalance";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -246,7 +249,6 @@ function SurfaceEnergyDiagram({ value }: { value: LessonDiagramBlock }) {
   return (
     <svg className={styles.svg} viewBox="0 0 760 380" role="img" aria-label="Molekulë në brendi dhe molekulë në sipërfaqen e lirë të lëngut">
       <ArrowDefs />
-
       <text x="205" y="42" textAnchor="middle" className={styles.pointLabel}>Molekulë në brendi</text>
       <circle cx="205" cy="202" r="22" fill="none" className={styles.axis} />
       {ring.map((deg) => {
@@ -260,7 +262,6 @@ function SurfaceEnergyDiagram({ value }: { value: LessonDiagramBlock }) {
         return <line key={`a-${deg}`} x1="205" y1="202" x2={205 + Math.cos(a) * 44} y2={202 + Math.sin(a) * 44} className={styles.velocityVector} markerEnd="url(#diag-arrow)" />;
       })}
       <text x="205" y="316" textAnchor="middle" className={styles.intervalLabel}>R = 0</text>
-
       <text x="536" y="42" textAnchor="middle" className={styles.pointLabel}>Molekulë në sipërfaqe</text>
       <line x1="392" y1="61" x2="668" y2="61" className={styles.guide} />
       {surfaceNeighbors.map(([cx, cy], index) => (
@@ -283,24 +284,100 @@ function SurfaceTensionFilmDiagram({ value }: { value: LessonDiagramBlock }) {
       <ArrowDefs />
       <rect x="145" y="72" width="455" height="220" fill="var(--medical-color-primary, #314adc)" opacity="0.07" />
       <rect x="145" y="72" width="455" height="220" fill="none" className={styles.axis} />
-
       <line x1="500" y1="72" x2="500" y2="292" className={styles.guide} strokeDasharray="8 7" />
       <line x1="552" y1="72" x2="552" y2="292" className={styles.axis} />
       <text x="566" y="90" className={styles.pointLabel}>{value.startPointLabel || "A"}</text>
       <text x="566" y="294" className={styles.pointLabel}>{value.endPointLabel || "B"}</text>
-
       <line x1="620" y1="182" x2="558" y2="182" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
       <text x="626" y="170" className={styles.vectorLabel}>{value.startVectorLabel || "F"}</text>
-
       <line x1="504" y1="322" x2="548" y2="322" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
       <text x="526" y="346" textAnchor="middle" className={styles.intervalLabel}>{value.intervalLabel || "Δx"}</text>
-
       <line x1="112" y1="78" x2="112" y2="286" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
       <text x="92" y="187" textAnchor="middle" className={styles.intervalLabel}>{value.axisLabel || "l"}</text>
-
       <text x="318" y="166" textAnchor="middle" className={styles.coordinate}>film i hollë i lëngut</text>
       <text x="318" y="194" textAnchor="middle" className={styles.coordinate}>dy sipërfaqe</text>
       <text x="526" y="52" textAnchor="middle" className={styles.coordinate}>shufra AB zhvendoset</text>
+    </svg>
+  );
+}
+
+function CapillaryWettingDiagram() {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 360" role="img" aria-label="Lagia dhe moslagia e qelqit nga lëngu">
+      <ArrowDefs />
+      <text x="190" y="38" textAnchor="middle" className={styles.pointLabel}>Ujë - qelq</text>
+      <line x1="90" y1="70" x2="90" y2="300" className={styles.axis} />
+      <path d="M90 206 Q150 158 250 206" fill="none" className={styles.trajectory} />
+      <path d="M90 206 L90 300 L250 300 L250 206 Q150 158 90 206" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="126" y1="194" x2="98" y2="151" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="126" y1="194" x2="175" y2="220" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="86" y="142" className={styles.vectorLabel}>Fₐ</text>
+      <text x="176" y="238" className={styles.vectorLabel}>Fₖ</text>
+      <text x="145" y="334" textAnchor="middle" className={styles.coordinate}>θ &lt; 90° - lag enën</text>
+
+      <text x="565" y="38" textAnchor="middle" className={styles.pointLabel}>Merkur - qelq</text>
+      <line x1="470" y1="70" x2="470" y2="300" className={styles.axis} />
+      <path d="M470 220 Q540 168 650 220" fill="none" className={styles.trajectory} />
+      <path d="M470 220 L470 300 L650 300 L650 220 Q540 168 470 220" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="505" y1="206" x2="478" y2="165" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="505" y1="206" x2="558" y2="184" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="465" y="157" className={styles.vectorLabel}>Fₐ</text>
+      <text x="562" y="176" className={styles.vectorLabel}>Fₖ</text>
+      <text x="555" y="334" textAnchor="middle" className={styles.coordinate}>90° &lt; θ &lt; 180° - nuk e lag enën</text>
+    </svg>
+  );
+}
+
+function CapillaryLevelsDiagram() {
+  const tubes = [170, 260, 350];
+  const widths = [42, 28, 18];
+  const rise = [176, 145, 112];
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 390" role="img" aria-label="Elevacioni dhe depresioni kapilar">
+      <text x="210" y="34" textAnchor="middle" className={styles.pointLabel}>Elevacion kapilar</text>
+      <rect x="70" y="205" width="310" height="115" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="70" y1="205" x2="380" y2="205" className={styles.guide} />
+      {tubes.map((x, i) => (
+        <g key={x}>
+          <path d={`M${x-widths[i]} 70 L${x-widths[i]} 320 M${x+widths[i]} 70 L${x+widths[i]} 320`} className={styles.axis} />
+          <rect x={x-widths[i]+2} y={rise[i]} width={2*widths[i]-4} height={320-rise[i]} fill="var(--medical-color-primary, #314adc)" opacity="0.11" />
+          <path d={`M${x-widths[i]+2} ${rise[i]} Q${x} ${rise[i]+16} ${x+widths[i]-2} ${rise[i]}`} fill="none" className={styles.trajectory} />
+        </g>
+      ))}
+      <text x="215" y="354" textAnchor="middle" className={styles.coordinate}>R më i vogël → h më e madhe</text>
+
+      <text x="575" y="34" textAnchor="middle" className={styles.pointLabel}>Depresion kapilar</text>
+      <rect x="450" y="175" width="240" height="145" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="450" y1="175" x2="690" y2="175" className={styles.guide} />
+      {[525, 610].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x-24+i*8} 70 L${x-24+i*8} 320 M${x+24-i*8} 70 L${x+24-i*8} 320`} className={styles.axis} />
+          <rect x={x-22+i*8} y={215+i*22} width={44-i*16} height={105-i*22} fill="var(--medical-color-primary, #314adc)" opacity="0.11" />
+          <path d={`M${x-22+i*8} ${215+i*22} Q${x} ${195+i*22} ${x+22-i*8} ${215+i*22}`} fill="none" className={styles.trajectory} />
+        </g>
+      ))}
+      <text x="570" y="354" textAnchor="middle" className={styles.coordinate}>niveli në kapilar bie nën nivelin e enës</text>
+    </svg>
+  );
+}
+
+function CapillaryBalanceDiagram({ value }: { value: LessonDiagramBlock }) {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 390" role="img" aria-label="Baraspesha e forcave në kapilar">
+      <ArrowDefs />
+      <rect x="125" y="225" width="510" height="95" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
+      <line x1="125" y1="225" x2="635" y2="225" className={styles.guide} />
+      <path d="M330 55 L330 320 M430 55 L430 320" className={styles.axis} />
+      <rect x="333" y="124" width="94" height="196" fill="var(--medical-color-primary, #314adc)" opacity="0.12" />
+      <path d="M333 124 Q380 148 427 124" fill="none" className={styles.trajectory} />
+      <line x1="304" y1="225" x2="304" y2="124" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <text x="282" y="178" className={styles.intervalLabel}>{value.intervalLabel || "h"}</text>
+      <line x1="380" y1="123" x2="380" y2="72" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="395" y="84" className={styles.vectorLabel}>{value.startVectorLabel || "F = σ·2πR"}</text>
+      <line x1="380" y1="170" x2="380" y2="218" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="397" y="210" className={styles.vectorLabel}>{value.endVectorLabel || "mg"}</text>
+      <line x1="334" y1="350" x2="426" y2="350" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <text x="380" y="377" textAnchor="middle" className={styles.coordinate}>diametri = 2R</text>
     </svg>
   );
 }
@@ -320,6 +397,9 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "hydraulicPress": return <HydraulicPressDiagram value={value} />;
     case "surfaceEnergy": return <SurfaceEnergyDiagram value={value} />;
     case "surfaceTensionFilm": return <SurfaceTensionFilmDiagram value={value} />;
+    case "capillaryWetting": return <CapillaryWettingDiagram />;
+    case "capillaryLevels": return <CapillaryLevelsDiagram />;
+    case "capillaryBalance": return <CapillaryBalanceDiagram value={value} />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
