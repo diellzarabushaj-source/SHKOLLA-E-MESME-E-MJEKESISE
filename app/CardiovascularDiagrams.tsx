@@ -3,7 +3,7 @@ import styles from "./LessonDiagram.module.css";
 export type CardiovascularDiagramBlock = {
   _key?: string;
   _type?: "lessonDiagram";
-  kind?: "bloodVesselModel" | "heartCycleCardiogram";
+  kind?: "bloodVesselModel" | "heartCycleCardiogram" | "bloodPressureMeasurement";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -74,12 +74,64 @@ function HeartCycleCardiogramDiagram() {
   );
 }
 
+function BloodPressureMeasurementDiagram() {
+  const waves = Array.from({ length: 13 }, (_, i) => {
+    const x = 108 + i * 25;
+    const amp = i < 2 ? 8 + i * 7 : i < 7 ? 28 : Math.max(8, 28 - (i - 6) * 5);
+    return `L ${x} ${92 - amp} L ${x + 12} ${92 + amp}`;
+  }).join(" ");
+
+  return (
+    <svg className={styles.svg} viewBox="0 0 780 430" role="img" aria-label="Matja e shtypjes së gjakut me manzhetë, fonendoskop dhe manometër">
+      <ArrowDefs />
+      <line x1="70" y1="112" x2="500" y2="112" className={styles.axis} />
+      <path d={`M82 92 ${waves} L 456 92`} fill="none" className={styles.trajectory} />
+      <line x1="118" y1="125" x2="430" y2="125" className={styles.axis} />
+      {[120, 100, 80].map((v, i) => (
+        <g key={v}>
+          <line x1={150 + i * 125} y1="119" x2={150 + i * 125} y2="132" className={styles.guide} />
+          <text x={150 + i * 125} y="151" textAnchor="middle" className={styles.coordinate}>{v}</text>
+        </g>
+      ))}
+
+      <rect x="210" y="215" width="180" height="86" rx="28" className={styles.axis} />
+      <text x="300" y="209" textAnchor="middle" className={styles.vectorLabel}>A · manzheta</text>
+      <path d="M220 258 C178 260 164 294 150 322" fill="none" className={styles.trajectory} />
+      <circle cx="147" cy="328" r="17" className={styles.axis} />
+      <path d="M142 345 C132 370 112 380 96 358 M152 345 C162 370 182 380 198 358" fill="none" className={styles.trajectory} />
+      <text x="92" y="407" className={styles.coordinate}>fonendoskopi</text>
+
+      <path d="M388 240 C435 232 455 248 480 262" fill="none" className={styles.guide} />
+      <ellipse cx="504" cy="265" rx="32" ry="19" className={styles.axis} />
+      <text x="504" y="270" textAnchor="middle" className={styles.vectorLabel}>P</text>
+      <text x="472" y="301" className={styles.coordinate}>pompa</text>
+
+      <path d="M390 282 C450 307 520 330 574 330" fill="none" className={styles.trajectory} />
+      <path d="M574 330 L600 330 L600 188" fill="none" className={styles.axis} />
+      <line x1="600" y1="188" x2="600" y2="362" className={styles.axis} />
+      {[0, 50, 100, 150].map((v) => {
+        const y = 354 - v * 1.02;
+        return (
+          <g key={v}>
+            <line x1="595" y1={y} x2="616" y2={y} className={styles.guide} />
+            <text x="625" y={y + 5} className={styles.coordinate}>{v}</text>
+          </g>
+        );
+      })}
+      <text x="675" y="270" transform="rotate(90 675 270)" textAnchor="middle" className={styles.coordinate}>mmHg</text>
+      <text x="390" y="40" textAnchor="middle" className={styles.intervalLabel}>tingujt e arteries gjatë uljes graduale të shtypjes në manzhetë</text>
+    </svg>
+  );
+}
+
 function DiagramCanvas({ value }: { value: CardiovascularDiagramBlock }) {
   switch (value.kind) {
     case "bloodVesselModel":
       return <BloodVesselModelDiagram />;
     case "heartCycleCardiogram":
       return <HeartCycleCardiogramDiagram />;
+    case "bloodPressureMeasurement":
+      return <BloodPressureMeasurementDiagram />;
     default:
       return null;
   }
