@@ -39,6 +39,7 @@ export const lessonDiagram = defineType({
           {title: 'Ligji i Puazejit - rrjedhja në gyp', value: 'poiseuilleTube'},
           {title: 'Rezistenca e mjedisit - forma e trupit', value: 'bodyResistance'},
           {title: 'Modeli fizik i enëve të gjakut', value: 'bloodVesselModel'},
+          {title: 'Puna e zemrës - kardiogram mekanik', value: 'heartCycleCardiogram'},
         ],
       },
       validation: (rule) => rule.required(),
