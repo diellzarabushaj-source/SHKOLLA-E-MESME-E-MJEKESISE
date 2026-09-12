@@ -3,7 +3,7 @@ import styles from "./LessonDiagram.module.css";
 export type CardiovascularDiagramBlock = {
   _key?: string;
   _type?: "lessonDiagram";
-  kind?: "bloodVesselModel";
+  kind?: "bloodVesselModel" | "heartCycleCardiogram";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -53,15 +53,47 @@ function BloodVesselModelDiagram() {
   );
 }
 
+function HeartCycleCardiogramDiagram() {
+  return (
+    <svg className={styles.svg} viewBox="0 0 780 330" role="img" aria-label="Kardiogram mekanik me sistolë, diastolë dhe pauzë">
+      <line x1="70" y1="245" x2="715" y2="245" className={styles.axis} />
+      <path
+        d="M82 245 C96 245 100 150 116 150 C132 150 136 245 150 245 C164 245 168 150 184 150 C200 150 204 245 218 245 C232 245 236 150 252 150 C268 150 272 245 286 245 C300 245 304 150 320 150 C336 150 340 245 354 245 C368 245 372 150 388 150 C404 150 408 245 422 245 C436 245 440 150 456 150 C472 150 476 245 490 245 C504 245 508 150 524 150 C540 150 544 245 558 245 C572 245 576 160 592 160 C608 160 612 245 626 245 C645 245 654 260 675 260 C690 260 700 260 708 260"
+        fill="none"
+        className={styles.trajectory}
+      />
+      <line x1="535" y1="72" x2="575" y2="144" className={styles.guide} />
+      <text x="515" y="62" className={styles.vectorLabel}>sistolë</text>
+      <line x1="610" y1="88" x2="620" y2="215" className={styles.guide} />
+      <text x="598" y="76" className={styles.vectorLabel}>diastolë</text>
+      <line x1="659" y1="286" x2="665" y2="263" className={styles.guide} />
+      <text x="639" y="308" className={styles.vectorLabel}>pauzë</text>
+      <text x="390" y="45" textAnchor="middle" className={styles.intervalLabel}>Kardiogrami mekanik i cikleve të zemrës</text>
+      <text x="390" y="290" textAnchor="middle" className={styles.coordinate}>krahu ngjitës → sistola · krahu zbritës → diastola</text>
+    </svg>
+  );
+}
+
+function DiagramCanvas({ value }: { value: CardiovascularDiagramBlock }) {
+  switch (value.kind) {
+    case "bloodVesselModel":
+      return <BloodVesselModelDiagram />;
+    case "heartCycleCardiogram":
+      return <HeartCycleCardiogramDiagram />;
+    default:
+      return null;
+  }
+}
+
 export default function CardiovascularDiagrams({ value }: { value: CardiovascularDiagramBlock }) {
-  if (!value || value.kind !== "bloodVesselModel") return null;
+  if (!value) return null;
   return (
     <figure className={styles.card} data-lesson-diagram="true">
       <header className={styles.header}>
         <span className={styles.badge}>FIGURË</span>
         {value.title ? <strong>{value.title}</strong> : null}
       </header>
-      <div className={styles.canvas}><BloodVesselModelDiagram /></div>
+      <div className={styles.canvas}><DiagramCanvas value={value} /></div>
       {value.explanation ? <p className={styles.explanation}>{value.explanation}</p> : null}
       {value.caption ? <figcaption>{value.caption}</figcaption> : null}
     </figure>
