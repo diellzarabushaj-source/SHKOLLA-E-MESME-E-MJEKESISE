@@ -27,6 +27,11 @@ const viscosityKinds = new Set<string>([
   "poiseuilleTube",
 ]);
 
+const cardiovascularKinds = new Set<string>([
+  "bloodVesselModel",
+  "heartCycleCardiogram",
+]);
+
 export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) {
   if (!value) return null;
 
@@ -38,7 +43,7 @@ export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) 
     return <BodyResistanceDiagram value={value as BodyResistanceDiagramBlock} />;
   }
 
-  if (value.kind === "bloodVesselModel") {
+  if (value.kind && cardiovascularKinds.has(value.kind)) {
     return <CardiovascularDiagrams value={value as CardiovascularDiagramBlock} />;
   }
 
