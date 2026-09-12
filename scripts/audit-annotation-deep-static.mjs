@@ -25,6 +25,7 @@ check(component.includes("scheduleSelectionRecheck"), "Deferred selection recove
 check(component.includes("TOOLBAR_POSITION_EPSILON"), "Micro-jitter suppression is missing.");
 check(component.includes('data-placement={selection.placement}'), "Placement-aware toolbar state is missing.");
 check(component.includes('aria-pressed={selectionHighlight?.color === color}'), "Active highlight accessibility state is missing.");
+check((component.match(/loadRequestRef\.current \+= 1/g) || []).length >= 5, "Mutations do not invalidate stale in-flight annotation loads.");
 
 check(contextCss.includes("min-width: 44px !important"), "Coarse-pointer controls are smaller than the 44px audit target.");
 check(contextCss.includes("min-height: 44px !important"), "Coarse-pointer controls are shorter than the 44px audit target.");
@@ -41,7 +42,9 @@ check(api.includes("quote = cleanText(body.quote, 1_000)"), "Quote length valida
 check(api.includes("cleanText(body.noteText, 4_000)"), "Sticky-note length validation is missing.");
 
 check(server.includes("WHERE user_id=${userId} AND lesson_id=${lessonId}"), "Server list query is not explicitly user scoped.");
-check(server.includes("if (count >= 500 && !anchorExists)"), "Per-lesson annotation limit is missing.");
+check(server.includes("pg_advisory_xact_lock(hashtextextended"), "Per-lesson annotation limit is not serialized against concurrent creates.");
+check(server.includes("count(*) < 500 AS has_capacity"), "Per-lesson 500-annotation capacity check is missing.");
+check(server.includes("WHERE has_capacity OR anchor_exists"), "Existing anchors cannot safely update at the annotation limit.");
 check(server.includes("WHERE id=${input.id} AND user_id=${userId}"), "Update query is not explicitly user scoped.");
 check(server.includes("WHERE id=${annotationId} AND user_id=${userId}"), "Delete query is not explicitly user scoped.");
 
@@ -61,4 +64,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Deep annotation static audit passed: interaction lifecycle, accessibility, API isolation, persistence limits, RLS and CI coverage are present.");
+console.log("Deep annotation static audit passed: interaction lifecycle, touch accessibility, mutation race protection, API isolation, concurrency-safe persistence limits, RLS and CI coverage are present.");
