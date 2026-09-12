@@ -81,7 +81,7 @@ swap(
 swap(
   "active highlight color",
   `          {COLORS.map((color) => (\n            <button\n              className={styles.colorButton}\n              data-color={color}\n              key={color}\n              type="button"\n              title={COLOR_LABELS[color]}\n              aria-label={\`Thekso \${COLOR_LABELS[color].toLowerCase()}\`}\n              disabled={busy}\n              onClick={() => void createAnnotation("highlight", color, null)}\n            />\n          ))}`,
-  `          {COLORS.map((color) => (\n            <button\n              className={\`${styles.colorButton} \${selectionHighlight?.color === color ? styles.selectedColor : ""}\`}\n              data-color={color}\n              key={color}\n              type="button"\n              title={COLOR_LABELS[color]}\n              aria-label={\`Thekso \${COLOR_LABELS[color].toLowerCase()}\`}\n              aria-pressed={selectionHighlight?.color === color}\n              disabled={busy}\n              onClick={() => void createAnnotation("highlight", color, null)}\n            />\n          ))}`,
+  `          {COLORS.map((color) => (\n            <button\n              className={styles.colorButton + (selectionHighlight?.color === color ? " " + styles.selectedColor : "")}\n              data-color={color}\n              key={color}\n              type="button"\n              title={COLOR_LABELS[color]}\n              aria-label={"Thekso " + COLOR_LABELS[color].toLowerCase()}\n              aria-pressed={selectionHighlight?.color === color}\n              disabled={busy}\n              onClick={() => void createAnnotation("highlight", color, null)}\n            />\n          ))}`,
 );
 
 swap(
