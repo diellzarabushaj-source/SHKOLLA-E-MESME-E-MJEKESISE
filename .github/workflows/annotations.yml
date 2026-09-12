@@ -60,11 +60,14 @@ jobs:
           ADOBE_STATUS=$?
           node scripts/e2e-annotation-toolbar.mjs > annotation-toolbar-e2e.log 2>&1
           TOOLBAR_STATUS=$?
+          node scripts/e2e-annotation-deep-audit.mjs > annotation-deep-e2e.log 2>&1
+          DEEP_STATUS=$?
           set -e
           cat annotations-e2e.log
           cat adobe-sticky-e2e.log
           cat annotation-toolbar-e2e.log
-          if [ "$STATUS" -ne 0 ] || [ "$ADOBE_STATUS" -ne 0 ] || [ "$TOOLBAR_STATUS" -ne 0 ]; then
+          cat annotation-deep-e2e.log
+          if [ "$STATUS" -ne 0 ] || [ "$ADOBE_STATUS" -ne 0 ] || [ "$TOOLBAR_STATUS" -ne 0 ] || [ "$DEEP_STATUS" -ne 0 ]; then
             cat annotations-server.log
             exit 1
           fi
@@ -77,5 +80,6 @@ jobs:
             annotations-e2e.log
             adobe-sticky-e2e.log
             annotation-toolbar-e2e.log
+            annotation-deep-e2e.log
             annotations-server.log
           retention-days: 1
