@@ -38,6 +38,7 @@ export const lessonDiagram = defineType({
           {title: 'Rrjedhja rreth trupit - vijat dhe shtjellat', value: 'flowAroundObstacle'},
           {title: 'Ligji i Puazejit - rrjedhja në gyp', value: 'poiseuilleTube'},
           {title: 'Rezistenca e mjedisit - forma e trupit', value: 'bodyResistance'},
+          {title: 'Modeli fizik i enëve të gjakut', value: 'bloodVesselModel'},
         ],
       },
       validation: (rule) => rule.required(),
