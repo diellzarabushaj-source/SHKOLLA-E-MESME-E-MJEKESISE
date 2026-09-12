@@ -3,7 +3,7 @@ import styles from "./LessonDiagram.module.css";
 export type ViscosityDiagramBlock = {
   _key?: string;
   _type?: "lessonDiagram";
-  kind?: "viscousLayeredPipe" | "velocityGradient" | "laminarPipeProfile";
+  kind?: "viscousLayeredPipe" | "velocityGradient" | "laminarPipeProfile" | "flowAroundObstacle" | "poiseuilleTube";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -14,6 +14,9 @@ function ArrowDefs() {
     <defs>
       <marker id="visc-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
         <path d="M0,0 L10,5 L0,10 Z" className={styles.velocityArrowFill} />
+      </marker>
+      <marker id="visc-arrow-dark" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0,0 L10,5 L0,10 Z" className={styles.arrowFill} />
       </marker>
       <marker id="visc-open-start" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
         <path d="M8,0 L0,4 L8,8" className={styles.intervalStroke} />
@@ -90,16 +93,57 @@ function LaminarPipeProfileDiagram() {
   );
 }
 
+function FlowAroundObstacleDiagram() {
+  const ys = [86, 116, 146, 176, 206, 236];
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 340" role="img" aria-label="Rrjedhja e fluidit rreth një trupi dhe formimi i shtjellave">
+      <ArrowDefs />
+      {ys.map((y, i) => (
+        <path
+          key={y}
+          d={`M70 ${y} C200 ${y} 250 ${y} 305 ${i < 3 ? 118 + i * 24 : 158 + (i - 3) * 24} C350 ${i < 3 ? 92 + i * 22 : 194 + (i - 3) * 18} 425 ${i < 3 ? 92 + i * 20 : 214 + (i - 3) * 15} 495 ${y} C560 ${y} 615 ${y} 680 ${y}`}
+          fill="none"
+          className={styles.trajectory}
+          markerEnd="url(#visc-arrow-dark)"
+        />
+      ))}
+      <ellipse cx="370" cy="162" rx="62" ry="72" fill="var(--medical-color-primary, #314adc)" opacity="0.10" className={styles.axis} />
+      <path d="M432 126 C495 94 550 108 565 145 C578 176 543 195 512 180 C487 168 493 140 520 138" fill="none" className={styles.guide} />
+      <path d="M432 198 C500 226 553 211 566 177 C577 149 548 137 520 149" fill="none" className={styles.guide} />
+      <text x="370" y="166" textAnchor="middle" className={styles.pointLabel}>trupi</text>
+      <text x="548" y="242" textAnchor="middle" className={styles.coordinate}>shtjellime pas trupit</text>
+    </svg>
+  );
+}
+
+function PoiseuilleTubeDiagram() {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 340" role="img" aria-label="Rrjedhja shtresore në gyp sipas ligjit të Puazejit">
+      <ArrowDefs />
+      <rect x="125" y="92" width="510" height="140" fill="var(--medical-color-primary, #314adc)" opacity="0.06" />
+      <path d="M125 92 L635 92 M125 232 L635 232" className={styles.axis} />
+      <line x1="170" y1="162" x2="580" y2="162" className={styles.velocityVector} markerEnd="url(#visc-arrow)" />
+      <text x="370" y="144" textAnchor="middle" className={styles.vectorLabel}>v</text>
+      <text x="100" y="166" className={styles.pointLabel}>p₁</text>
+      <text x="647" y="166" className={styles.pointLabel}>p₂</text>
+      <text x="86" y="194" className={styles.coordinate}>p₁ &gt; p₂</text>
+      <line x1="125" y1="272" x2="635" y2="272" className={styles.interval} markerStart="url(#visc-open-start)" markerEnd="url(#visc-open-end)" />
+      <text x="380" y="300" textAnchor="middle" className={styles.intervalLabel}>l</text>
+      <line x1="676" y1="162" x2="676" y2="94" className={styles.interval} markerStart="url(#visc-open-start)" markerEnd="url(#visc-open-end)" />
+      <text x="697" y="132" className={styles.intervalLabel}>r</text>
+      <text x="380" y="326" textAnchor="middle" className={styles.coordinate}>v = (p₁ − p₂)r² / (8ηl)</text>
+    </svg>
+  );
+}
+
 function DiagramCanvas({ value }: { value: ViscosityDiagramBlock }) {
   switch (value.kind) {
-    case "viscousLayeredPipe":
-      return <ViscousLayeredPipeDiagram />;
-    case "velocityGradient":
-      return <VelocityGradientDiagram />;
-    case "laminarPipeProfile":
-      return <LaminarPipeProfileDiagram />;
-    default:
-      return null;
+    case "viscousLayeredPipe": return <ViscousLayeredPipeDiagram />;
+    case "velocityGradient": return <VelocityGradientDiagram />;
+    case "laminarPipeProfile": return <LaminarPipeProfileDiagram />;
+    case "flowAroundObstacle": return <FlowAroundObstacleDiagram />;
+    case "poiseuilleTube": return <PoiseuilleTubeDiagram />;
+    default: return null;
   }
 }
 
