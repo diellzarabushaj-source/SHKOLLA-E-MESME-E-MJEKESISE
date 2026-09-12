@@ -1,1 +1,0 @@
-Stability v4 is enforced by scripts/stabilize-annotation-interactions.mjs and scripts/e2e-annotation-toolbar.mjs.
