@@ -20,7 +20,8 @@ check(component.includes('import { createPortal } from "react-dom";'), "Annotati
 check(component.includes('document.addEventListener("pointerup", releaseInteraction, true)'), "Global pointer-up release guard is missing.");
 check(component.includes('document.addEventListener("pointercancel", releaseInteraction, true)'), "Global pointer-cancel release guard is missing.");
 check(component.includes('window.addEventListener("blur", releaseInteraction)'), "Window blur interaction release guard is missing.");
-check(component.includes("setPointerCapture(event.pointerId)"), "Toolbar pointer capture is missing.");
+check(!component.includes("setPointerCapture(event.pointerId)"), "Toolbar must not capture the pointer because capture can retarget button clicks away from controls.");
+check(component.includes("pendingSelectionRecheckRef"), "Conditional blocked-selection recovery state is missing.");
 check(component.includes("scheduleSelectionRecheck"), "Deferred selection recovery is missing.");
 check(component.includes("TOOLBAR_POSITION_EPSILON"), "Micro-jitter suppression is missing.");
 check(component.includes('data-placement={selection.placement}'), "Placement-aware toolbar state is missing.");
@@ -64,4 +65,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Deep annotation static audit passed: interaction lifecycle, touch accessibility, mutation race protection, API isolation, concurrency-safe persistence limits, RLS and CI coverage are present.");
+console.log("Deep annotation static audit passed: click-safe interaction lifecycle, touch accessibility, mutation race protection, API isolation, concurrency-safe persistence limits, RLS and CI coverage are present.");
