@@ -40,6 +40,7 @@ export const lessonDiagram = defineType({
           {title: 'Rezistenca e mjedisit - forma e trupit', value: 'bodyResistance'},
           {title: 'Modeli fizik i enëve të gjakut', value: 'bloodVesselModel'},
           {title: 'Puna e zemrës - kardiogram mekanik', value: 'heartCycleCardiogram'},
+          {title: 'Matësi i shtypjes së gjakut', value: 'bloodPressureMeasurement'},
         ],
       },
       validation: (rule) => rule.required(),
