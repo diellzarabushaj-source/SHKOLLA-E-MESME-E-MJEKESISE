@@ -12,7 +12,8 @@ export type LessonDiagramBlock = {
     | "pascalEqualPressure"
     | "communicatingVessels"
     | "hydraulicPress"
-    | "surfaceEnergy";
+    | "surfaceEnergy"
+    | "surfaceTensionFilm";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -276,6 +277,34 @@ function SurfaceEnergyDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function SurfaceTensionFilmDiagram({ value }: { value: LessonDiagramBlock }) {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 360" role="img" aria-label="Film i hollë lëngu me shufrën lëvizëse AB">
+      <ArrowDefs />
+      <rect x="145" y="72" width="455" height="220" fill="var(--medical-color-primary, #314adc)" opacity="0.07" />
+      <rect x="145" y="72" width="455" height="220" fill="none" className={styles.axis} />
+
+      <line x1="500" y1="72" x2="500" y2="292" className={styles.guide} strokeDasharray="8 7" />
+      <line x1="552" y1="72" x2="552" y2="292" className={styles.axis} />
+      <text x="566" y="90" className={styles.pointLabel}>{value.startPointLabel || "A"}</text>
+      <text x="566" y="294" className={styles.pointLabel}>{value.endPointLabel || "B"}</text>
+
+      <line x1="620" y1="182" x2="558" y2="182" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="626" y="170" className={styles.vectorLabel}>{value.startVectorLabel || "F"}</text>
+
+      <line x1="504" y1="322" x2="548" y2="322" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <text x="526" y="346" textAnchor="middle" className={styles.intervalLabel}>{value.intervalLabel || "Δx"}</text>
+
+      <line x1="112" y1="78" x2="112" y2="286" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <text x="92" y="187" textAnchor="middle" className={styles.intervalLabel}>{value.axisLabel || "l"}</text>
+
+      <text x="318" y="166" textAnchor="middle" className={styles.coordinate}>film i hollë i lëngut</text>
+      <text x="318" y="194" textAnchor="middle" className={styles.coordinate}>dy sipërfaqe</text>
+      <text x="526" y="52" textAnchor="middle" className={styles.coordinate}>shufra AB zhvendoset</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -290,6 +319,7 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "communicatingVessels": return <CommunicatingVesselsDiagram value={value} />;
     case "hydraulicPress": return <HydraulicPressDiagram value={value} />;
     case "surfaceEnergy": return <SurfaceEnergyDiagram value={value} />;
+    case "surfaceTensionFilm": return <SurfaceTensionFilmDiagram value={value} />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
