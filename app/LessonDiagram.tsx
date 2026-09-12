@@ -19,7 +19,8 @@ export type LessonDiagramBlock = {
     | "capillaryBalance"
     | "fluidStreamlines"
     | "continuityTube"
-    | "bernoulliTube";
+    | "bernoulliTube"
+    | "suctionJet";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -233,7 +234,7 @@ function HydraulicPressDiagram({ value }: { value: LessonDiagramBlock }) {
       <text x="202" y="86" className={styles.vectorLabel}>{value.startVectorLabel || "F₁"}</text>
       <text x="606" y="88" className={styles.vectorLabel}>{value.endVectorLabel || "F₂"}</text>
       <text x="185" y="193" textAnchor="middle" className={styles.coordinate}>{value.startCoordinateLabel || "S₁"}</text>
-      <text x="590" y="149" textAnchor="middle" className={styles.coordinate}>{value.endCoordinateLabel || "S₂"}</text>
+      <text x="590" y="149" className={styles.coordinate}>{value.endCoordinateLabel || "S₂"}</text>
       <rect x="532" y="34" width="116" height="38" rx="8" fill="none" className={styles.axis} />
       <circle cx="554" cy="74" r="12" fill="none" className={styles.axis} />
       <circle cx="626" cy="74" r="12" fill="none" className={styles.axis} />
@@ -317,6 +318,7 @@ function CapillaryWettingDiagram() {
       <text x="86" y="142" className={styles.vectorLabel}>Fₐ</text>
       <text x="176" y="238" className={styles.vectorLabel}>Fₖ</text>
       <text x="145" y="334" textAnchor="middle" className={styles.coordinate}>θ &lt; 90° - lag enën</text>
+
       <text x="565" y="38" textAnchor="middle" className={styles.pointLabel}>Merkur - qelq</text>
       <line x1="470" y1="70" x2="470" y2="300" className={styles.axis} />
       <path d="M470 220 Q540 168 650 220" fill="none" className={styles.trajectory} />
@@ -347,6 +349,7 @@ function CapillaryLevelsDiagram() {
         </g>
       ))}
       <text x="215" y="354" textAnchor="middle" className={styles.coordinate}>R më i vogël → h më e madhe</text>
+
       <text x="575" y="34" textAnchor="middle" className={styles.pointLabel}>Depresion kapilar</text>
       <rect x="450" y="175" width="240" height="145" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
       <line x1="450" y1="175" x2="690" y2="175" className={styles.guide} />
@@ -446,6 +449,34 @@ function BernoulliTubeDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function SuctionJetDiagram() {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 430" role="img" aria-label="Veprimi thithës i rrymimit të lëngut në pompën e Bunzenit">
+      <ArrowDefs />
+      <text x="286" y="34" textAnchor="middle" className={styles.pointLabel}>uji</text>
+      <path d="M245 52 L327 52 L327 128 L306 166 L306 326 L266 326 L266 166 L245 128 Z" fill="none" className={styles.axis} />
+      <path d="M258 62 L314 62 L314 124 L294 164 L294 316 L278 316 L278 164 L258 124 Z" fill="var(--medical-color-primary, #314adc)" opacity="0.10" />
+      <line x1="286" y1="74" x2="286" y2="148" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="286" y1="182" x2="286" y2="296" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <path d="M228 132 L344 132 L344 232 L404 232" fill="none" className={styles.axis} />
+      <path d="M228 132 L228 232 L168 232" fill="none" className={styles.axis} />
+      <line x1="398" y1="232" x2="335" y2="232" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="366" y="214" textAnchor="middle" className={styles.vectorLabel}>ajri</text>
+      <path d="M404 232 L492 232 L492 284" fill="none" className={styles.axis} />
+      <path d="M492 284 C456 292 438 326 444 358 C451 394 486 408 522 398 C557 389 575 358 567 326 C560 296 530 279 492 284 Z" fill="none" className={styles.axis} />
+      <text x="508" y="352" textAnchor="middle" className={styles.pointLabel}>B</text>
+      <line x1="505" y1="306" x2="505" y2="270" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="518" y="292" className={styles.coordinate}>ajri thithet</text>
+      <rect x="92" y="158" width="145" height="92" rx="14" fill="none" className={styles.guide} />
+      <text x="164" y="188" textAnchor="middle" className={styles.coordinate}>pjesa e ngushtë</text>
+      <text x="164" y="216" textAnchor="middle" className={styles.vectorLabel}>shpejtësia e madhe</text>
+      <text x="164" y="240" textAnchor="middle" className={styles.coordinate}>shtypja e vogël</text>
+      <line x1="238" y1="204" x2="270" y2="190" className={styles.guide} />
+      <text x="286" y="358" textAnchor="middle" className={styles.coordinate}>uji + ajri dalin së bashku</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -467,6 +498,7 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "fluidStreamlines": return <FluidStreamlinesDiagram />;
     case "continuityTube": return <ContinuityTubeDiagram value={value} />;
     case "bernoulliTube": return <BernoulliTubeDiagram value={value} />;
+    case "suctionJet": return <SuctionJetDiagram />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
