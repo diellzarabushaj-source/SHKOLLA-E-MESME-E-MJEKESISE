@@ -1,26 +1,42 @@
+[data-annotation-selection-toolbar] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+[data-annotation-selection-toolbar] button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
 @media (min-width: 701px) and (pointer: fine) {
   [data-annotation-selection-toolbar] {
     width: max-content !important;
     max-width: calc(100vw - 24px);
     min-height: 50px;
-    padding: 7px 8px;
-    gap: 7px;
-    border-color: color-mix(in srgb, var(--primary) 36%, var(--line));
-    border-radius: 15px;
+    padding: 6px 7px;
+    gap: 6px;
+    border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--line));
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--panel) 98%, transparent);
     box-shadow:
-      0 22px 58px color-mix(in srgb, var(--text) 22%, transparent),
-      0 4px 14px color-mix(in srgb, var(--primary) 10%, transparent);
+      0 16px 42px color-mix(in srgb, var(--text) 18%, transparent),
+      0 3px 10px color-mix(in srgb, var(--primary) 9%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(1.12);
+    backdrop-filter: blur(20px) saturate(1.12);
     isolation: isolate;
-    animation: annotation-toolbar-in 130ms ease-out;
+    transform: translate3d(-50%, 0, 0);
+    animation: annotation-toolbar-in 90ms ease-out;
   }
 
   [data-annotation-selection-toolbar]::after {
     position: absolute;
     left: 50%;
-    width: 11px;
-    height: 11px;
-    border-right: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line));
-    border-bottom: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line));
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line));
+    border-bottom: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line));
     background: color-mix(in srgb, var(--panel) 98%, transparent);
     content: "";
     pointer-events: none;
@@ -38,36 +54,72 @@
   }
 
   [data-annotation-selection-toolbar] > span:first-child {
-    padding-inline: 2px 3px;
+    padding-inline: 4px 5px;
+    color: color-mix(in srgb, var(--muted) 92%, var(--text));
     font-size: 10px;
-    letter-spacing: 0.02em;
+    font-weight: 850;
+    letter-spacing: 0.015em;
+    white-space: nowrap;
   }
 
   [data-annotation-selection-toolbar] button {
     transition:
-      transform 120ms ease,
-      box-shadow 120ms ease,
-      border-color 120ms ease,
-      background 120ms ease;
+      box-shadow 100ms ease,
+      border-color 100ms ease,
+      background-color 100ms ease,
+      opacity 100ms ease;
   }
 
   [data-annotation-selection-toolbar] button:hover:not(:disabled) {
-    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--text) 34%, var(--line));
+  }
+
+  [data-annotation-selection-toolbar] button:active {
+    transform: none !important;
+  }
+
+  [data-annotation-selection-toolbar] button[data-color] {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border-width: 2px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
   }
 
   [data-annotation-selection-toolbar] .selectedColor,
   [data-annotation-selection-toolbar] button[aria-pressed="true"] {
-    border-color: color-mix(in srgb, var(--text) 72%, transparent) !important;
+    border-color: color-mix(in srgb, var(--text) 74%, transparent) !important;
     box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--panel) 96%, transparent),
-      0 0 0 5px color-mix(in srgb, var(--primary) 24%, transparent) !important;
-    transform: scale(1.06);
+      inset 0 0 0 1px rgb(255 255 255 / 0.42),
+      0 0 0 3px color-mix(in srgb, var(--panel) 98%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--primary) 22%, transparent) !important;
+    transform: none !important;
+  }
+
+  [data-annotation-remove-highlight] {
+    min-height: 32px;
+    padding-inline: 9px;
+    border: 1px solid color-mix(in srgb, var(--text) 12%, var(--line));
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--bg-soft) 94%, transparent);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  [data-annotation-remove-highlight]:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--bg-soft) 82%, var(--panel));
+    color: var(--text);
   }
 
   [data-annotation-add-note] {
     min-height: 34px;
+    margin-left: 2px;
     padding-inline: 11px 12px;
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 20%, transparent);
+    border-radius: 10px;
+    box-shadow: 0 7px 16px color-mix(in srgb, var(--primary) 18%, transparent);
+    white-space: nowrap;
   }
 
   [data-annotation-add-note]::before {
@@ -93,25 +145,87 @@
 }
 
 @keyframes annotation-toolbar-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 4px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 700px), (pointer: coarse) {
+  [data-annotation-selection-toolbar] {
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line)) !important;
+    border-radius: 18px !important;
+    background: color-mix(in srgb, var(--panel) 98%, transparent) !important;
+    box-shadow:
+      0 18px 44px rgb(0 0 0 / 0.22),
+      0 2px 8px color-mix(in srgb, var(--primary) 8%, transparent) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
+    backdrop-filter: blur(20px) saturate(1.1);
+  }
+
+  [data-annotation-selection-toolbar] button {
+    min-width: 42px !important;
+    min-height: 42px !important;
+    border-radius: 12px;
+  }
+
+  [data-annotation-selection-toolbar] button[data-color] {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.34);
+  }
+
   [data-annotation-selection-toolbar] button[aria-pressed="true"] {
     border-color: var(--text) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--panel) 88%, transparent) !important;
-    transform: scale(1.05);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.38),
+      0 0 0 3px color-mix(in srgb, var(--panel) 94%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--primary) 20%, transparent) !important;
+    transform: none !important;
+  }
+
+  [data-annotation-remove-highlight] {
+    padding-inline: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--muted);
+    font-weight: 850;
+  }
+
+  [data-annotation-add-note] {
+    padding-inline: 12px;
+    font-weight: 900;
+    white-space: nowrap;
   }
 
   [data-annotation-character-count] {
     font-size: 11px;
+  }
+}
+
+@media (max-width: 370px) and (pointer: coarse) {
+  [data-annotation-selection-toolbar] {
+    gap: 5px !important;
+    padding-inline: 7px !important;
+  }
+
+  [data-annotation-selection-toolbar] button,
+  [data-annotation-selection-toolbar] button[data-color] {
+    min-width: 38px !important;
+    width: 38px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+  }
+
+  [data-annotation-add-note] {
+    width: 42px !important;
+    min-width: 42px !important;
+    padding: 0 !important;
+    font-size: 0;
+  }
+
+  [data-annotation-add-note]::before {
+    margin: 0;
+    font-size: 15px;
   }
 }
 
