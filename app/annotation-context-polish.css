@@ -15,6 +15,12 @@
   outline-offset: 2px;
 }
 
+[data-annotation-selection-toolbar] button:hover:not(:disabled),
+[data-annotation-selection-toolbar] button:focus-visible,
+[data-annotation-selection-toolbar] button:active {
+  transform: none !important;
+}
+
 @media (min-width: 701px) and (pointer: fine) {
   [data-annotation-selection-toolbar] {
     width: max-content !important;
