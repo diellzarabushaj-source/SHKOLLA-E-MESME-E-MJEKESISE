@@ -10,13 +10,17 @@ import BodyResistanceDiagram, {
 import CardiovascularDiagrams, {
   type CardiovascularDiagramBlock,
 } from "./CardiovascularDiagrams";
+import SolidStateDiagrams, {
+  type SolidStateDiagramBlock,
+} from "./SolidStateDiagrams";
 
 export type LessonDiagramBlock = Omit<LegacyLessonDiagramBlock, "kind"> & {
   kind?:
     | LegacyLessonDiagramBlock["kind"]
     | ViscosityDiagramBlock["kind"]
     | BodyResistanceDiagramBlock["kind"]
-    | CardiovascularDiagramBlock["kind"];
+    | CardiovascularDiagramBlock["kind"]
+    | SolidStateDiagramBlock["kind"];
 };
 
 const viscosityKinds = new Set<string>([
@@ -33,6 +37,12 @@ const cardiovascularKinds = new Set<string>([
   "bloodPressureMeasurement",
 ]);
 
+const solidStateKinds = new Set<string>([
+  "crystalForms",
+  "crystalLattice",
+  "crystalAnisotropy",
+]);
+
 export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) {
   if (!value) return null;
 
@@ -46,6 +56,10 @@ export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) 
 
   if (value.kind && cardiovascularKinds.has(value.kind)) {
     return <CardiovascularDiagrams value={value as CardiovascularDiagramBlock} />;
+  }
+
+  if (value.kind && solidStateKinds.has(value.kind)) {
+    return <SolidStateDiagrams value={value as SolidStateDiagramBlock} />;
   }
 
   return <LegacyLessonDiagram value={value as LegacyLessonDiagramBlock} />;
