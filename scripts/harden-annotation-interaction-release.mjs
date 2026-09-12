@@ -25,15 +25,33 @@ swap(
 );
 
 swap(
-  "release lifecycle and deferred selection recheck",
-  `  const endToolbarInteraction = useCallback(() => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    toolbarReleaseTimerRef.current = window.setTimeout(() => {\n      toolbarInteractionRef.current = false;\n      toolbarReleaseTimerRef.current = null;\n    }, TOOLBAR_INTERACTION_RELEASE_MS);\n  }, []);\n\n  useEffect(() => () => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n  }, []);`,
-  `  const scheduleSelectionRecheck = useCallback(() => {\n    window.requestAnimationFrame(() => {\n      const activeSelection = window.getSelection();\n      if (!activeSelection || activeSelection.isCollapsed || activeSelection.rangeCount === 0) return;\n      document.dispatchEvent(new Event("selectionchange"));\n    });\n  }, []);\n\n  const endToolbarInteraction = useCallback(() => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    toolbarReleaseTimerRef.current = window.setTimeout(() => {\n      toolbarInteractionRef.current = false;\n      toolbarReleaseTimerRef.current = null;\n      scheduleSelectionRecheck();\n    }, TOOLBAR_INTERACTION_RELEASE_MS);\n  }, [scheduleSelectionRecheck]);\n\n  useEffect(() => {\n    const releaseInteraction = () => {\n      if (toolbarInteractionRef.current) endToolbarInteraction();\n    };\n    const releaseWhenHidden = () => {\n      if (document.visibilityState !== "visible") releaseInteraction();\n    };\n\n    document.addEventListener("pointerup", releaseInteraction, true);\n    document.addEventListener("pointercancel", releaseInteraction, true);\n    document.addEventListener("visibilitychange", releaseWhenHidden);\n    window.addEventListener("blur", releaseInteraction);\n\n    return () => {\n      document.removeEventListener("pointerup", releaseInteraction, true);\n      document.removeEventListener("pointercancel", releaseInteraction, true);\n      document.removeEventListener("visibilitychange", releaseWhenHidden);\n      window.removeEventListener("blur", releaseInteraction);\n      if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    };\n  }, [endToolbarInteraction]);`,
+  "pending selection ref",
+  `  const toolbarInteractionRef = useRef(false);\n  const toolbarReleaseTimerRef = useRef<number | null>(null);`,
+  `  const toolbarInteractionRef = useRef(false);\n  const toolbarReleaseTimerRef = useRef<number | null>(null);\n  const pendingSelectionRecheckRef = useRef(false);`,
 );
 
 swap(
-  "pointer capture",
-  `          onPointerDown={(event) => {\n            beginToolbarInteraction();\n            event.preventDefault();\n            event.stopPropagation();\n          }}\n          onPointerUp={(event) => {\n            event.stopPropagation();\n            endToolbarInteraction();\n          }}\n          onPointerCancel={() => endToolbarInteraction()}>`,
-  `          onPointerDown={(event) => {\n            beginToolbarInteraction();\n            try { event.currentTarget.setPointerCapture(event.pointerId); } catch {}\n            event.preventDefault();\n            event.stopPropagation();\n          }}\n          onPointerUp={(event) => {\n            try {\n              if (event.currentTarget.hasPointerCapture(event.pointerId)) {\n                event.currentTarget.releasePointerCapture(event.pointerId);\n              }\n            } catch {}\n            event.stopPropagation();\n            endToolbarInteraction();\n          }}\n          onPointerCancel={(event) => {\n            try {\n              if (event.currentTarget.hasPointerCapture(event.pointerId)) {\n                event.currentTarget.releasePointerCapture(event.pointerId);\n              }\n            } catch {}\n            endToolbarInteraction();\n          }}>`,
+  "lesson reset pending state",
+  `    toolbarInteractionRef.current = false;\n    if (toolbarReleaseTimerRef.current !== null) {`,
+  `    toolbarInteractionRef.current = false;\n    pendingSelectionRecheckRef.current = false;\n    if (toolbarReleaseTimerRef.current !== null) {`,
+);
+
+swap(
+  "selection schedule remembers blocked changes",
+  `    const schedule = (event?: Event) => {\n      if (toolbarInteractionRef.current) return;\n      const target = event?.target instanceof Element ? event.target : null;`,
+  `    const schedule = (event?: Event) => {\n      if (toolbarInteractionRef.current) {\n        if (event?.type === "selectionchange") pendingSelectionRecheckRef.current = true;\n        return;\n      }\n      const target = event?.target instanceof Element ? event.target : null;`,
+);
+
+swap(
+  "release lifecycle and conditional selection recovery",
+  `  const endToolbarInteraction = useCallback(() => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    toolbarReleaseTimerRef.current = window.setTimeout(() => {\n      toolbarInteractionRef.current = false;\n      toolbarReleaseTimerRef.current = null;\n    }, TOOLBAR_INTERACTION_RELEASE_MS);\n  }, []);\n\n  useEffect(() => () => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n  }, []);`,
+  `  const scheduleSelectionRecheck = useCallback(() => {\n    window.requestAnimationFrame(() => {\n      const activeSelection = window.getSelection();\n      if (!activeSelection || activeSelection.isCollapsed || activeSelection.rangeCount === 0) return;\n      document.dispatchEvent(new Event("selectionchange"));\n    });\n  }, []);\n\n  const endToolbarInteraction = useCallback(() => {\n    if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    toolbarReleaseTimerRef.current = window.setTimeout(() => {\n      toolbarInteractionRef.current = false;\n      toolbarReleaseTimerRef.current = null;\n      const shouldRecheckSelection = pendingSelectionRecheckRef.current;\n      pendingSelectionRecheckRef.current = false;\n      if (shouldRecheckSelection) scheduleSelectionRecheck();\n    }, TOOLBAR_INTERACTION_RELEASE_MS);\n  }, [scheduleSelectionRecheck]);\n\n  useEffect(() => {\n    const releaseInteraction = () => {\n      if (toolbarInteractionRef.current) endToolbarInteraction();\n    };\n    const releaseWhenHidden = () => {\n      if (document.visibilityState !== "visible") releaseInteraction();\n    };\n\n    document.addEventListener("pointerup", releaseInteraction, true);\n    document.addEventListener("pointercancel", releaseInteraction, true);\n    document.addEventListener("visibilitychange", releaseWhenHidden);\n    window.addEventListener("blur", releaseInteraction);\n\n    return () => {\n      document.removeEventListener("pointerup", releaseInteraction, true);\n      document.removeEventListener("pointercancel", releaseInteraction, true);\n      document.removeEventListener("visibilitychange", releaseWhenHidden);\n      window.removeEventListener("blur", releaseInteraction);\n      if (toolbarReleaseTimerRef.current !== null) window.clearTimeout(toolbarReleaseTimerRef.current);\n    };\n  }, [endToolbarInteraction]);`,
+);
+
+swap(
+  "clear pending interaction state",
+  `  function clearSelection() {\n    toolbarInteractionRef.current = false;`,
+  `  function clearSelection() {\n    toolbarInteractionRef.current = false;\n    pendingSelectionRecheckRef.current = false;`,
 );
 
 swap(
@@ -61,4 +79,4 @@ swap(
 );
 
 writeFileSync(file, source);
-console.log("Installed annotation stability v5: global pointer release, pointer capture, deferred selection recovery and stale-load invalidation.");
+console.log("Installed annotation stability v5: outside-release recovery, conditional selection recheck and stale-load invalidation without pointer capture.");
