@@ -31,6 +31,7 @@ export const lessonDiagram = defineType({
           {title: 'Dinamika e fluideve - vijat e rrymimit', value: 'fluidStreamlines'},
           {title: 'Dinamika e fluideve - ekuacioni i kontinuitetit', value: 'continuityTube'},
           {title: 'Dinamika e fluideve - ekuacioni i Bernulit', value: 'bernoulliTube'},
+          {title: 'Dinamika e fluideve - veprimi thithës i rrymimit', value: 'suctionJet'},
         ],
       },
       validation: (rule) => rule.required(),
