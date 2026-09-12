@@ -12,6 +12,7 @@ async function geometry(page) {
     const selectionRect = selection.getRangeAt(0).getBoundingClientRect();
     return {
       portalIsBody: toolbar.parentElement === document.body,
+      placement: toolbar.dataset.placement,
       viewport: { width: window.innerWidth, height: window.innerHeight },
       toolbar: {
         left: toolbarRect.left,
@@ -36,6 +37,7 @@ async function geometry(page) {
 function assertContextualPosition(snapshot, label) {
   assert(snapshot, `${label}: toolbar geometry missing`);
   assert(snapshot.portalIsBody, `${label}: toolbar is not portaled to document.body`);
+  assert(["above", "below"].includes(snapshot.placement), `${label}: toolbar placement metadata missing`);
   assert(snapshot.toolbar.left >= -0.5, `${label}: toolbar overflows left viewport edge`);
   assert(snapshot.toolbar.right <= snapshot.viewport.width + 0.5, `${label}: toolbar overflows right viewport edge`);
   assert(snapshot.toolbar.top >= -0.5, `${label}: toolbar overflows top viewport edge`);
@@ -48,6 +50,30 @@ function assertContextualPosition(snapshot, label) {
   const distanceAbove = Math.abs(snapshot.selection.top - snapshot.toolbar.bottom);
   const distanceBelow = Math.abs(snapshot.toolbar.top - snapshot.selection.bottom);
   assert(Math.min(distanceAbove, distanceBelow) <= 42, `${label}: toolbar is vertically detached from the selection`);
+
+  if (snapshot.placement === "above") {
+    assert(snapshot.toolbar.bottom <= snapshot.selection.top + 1, `${label}: above placement overlaps selected text`);
+  } else {
+    assert(snapshot.toolbar.top >= snapshot.selection.bottom - 1, `${label}: below placement overlaps selected text`);
+  }
+}
+
+async function selectAuditPhrase(page) {
+  await page.evaluate(() => {
+    const paragraph = document.querySelector("[data-audit-paragraph]");
+    const node = paragraph?.firstChild;
+    if (!(node instanceof Text)) throw new Error("Audit text node missing");
+    const phrase = "Membrana kontrollon shkëmbimin";
+    const start = node.data.indexOf(phrase);
+    if (start < 0) throw new Error("Audit phrase missing");
+    const range = document.createRange();
+    range.setStart(node, start);
+    range.setEnd(node, start + phrase.length);
+    window.getSelection()?.removeAllRanges();
+    window.getSelection()?.addRange(range);
+    document.dispatchEvent(new Event("selectionchange"));
+    document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerType: "mouse" }));
+  });
 }
 
 const browser = await chromium.launch({ headless: true });
@@ -69,21 +95,7 @@ try {
   await page.goto(`${baseURL}/annotations-audit`, { waitUntil: "domcontentloaded" });
   await page.locator("[data-audit-paragraph][data-annotation-block-key]").waitFor({ state: "visible", timeout: 10_000 });
 
-  await page.evaluate(() => {
-    const paragraph = document.querySelector("[data-audit-paragraph]");
-    const node = paragraph?.firstChild;
-    if (!(node instanceof Text)) throw new Error("Audit text node missing");
-    const phrase = "Membrana kontrollon shkëmbimin";
-    const start = node.data.indexOf(phrase);
-    if (start < 0) throw new Error("Audit phrase missing");
-    const range = document.createRange();
-    range.setStart(node, start);
-    range.setEnd(node, start + phrase.length);
-    window.getSelection()?.removeAllRanges();
-    window.getSelection()?.addRange(range);
-    document.dispatchEvent(new Event("selectionchange"));
-    document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerType: "mouse" }));
-  });
+  await selectAuditPhrase(page);
 
   const toolbar = page.locator("[data-annotation-selection-toolbar]");
   await toolbar.waitFor({ state: "visible", timeout: 10_000 });
@@ -105,9 +117,20 @@ try {
   await page.waitForTimeout(120);
   assertContextualPosition(await geometry(page), "after resize");
 
+  await page.keyboard.press("Escape");
+  await toolbar.waitFor({ state: "detached", timeout: 5_000 });
+
+  await selectAuditPhrase(page);
+  await toolbar.waitFor({ state: "visible", timeout: 5_000 });
+  const buttons = toolbar.locator("button[data-color]");
+  assert(await buttons.count() === 4, "Toolbar lost highlight color controls after reopening");
+  for (let index = 0; index < 4; index += 1) {
+    assert(await buttons.nth(index).getAttribute("aria-pressed") === "false", "Fresh selection should not report a highlight color as active");
+  }
+
   await context.close();
 } finally {
   await browser.close();
 }
 
-console.log("Contextual annotation toolbar stayed beside the selected text and inside the viewport.");
+console.log("Contextual annotation toolbar stayed beside the selection, exposed placement state and supported keyboard dismissal.");
