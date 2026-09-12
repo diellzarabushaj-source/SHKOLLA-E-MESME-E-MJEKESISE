@@ -16,7 +16,9 @@ export type LessonDiagramBlock = {
     | "surfaceTensionFilm"
     | "capillaryWetting"
     | "capillaryLevels"
-    | "capillaryBalance";
+    | "capillaryBalance"
+    | "fluidStreamlines"
+    | "continuityTube";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -314,7 +316,6 @@ function CapillaryWettingDiagram() {
       <text x="86" y="142" className={styles.vectorLabel}>Fₐ</text>
       <text x="176" y="238" className={styles.vectorLabel}>Fₖ</text>
       <text x="145" y="334" textAnchor="middle" className={styles.coordinate}>θ &lt; 90° - lag enën</text>
-
       <text x="565" y="38" textAnchor="middle" className={styles.pointLabel}>Merkur - qelq</text>
       <line x1="470" y1="70" x2="470" y2="300" className={styles.axis} />
       <path d="M470 220 Q540 168 650 220" fill="none" className={styles.trajectory} />
@@ -345,7 +346,6 @@ function CapillaryLevelsDiagram() {
         </g>
       ))}
       <text x="215" y="354" textAnchor="middle" className={styles.coordinate}>R më i vogël → h më e madhe</text>
-
       <text x="575" y="34" textAnchor="middle" className={styles.pointLabel}>Depresion kapilar</text>
       <rect x="450" y="175" width="240" height="145" fill="var(--medical-color-primary, #314adc)" opacity="0.08" />
       <line x1="450" y1="175" x2="690" y2="175" className={styles.guide} />
@@ -382,6 +382,43 @@ function CapillaryBalanceDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function FluidStreamlinesDiagram() {
+  const ys = [92, 122, 152, 182, 212, 242];
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 340" role="img" aria-label="Vijat e rrymimit në një gyp që ngushtohet">
+      <ArrowDefs />
+      <path d="M90 72 L330 72 Q430 72 500 126 L670 126 M90 262 L330 262 Q430 262 500 208 L670 208" fill="none" className={styles.axis} />
+      {ys.map((y, i) => {
+        const endY = 138 + i * 12;
+        return <path key={y} d={`M105 ${y} C310 ${y} 405 ${y} 500 ${endY} L645 ${endY}`} fill="none" className={styles.trajectory} markerEnd="url(#diag-arrow-dark)" />;
+      })}
+      <text x="190" y="302" textAnchor="middle" className={styles.coordinate}>vijat më të rralla → shpejtësi më e vogël</text>
+      <text x="575" y="302" textAnchor="middle" className={styles.coordinate}>vijat më të dendura → shpejtësi më e madhe</text>
+      <text x="380" y="42" textAnchor="middle" className={styles.pointLabel}>tub rryme</text>
+    </svg>
+  );
+}
+
+function ContinuityTubeDiagram({ value }: { value: LessonDiagramBlock }) {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 360" role="img" aria-label="Ekuacioni i kontinuitetit në dy prerje të gypit">
+      <ArrowDefs />
+      <path d="M90 88 L310 88 Q420 88 500 136 L670 136 M90 272 L310 272 Q420 272 500 224 L670 224" fill="none" className={styles.axis} />
+      <line x1="190" y1="88" x2="190" y2="272" className={styles.guide} strokeDasharray="7 6" />
+      <line x1="575" y1="136" x2="575" y2="224" className={styles.guide} strokeDasharray="7 6" />
+      <text x="165" y="78" className={styles.pointLabel}>{value.startPointLabel || "A"}</text>
+      <text x="550" y="126" className={styles.pointLabel}>{value.endPointLabel || "B"}</text>
+      <text x="205" y="184" className={styles.intervalLabel}>{value.startCoordinateLabel || "S₁"}</text>
+      <text x="590" y="184" className={styles.intervalLabel}>{value.endCoordinateLabel || "S₂"}</text>
+      <line x1="230" y1="180" x2="330" y2="180" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="535" y1="180" x2="655" y2="180" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="265" y="158" className={styles.vectorLabel}>{value.startVectorLabel || "v₁"}</text>
+      <text x="586" y="158" className={styles.vectorLabel}>{value.endVectorLabel || "v₂"}</text>
+      <text x="380" y="320" textAnchor="middle" className={styles.coordinate}>{value.intervalLabel || "v₁S₁ = v₂S₂"}</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -400,6 +437,8 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "capillaryWetting": return <CapillaryWettingDiagram />;
     case "capillaryLevels": return <CapillaryLevelsDiagram />;
     case "capillaryBalance": return <CapillaryBalanceDiagram value={value} />;
+    case "fluidStreamlines": return <FluidStreamlinesDiagram />;
+    case "continuityTube": return <ContinuityTubeDiagram value={value} />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
