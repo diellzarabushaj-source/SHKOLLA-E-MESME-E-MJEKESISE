@@ -30,6 +30,7 @@ export const lessonDiagram = defineType({
           {title: 'Kapilariteti - baraspesha e forcave', value: 'capillaryBalance'},
           {title: 'Dinamika e fluideve - vijat e rrymimit', value: 'fluidStreamlines'},
           {title: 'Dinamika e fluideve - ekuacioni i kontinuitetit', value: 'continuityTube'},
+          {title: 'Dinamika e fluideve - ekuacioni i Bernulit', value: 'bernoulliTube'},
         ],
       },
       validation: (rule) => rule.required(),
