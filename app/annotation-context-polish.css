@@ -1,0 +1,126 @@
+@media (min-width: 701px) and (pointer: fine) {
+  [data-annotation-selection-toolbar] {
+    width: max-content !important;
+    max-width: calc(100vw - 24px);
+    min-height: 50px;
+    padding: 7px 8px;
+    gap: 7px;
+    border-color: color-mix(in srgb, var(--primary) 36%, var(--line));
+    border-radius: 15px;
+    box-shadow:
+      0 22px 58px color-mix(in srgb, var(--text) 22%, transparent),
+      0 4px 14px color-mix(in srgb, var(--primary) 10%, transparent);
+    isolation: isolate;
+    animation: annotation-toolbar-in 130ms ease-out;
+  }
+
+  [data-annotation-selection-toolbar]::after {
+    position: absolute;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border-right: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line));
+    border-bottom: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line));
+    background: color-mix(in srgb, var(--panel) 98%, transparent);
+    content: "";
+    pointer-events: none;
+    transform: translateX(-50%) rotate(45deg);
+    z-index: -1;
+  }
+
+  [data-annotation-selection-toolbar][data-placement="above"]::after {
+    bottom: -6px;
+  }
+
+  [data-annotation-selection-toolbar][data-placement="below"]::after {
+    top: -6px;
+    transform: translateX(-50%) rotate(225deg);
+  }
+
+  [data-annotation-selection-toolbar] > span:first-child {
+    padding-inline: 2px 3px;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  [data-annotation-selection-toolbar] button {
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease,
+      border-color 120ms ease,
+      background 120ms ease;
+  }
+
+  [data-annotation-selection-toolbar] button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  [data-annotation-selection-toolbar] .selectedColor,
+  [data-annotation-selection-toolbar] button[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--text) 72%, transparent) !important;
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--panel) 96%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--primary) 24%, transparent) !important;
+    transform: scale(1.06);
+  }
+
+  [data-annotation-add-note] {
+    min-height: 34px;
+    padding-inline: 11px 12px;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  [data-annotation-add-note]::before {
+    margin-right: 5px;
+    content: "✎";
+    font-size: 13px;
+    line-height: 1;
+  }
+}
+
+[data-annotation-character-count] {
+  margin-top: 6px;
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+[data-adobe-note-popover] textarea:focus + [data-annotation-character-count],
+.composer textarea:focus + [data-annotation-character-count] {
+  color: var(--primary);
+}
+
+@keyframes annotation-toolbar-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (max-width: 700px), (pointer: coarse) {
+  [data-annotation-selection-toolbar] button[aria-pressed="true"] {
+    border-color: var(--text) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--panel) 88%, transparent) !important;
+    transform: scale(1.05);
+  }
+
+  [data-annotation-character-count] {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-annotation-selection-toolbar] {
+    animation: none !important;
+  }
+
+  [data-annotation-selection-toolbar] button {
+    transition: none !important;
+  }
+}
