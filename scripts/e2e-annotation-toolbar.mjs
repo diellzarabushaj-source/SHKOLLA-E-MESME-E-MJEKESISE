@@ -13,6 +13,7 @@ async function geometry(page) {
     return {
       portalIsBody: toolbar.parentElement === document.body,
       placement: toolbar.dataset.placement,
+      selectionCollapsed: selection.isCollapsed,
       viewport: { width: window.innerWidth, height: window.innerHeight },
       toolbar: {
         left: toolbarRect.left,
@@ -37,6 +38,7 @@ async function geometry(page) {
 function assertContextualPosition(snapshot, label) {
   assert(snapshot, `${label}: toolbar geometry missing`);
   assert(snapshot.portalIsBody, `${label}: toolbar is not portaled to document.body`);
+  assert(!snapshot.selectionCollapsed, `${label}: text selection collapsed unexpectedly`);
   assert(["above", "below"].includes(snapshot.placement), `${label}: toolbar placement metadata missing`);
   assert(snapshot.toolbar.left >= -0.5, `${label}: toolbar overflows left viewport edge`);
   assert(snapshot.toolbar.right <= snapshot.viewport.width + 0.5, `${label}: toolbar overflows right viewport edge`);
@@ -56,6 +58,16 @@ function assertContextualPosition(snapshot, label) {
   } else {
     assert(snapshot.toolbar.top >= snapshot.selection.bottom - 1, `${label}: below placement overlaps selected text`);
   }
+}
+
+function assertStableGeometry(before, after, label, tolerance = 2.5) {
+  assert(before && after, `${label}: missing toolbar geometry`);
+  assert(Math.abs(before.toolbar.left - after.toolbar.left) <= tolerance, `${label}: toolbar drifted horizontally`);
+  assert(Math.abs(before.toolbar.top - after.toolbar.top) <= tolerance, `${label}: toolbar drifted vertically`);
+  assert(Math.abs(before.toolbar.width - after.toolbar.width) <= tolerance, `${label}: toolbar width changed while interacting`);
+  assert(Math.abs(before.toolbar.height - after.toolbar.height) <= tolerance, `${label}: toolbar height changed while interacting`);
+  assert(before.placement === after.placement, `${label}: toolbar flipped placement while interacting`);
+  assert(!after.selectionCollapsed, `${label}: selection collapsed while interacting with toolbar`);
 }
 
 async function selectAuditPhrase(page) {
@@ -99,8 +111,21 @@ try {
 
   const toolbar = page.locator("[data-annotation-selection-toolbar]");
   await toolbar.waitFor({ state: "visible", timeout: 10_000 });
-  await page.waitForTimeout(80);
-  assertContextualPosition(await geometry(page), "initial selection");
+  await page.waitForTimeout(100);
+  const initial = await geometry(page);
+  assertContextualPosition(initial, "initial selection");
+
+  const firstColor = toolbar.locator("button[data-color]").first();
+  await firstColor.dispatchEvent("pointerdown", { pointerType: "mouse", button: 0, buttons: 1 });
+  await page.waitForTimeout(70);
+  const duringPress = await geometry(page);
+  assertContextualPosition(duringPress, "during toolbar press");
+  assertStableGeometry(initial, duringPress, "toolbar pointer-down stability");
+  await firstColor.dispatchEvent("pointercancel", { pointerType: "mouse", button: 0, buttons: 0 });
+  await page.waitForTimeout(180);
+  const afterCancel = await geometry(page);
+  assertContextualPosition(afterCancel, "after toolbar pointer cancel");
+  assertStableGeometry(initial, afterCancel, "toolbar pointer-cancel stability");
 
   const didScroll = await page.evaluate(() => {
     const before = window.scrollY;
@@ -133,4 +158,4 @@ try {
   await browser.close();
 }
 
-console.log("Contextual annotation toolbar stayed beside the selection, exposed placement state and supported keyboard dismissal.");
+console.log("Contextual annotation toolbar stayed stable through pointer interaction, scrolling, resizing and keyboard dismissal.");
