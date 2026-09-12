@@ -18,7 +18,8 @@ export type LessonDiagramBlock = {
     | "capillaryLevels"
     | "capillaryBalance"
     | "fluidStreamlines"
-    | "continuityTube";
+    | "continuityTube"
+    | "bernoulliTube";
   title?: string;
   caption?: string;
   explanation?: string;
@@ -419,6 +420,32 @@ function ContinuityTubeDiagram({ value }: { value: LessonDiagramBlock }) {
   );
 }
 
+function BernoulliTubeDiagram({ value }: { value: LessonDiagramBlock }) {
+  return (
+    <svg className={styles.svg} viewBox="0 0 760 410" role="img" aria-label="Ekuacioni i Bernulit në dy prerje të një gypi në lartësi të ndryshme">
+      <ArrowDefs />
+      <line x1="70" y1="310" x2="690" y2="310" className={styles.guide} />
+      <path d="M105 76 L245 76 C335 76 395 132 458 185 C505 225 555 236 665 236 M105 170 L245 170 C332 170 378 188 447 236 C505 276 555 280 665 280" fill="none" className={styles.axis} />
+      <path d="M108 79 L243 79 C330 79 390 135 455 188 C505 229 553 239 662 239 L662 277 C555 277 507 273 450 233 C380 185 335 167 243 167 L108 167 Z" fill="var(--medical-color-primary, #314adc)" opacity="0.07" />
+      <line x1="185" y1="77" x2="185" y2="169" className={styles.guide} strokeDasharray="7 6" />
+      <line x1="565" y1="232" x2="565" y2="282" className={styles.guide} strokeDasharray="7 6" />
+      <line x1="185" y1="122" x2="302" y2="122" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <line x1="565" y1="257" x2="660" y2="257" className={styles.velocityVector} markerEnd="url(#diag-arrow)" />
+      <text x="235" y="104" className={styles.vectorLabel}>{value.startVectorLabel || "v₁"}</text>
+      <text x="602" y="239" className={styles.vectorLabel}>{value.endVectorLabel || "v₂"}</text>
+      <text x="145" y="66" className={styles.pointLabel}>{value.startPointLabel || "p₁"}</text>
+      <text x="606" y="222" className={styles.pointLabel}>{value.endPointLabel || "p₂"}</text>
+      <text x="200" y="130" className={styles.intervalLabel}>{value.startCoordinateLabel || "S₁"}</text>
+      <text x="580" y="264" className={styles.intervalLabel}>{value.endCoordinateLabel || "S₂"}</text>
+      <line x1="150" y1="310" x2="150" y2="123" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <line x1="530" y1="310" x2="530" y2="258" className={styles.interval} markerStart="url(#diag-open-start)" markerEnd="url(#diag-open-end)" />
+      <text x="124" y="220" className={styles.coordinate}>h₁</text>
+      <text x="505" y="292" className={styles.coordinate}>h₂</text>
+      <text x="380" y="366" textAnchor="middle" className={styles.coordinate}>{value.intervalLabel || "p₁ + ρgh₁ + ρv₁²/2 = p₂ + ρgh₂ + ρv₂²/2"}</text>
+    </svg>
+  );
+}
+
 function isUniformMotionFigure(value: LessonDiagramBlock) {
   return value.startPointLabel?.trim() === "t = 0" && value.intervalLabel?.replace(/\s+/g, "").toLowerCase() === "s=x";
 }
@@ -439,6 +466,7 @@ function DiagramCanvas({ value }: { value: LessonDiagramBlock }) {
     case "capillaryBalance": return <CapillaryBalanceDiagram value={value} />;
     case "fluidStreamlines": return <FluidStreamlinesDiagram />;
     case "continuityTube": return <ContinuityTubeDiagram value={value} />;
+    case "bernoulliTube": return <BernoulliTubeDiagram value={value} />;
     default: return isUniformMotionFigure(value) ? <UniformMotionAxisDiagram value={value} /> : <LinearPositionDiagram value={value} />;
   }
 }
