@@ -73,6 +73,14 @@ async function selectText(page, selector, phrase, pointerType = "mouse") {
   }, { selector, phrase, pointerType });
 }
 
+function assertSameBox(before, after, label, tolerance = 0.6) {
+  assert(before && after, `${label}: missing bounding box.`);
+  assert(Math.abs(before.x - after.x) <= tolerance, `${label}: moved horizontally.`);
+  assert(Math.abs(before.y - after.y) <= tolerance, `${label}: moved vertically.`);
+  assert(Math.abs(before.width - after.width) <= tolerance, `${label}: width changed.`);
+  assert(Math.abs(before.height - after.height) <= tolerance, `${label}: height changed.`);
+}
+
 async function desktopAudit(browser) {
   const context = await browser.newContext({
     viewport: { width: 1100, height: 760 },
@@ -97,6 +105,21 @@ async function desktopAudit(browser) {
   assert(await toolbar.evaluate((element) => element.parentElement === document.body), "Desktop toolbar is not portaled to body.");
 
   const firstColor = toolbar.locator("button[data-color]").first();
+  const colorBeforeHover = await firstColor.boundingBox();
+  await firstColor.hover();
+  await page.waitForTimeout(120);
+  const colorAfterHover = await firstColor.boundingBox();
+  assertSameBox(colorBeforeHover, colorAfterHover, "Highlight color hover stability");
+  await page.mouse.move(4, 4);
+
+  const noneForHover = toolbar.getByRole("button", { name: "Hiq highlighting-un nga teksti i zgjedhur" });
+  const noneBeforeHover = await noneForHover.boundingBox();
+  await noneForHover.hover();
+  await page.waitForTimeout(120);
+  const noneAfterHover = await noneForHover.boundingBox();
+  assertSameBox(noneBeforeHover, noneAfterHover, "None hover stability");
+  await page.mouse.move(4, 4);
+
   await firstColor.dispatchEvent("pointerdown", { pointerType: "mouse", pointerId: 41, button: 0, buttons: 1 });
   await page.locator("body").dispatchEvent("pointerup", { pointerType: "mouse", pointerId: 41, button: 0, buttons: 0 });
   await page.waitForTimeout(220);
@@ -139,6 +162,10 @@ async function desktopAudit(browser) {
 
   const noneButton = toolbar.getByRole("button", { name: "Hiq highlighting-un nga teksti i zgjedhur" });
   await noneButton.focus();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
+  const focusedLabel = await page.evaluate(() => document.activeElement?.getAttribute("aria-label") || "");
+  assert(focusedLabel === "Hiq highlighting-un nga teksti i zgjedhur", "Keyboard focus did not return to the None control.");
   const focusStyle = await noneButton.evaluate((element) => getComputedStyle(element).outlineStyle);
   assert(focusStyle !== "none", "Portaled desktop toolbar control has no visible focus outline.");
 
@@ -214,4 +241,4 @@ try {
   await browser.close();
 }
 
-console.log("Deep annotation browser audit passed: outside pointer release recovery, repeated desktop selection, focus visibility, 320/390px overflow and 44px touch targets are stable.");
+console.log("Deep annotation browser audit passed: outside pointer release recovery, hover/focus stability, repeated desktop selection, 320/390px overflow and 44px touch targets are stable.");
