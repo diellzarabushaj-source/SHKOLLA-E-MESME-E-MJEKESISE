@@ -24,6 +24,7 @@ export const lessonDiagram = defineType({
           {title: 'Enët komunikuese', value: 'communicatingVessels'},
           {title: 'Presa hidraulike', value: 'hydraulicPress'},
           {title: 'Energjia e sipërfaqes së lirë - molekulat', value: 'surfaceEnergy'},
+          {title: 'Tensioni sipërfaqësor - film dhe shufër lëvizëse', value: 'surfaceTensionFilm'},
         ],
       },
       validation: (rule) => rule.required(),
