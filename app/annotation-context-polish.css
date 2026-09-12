@@ -10,6 +10,17 @@
   touch-action: manipulation;
 }
 
+[data-annotation-selection-toolbar] button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 34%, transparent);
+  outline-offset: 2px;
+}
+
+[data-annotation-selection-toolbar] button:hover:not(:disabled),
+[data-annotation-selection-toolbar] button:focus-visible,
+[data-annotation-selection-toolbar] button:active {
+  transform: none !important;
+}
+
 @media (min-width: 701px) and (pointer: fine) {
   [data-annotation-selection-toolbar] {
     width: max-content !important;
@@ -162,14 +173,14 @@
   }
 
   [data-annotation-selection-toolbar] button {
-    min-width: 42px !important;
-    min-height: 42px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
     border-radius: 12px;
   }
 
   [data-annotation-selection-toolbar] button[data-color] {
-    width: 42px !important;
-    height: 42px !important;
+    width: 44px !important;
+    height: 44px !important;
     border-radius: 999px !important;
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.34);
   }
@@ -204,21 +215,22 @@
 
 @media (max-width: 370px) and (pointer: coarse) {
   [data-annotation-selection-toolbar] {
-    gap: 5px !important;
-    padding-inline: 7px !important;
+    gap: 3px !important;
+    padding-inline: 5px !important;
   }
 
   [data-annotation-selection-toolbar] button,
   [data-annotation-selection-toolbar] button[data-color] {
-    min-width: 38px !important;
-    width: 38px !important;
-    min-height: 38px !important;
-    height: 38px !important;
+    min-width: 44px !important;
+    width: 44px !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    padding-inline: 0 !important;
   }
 
   [data-annotation-add-note] {
-    width: 42px !important;
-    min-width: 42px !important;
+    width: 44px !important;
+    min-width: 44px !important;
     padding: 0 !important;
     font-size: 0;
   }
