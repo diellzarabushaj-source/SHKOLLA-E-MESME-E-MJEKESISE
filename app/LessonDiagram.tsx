@@ -30,6 +30,7 @@ const viscosityKinds = new Set<string>([
 const cardiovascularKinds = new Set<string>([
   "bloodVesselModel",
   "heartCycleCardiogram",
+  "bloodPressureMeasurement",
 ]);
 
 export default function LessonDiagram({ value }: { value: LessonDiagramBlock }) {
