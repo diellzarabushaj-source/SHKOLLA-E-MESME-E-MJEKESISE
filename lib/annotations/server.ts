@@ -115,39 +115,34 @@ export async function createLessonAnnotation(
 ): Promise<LessonAnnotation> {
   const sql = database();
   const claims = claimsFor(userId);
-  const [, , countRows] = await sql.transaction((txn) => [
+  const lockKey = `${userId}:${input.lessonId}`;
+  const [, , , rows] = await sql.transaction((txn) => [
     txn`SET LOCAL ROLE authenticated`,
     txn`SELECT set_config('request.jwt.claims', ${claims}, true)`,
+    txn`SELECT pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))`,
     txn`
-      SELECT
-        count(*)::int AS count,
-        bool_or(
-          annotation_type=${input.kind}
-          AND block_key=${input.blockKey}
-          AND start_offset=${input.startOffset}
-          AND end_offset=${input.endOffset}
-        ) AS anchor_exists
-      FROM public.lesson_annotations
-      WHERE user_id=${userId} AND lesson_id=${input.lessonId}
-    `,
-  ]);
-  const countRow = firstRow(countRows);
-  const count = Number(countRow?.count || 0);
-  const anchorExists = countRow?.anchor_exists === true;
-  if (count >= 500 && !anchorExists) throw new Error("ANNOTATION_LIMIT_REACHED");
-
-  const [, , rows] = await sql.transaction((txn) => [
-    txn`SET LOCAL ROLE authenticated`,
-    txn`SELECT set_config('request.jwt.claims', ${claims}, true)`,
-    txn`
+      WITH allowance AS (
+        SELECT
+          count(*) < 500 AS has_capacity,
+          COALESCE(bool_or(
+            annotation_type=${input.kind}
+            AND block_key=${input.blockKey}
+            AND start_offset=${input.startOffset}
+            AND end_offset=${input.endOffset}
+          ), false) AS anchor_exists
+        FROM public.lesson_annotations
+        WHERE user_id=${userId} AND lesson_id=${input.lessonId}
+      )
       INSERT INTO public.lesson_annotations (
         user_id, lesson_id, content_revision, annotation_type, block_key,
         start_offset, end_offset, quote, prefix, suffix, color, note_text
-      ) VALUES (
+      )
+      SELECT
         ${userId}, ${input.lessonId}, ${input.contentRevision}, ${input.kind}, ${input.blockKey},
         ${input.startOffset}, ${input.endOffset}, ${input.quote}, ${input.prefix}, ${input.suffix},
         ${input.color}, ${input.kind === "note" ? input.noteText : null}
-      )
+      FROM allowance
+      WHERE has_capacity OR anchor_exists
       ON CONFLICT (user_id, lesson_id, annotation_type, block_key, start_offset, end_offset)
       DO UPDATE SET
         content_revision=EXCLUDED.content_revision,
@@ -163,7 +158,7 @@ export async function createLessonAnnotation(
     `,
   ]);
   const row = firstRow(rows);
-  if (!row) throw new Error("ANNOTATION_CREATE_FAILED");
+  if (!row) throw new Error("ANNOTATION_LIMIT_REACHED");
   return annotationFromRow(row);
 }
 
