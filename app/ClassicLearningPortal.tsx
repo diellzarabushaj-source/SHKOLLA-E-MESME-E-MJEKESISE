@@ -535,7 +535,8 @@ export default function ClassicLearningPortal({
   }, [card, cardIndex, cards]);
 
   function scrollTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Wait for the new learning view to commit, then start at its heading.
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
   }
 
   function resetStudy() {
