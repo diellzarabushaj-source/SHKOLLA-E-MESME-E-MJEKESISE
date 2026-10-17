@@ -33,7 +33,7 @@ jobs:
           version: 11.9.0
           cache: true
       - name: Install dependencies
-        run: ppnpm install --frozen-lockfile --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Generate optimized portal
         run: npm run prepare:portal
       - name: Confirm generated data layer
