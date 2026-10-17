@@ -1,4 +1,9 @@
 /* Final mobile shell layer, shared by classes, chapters and lessons. */
+.active-session-timer { position: static; display: flex; justify-content: flex-end; min-width: 0; min-height: 20px; width: auto; max-width: 1280px; padding: 0 18px; margin: 8px auto 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; transform: none; backdrop-filter: none; color: var(--muted); }
+.active-session-timer > span:last-child { display: inline-flex; align-items: center; gap: 6px; }
+.active-session-timer small { display: inline; color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.active-session-timer strong { font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--muted); }
+.active-session-dot { width: 5px; height: 5px; box-shadow: none; }
 @media (max-width: 767px), (max-height: 500px) and (max-width: 950px) {
   :root { --mobile-nav-height: 76px; }
   html { scroll-padding-block: 76px calc(96px + env(safe-area-inset-bottom)); }
@@ -20,11 +25,6 @@
   .mobile-navigation-item.is-active .mobile-navigation-icon { background: transparent; transform: none; }
   .mobile-navigation-label { font-size: 11px; font-weight: 600; letter-spacing: 0; }
   .mobile-navigation-icon svg { width: 23px; height: 23px; }
-  .active-session-timer { position: static; display: flex; justify-content: flex-end; min-width: 0; min-height: 20px; width: auto; max-width: 1280px; padding: 0 18px; margin: 8px auto 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; transform: none; backdrop-filter: none; color: var(--muted); }
-  .active-session-timer > span:last-child { display: inline-flex; align-items: center; gap: 6px; }
-  .active-session-timer small { display: inline; color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; }
-  .active-session-timer strong { font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--muted); }
-  .active-session-dot { width: 5px; height: 5px; box-shadow: none; }
   main.inner-page[data-campus-view] { padding: 8px 16px 40px; }
   [data-campus-breadcrumb] { display: flex; flex-wrap: nowrap !important; gap: 7px; margin: 3px 0 16px !important; padding-block: 2px; overflow-x: auto; white-space: nowrap; scrollbar-width: none !important; font-size: 11px; -webkit-overflow-scrolling: touch; }
   [data-campus-breadcrumb]::-webkit-scrollbar { display: none; }
