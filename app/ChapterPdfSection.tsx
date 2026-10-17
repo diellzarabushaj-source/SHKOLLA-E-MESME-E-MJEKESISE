@@ -1,5 +1,6 @@
 import { chapterPdfs, pdfCoverUrl, pdfDownloadUrl, type ChapterPdf } from "@/lib/chapter-pdfs";
 import styles from "./chapter-pdfs.module.css";
+import ChapterPdfCover from "./ChapterPdfCover";
 
 export default function ChapterPdfSection({ chapterId, resources, isAdmin = false }: {
   chapterId: string;
@@ -26,8 +27,9 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
             const title = pdf.title || pdf.originalFilename || "Material PDF";
             return (
             <article className={styles.card} key={pdf.url} aria-label={title}>
+              <a className={styles.preview} href={pdf.url} target="_blank" rel="noopener noreferrer" aria-label={`Shiko ${title} (PDF, në skedë të re)`}>
               <div className={styles.cover} aria-hidden="true">
-                {cover ? <img src={cover} alt="" width={260} height={360} loading="lazy" decoding="async" /> : <svg viewBox="0 0 48 56" fill="none"><path d="M9 2h21l13 13v37a2 2 0 0 1-2 2H9a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2"/><path d="M29 2v14h14M15 29h18M15 36h18M15 43h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
+                <ChapterPdfCover src={cover} />
                 <span className={styles.fileType}>PDF</span>
                 <span className={styles.index}>{String(index + 1).padStart(2, "0")}</span>
               </div>
@@ -35,10 +37,11 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
                 <h3>{title}</h3>
                 {pdf.description && <p>{pdf.description}</p>}
                 <span className={styles.metadata}>
-                  {pdf.pageCount ? <span>{pdf.pageCount} faqe</span> : <span>Dokument PDF</span>}
-                  {pdf.size ? <span>{(pdf.size / 1000000).toLocaleString("sq-AL", { maximumFractionDigits: 1 })} MB</span> : null}
+                  {Number.isFinite(pdf.pageCount) && Number(pdf.pageCount) > 0 ? <span>{pdf.pageCount} faqe</span> : <span>Dokument PDF</span>}
+                  {Number.isFinite(pdf.size) && Number(pdf.size) > 0 ? <span>{(Number(pdf.size) / 1000000).toLocaleString("sq-AL", { maximumFractionDigits: 1 })} MB</span> : null}
                 </span>
               </div>
+              </a>
               <div className={styles.actions}>
                 <a className={styles.open} href={pdf.url} target="_blank" rel="noopener noreferrer" aria-label={`Hape PDF: ${title} (në skedë të re)`}>Hape PDF <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
                 <a className={styles.download} href={pdfDownloadUrl(pdf)} download={pdf.originalFilename || true} aria-label={`Shkarko PDF: ${title}`}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg><span>Shkarko</span></a>
@@ -49,6 +52,7 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
       ) : (
         <p className={styles.empty}>Ende nuk ka PDF në këtë kapitull. Materialet do të shfaqen këtu pasi të shtohen.</p>
       )}
+      {pdfs.length > 0 && <p className={styles.hint}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5m0-9v.5" /></svg><span>PDF-të hapen në skedë të re. Për lexim pa internet, shkarkoji në pajisje.</span></p>}
       {isAdmin && <p className={styles.admin}>PDF të reja mund të ngarkohen në Sanity Studio → Kapitujt → ky kapitull → PDF / Harta mendore.</p>}
     </section>
   );

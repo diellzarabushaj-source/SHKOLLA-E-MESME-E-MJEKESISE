@@ -10,7 +10,7 @@ export type ChapterPdf = {
 };
 
 export function isPdfUrl(value: string | undefined): value is string {
-  if (!value) return false;
+  if (typeof value !== "string" || !value) return false;
   try {
     const url = new URL(value);
     return url.protocol === "https:" && url.hostname === "cdn.sanity.io"
@@ -20,10 +20,10 @@ export function isPdfUrl(value: string | undefined): value is string {
   }
 }
 
-export function chapterPdfs(resources?: ChapterPdf[] | null): ChapterPdf[] {
+export function chapterPdfs(resources?: readonly (ChapterPdf | null | undefined)[] | null): ChapterPdf[] {
   const seen = new Set<string>();
-  return (resources || []).filter((pdf) => {
-    if (!isPdfUrl(pdf.url) || seen.has(pdf.url)) return false;
+  return (Array.isArray(resources) ? resources : []).filter((pdf): pdf is ChapterPdf => {
+    if (!pdf || typeof pdf !== "object" || !isPdfUrl(pdf.url) || seen.has(pdf.url)) return false;
     seen.add(pdf.url);
     return true;
   });
@@ -37,7 +37,7 @@ export function pdfDownloadUrl(pdf: ChapterPdf): string {
 }
 
 export function pdfCoverUrl(value?: string): string | undefined {
-  if (!value) return undefined;
+  if (typeof value !== "string" || !value) return undefined;
   try {
     const url = new URL(value);
     if (url.protocol !== "https:" || url.hostname !== "cdn.sanity.io" || !url.pathname.startsWith("/images/") || url.username || url.password) return undefined;
