@@ -1,4 +1,4 @@
-import {ImageIcon} from '@sanity/icons/Image'
+import {ImageIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 
 export const lessonDiagram = defineType({

@@ -11,6 +11,8 @@ import LessonAnnotations from "./LessonAnnotations";
 import LessonLearningExperience from "./LessonLearningExperience";
 import LessonTable, { type LessonTableBlock } from "./LessonTable";
 import MarkdownLessonBlock from "./MarkdownLessonContent";
+import ChapterPdfSection from "./ChapterPdfSection";
+import type { ChapterPdf } from "@/lib/chapter-pdfs";
 
 // admin-table-paste-v1
 // markdown-lesson-formatting-v1
@@ -67,6 +69,7 @@ type Chapter = {
   title: string;
   slug: string;
   summary?: string;
+  pdfResources?: ChapterPdf[] | null;
   coverImage?: SanityImage;
   lessons: Lesson[];
 };
@@ -140,6 +143,12 @@ const portalQuery = `
             title,
             "slug": slug.current,
             summary,
+            pdfResources[] {
+              _key, title, description, pageCount,
+              "url": file.asset->url,
+              "originalFilename": file.asset->originalFilename,
+              "size": file.asset->size
+            },
             coverImage { alt, "asset": asset->{url} },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
               | order(order asc, title asc) {
@@ -971,6 +980,8 @@ export default function ClassicLearningPortal({
             <p>{selectedChapter.summary || "Mësimet dhe flashcards e këtij kapitulli."}</p>
           </div>
         </section>
+
+        <ChapterPdfSection chapterId={selectedChapter._id} resources={selectedChapter.pdfResources} isAdmin={isAdmin} />
 
         <ModeChooser mode={contentMode} onChange={setContentMode} />
 
