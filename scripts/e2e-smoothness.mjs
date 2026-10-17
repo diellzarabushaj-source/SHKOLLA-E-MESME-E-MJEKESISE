@@ -242,6 +242,50 @@ async function auditThemeAndDesktop(browser) {
   }
 }
 
+async function auditCollapsibleSidebar(browser) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: "block" });
+  await installSanityFixture(context);
+  const page = await context.newPage();
+  watchPage(page, "collapsible sidebar");
+  const contentLeft = () => page.locator("#main-content").evaluate((element) => Math.round(element.getBoundingClientRect().left));
+  try {
+    await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
+    const collapse = page.getByRole("button", { name: "Minimizo menunë", exact: true });
+    await collapse.waitFor({ state: "visible" });
+    assert(await contentLeft() === 224, "expanded sidebar does not reserve the expected content space");
+    await collapse.click();
+    const expand = page.getByRole("button", { name: "Zgjero menunë", exact: true });
+    await expand.waitFor({ state: "visible" });
+    assert(await expand.getAttribute("aria-expanded") === "false", "collapsed sidebar has an incorrect expanded state");
+    assert(await contentLeft() === 80, "collapsing the sidebar did not free content space");
+    const links = page.locator("#desktop-navigation a");
+    assert(await links.count() === 3, "collapsed sidebar lost a navigation destination");
+    for (const link of await links.all()) {
+      const target = await link.boundingBox();
+      assert(target && target.width >= 44 && target.height >= 44, "collapsed navigation target is too small");
+      assert(Boolean(await link.getAttribute("aria-label")), "icon navigation is missing an accessible name");
+    }
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expand.waitFor({ state: "visible" });
+    assert(await contentLeft() === 80, "collapsed preference did not survive refresh");
+    await page.locator("#desktop-navigation").getByRole("link", { name: "Progresi im", exact: true }).click();
+    await page.waitForURL("**/progress");
+    assert(await contentLeft() === 80, "route navigation reset the collapsed sidebar");
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert(!await expand.isVisible(), "desktop collapse control is visible on mobile");
+    assert(await page.locator("nav.mobile-navigation").isVisible(), "collapsed desktop preference hid mobile navigation");
+    assert(await contentLeft() === 0, "collapsed desktop preference left a gap on mobile");
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expand.click();
+    await collapse.waitFor({ state: "visible" });
+    assert(await collapse.getAttribute("aria-expanded") === "true", "expanded sidebar has an incorrect expanded state");
+    assert(await contentLeft() === 224, "expanding did not restore the sidebar");
+    console.log("✓ sidebar collapse, saved preference, route navigation and mobile isolation");
+  } finally {
+    await context.close();
+  }
+}
+
 async function auditMobileShell(browser) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   await installSanityFixture(context);
@@ -279,6 +323,7 @@ try {
   await auditPublicInfrastructure(browser).catch((error) => failures.push(error instanceof Error ? error.message : "infrastructure audit failed"));
   await auditServiceWorkerRegistration(browser).catch((error) => failures.push(error instanceof Error ? error.message : "service worker audit failed"));
   await auditThemeAndDesktop(browser).catch((error) => failures.push(error instanceof Error ? error.message : "desktop smoothness audit failed"));
+  await auditCollapsibleSidebar(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sidebar collapse audit failed"));
   await auditMobileShell(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile smoothness audit failed"));
 } finally {
   await browser.close();

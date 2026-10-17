@@ -1,6 +1,7 @@
 /* One application shell across learning, account, progress and system screens. */
 #main-content { min-height: calc(100dvh - 170px); }
 #main-content button[class*="startStudy"]:is(:hover, :active) { transform: none; }
+.sidebar-toggle { display: none; }
 [data-app-screen="progress"] { padding: 26px 32px 60px; }
 [data-app-screen="progress"] [class*="hero"] h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.12; }
 [data-app-screen="progress"] [class*="loginCard"] { max-width: 620px; padding: 40px; text-align: left; border-radius: 24px; box-shadow: var(--premium-shadow); }
@@ -17,14 +18,24 @@
 /* Keep the existing navigation and its history semantics; place it in a rail. */
 @media (min-width: 1180px) {
   :root { --app-rail-width: 224px; }
+  html[data-sidebar-collapsed="true"] { --app-rail-width: 80px; }
+  .sidebar-toggle { position: fixed; z-index: 60; top: 82px; left: calc(var(--app-rail-width) - 22px); display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); color: var(--muted); box-shadow: 0 3px 10px color-mix(in srgb, #000 8%, transparent); cursor: pointer; }
+  .sidebar-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .sidebar-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .sidebar-toggle svg { width: 20px; height: 20px; }
+  html[data-sidebar-collapsed="true"] .sidebar-toggle svg { transform: rotate(180deg); }
   body::before { content: ""; position: fixed; z-index: 0; left: 0; top: 76px; bottom: 0; width: var(--app-rail-width); border-right: 1px solid var(--line); background: var(--panel); pointer-events: none; }
   .site-header { min-height: 76px; padding-inline: 24px 32px; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .site-header .brand { min-width: 200px; }
   .site-header .header-actions { margin-left: auto; }
-  .site-header .desktop-navigation { position: fixed; left: 16px; top: 104px; width: 192px; height: auto; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: stretch; gap: 8px; border: 0; background: transparent; border-radius: 0; box-shadow: none; }
+  .site-header .desktop-navigation { position: fixed; left: 16px; top: 138px; width: calc(var(--app-rail-width) - 32px); height: auto; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: stretch; gap: 8px; border: 0; background: transparent; border-radius: 0; box-shadow: none; }
   .site-header .desktop-navigation .tab { justify-content: flex-start; min-height: 48px; height: 48px; width: 100%; gap: 12px; padding: 0 16px; border-radius: 12px; font-size: 13px; font-weight: 600; }
   .site-header .desktop-navigation .tab svg { width: 20px; height: 20px; }
   .site-header .desktop-navigation .tab.is-active { color: var(--accent); border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--line)); background: color-mix(in srgb, var(--primary) 8%, var(--panel)); box-shadow: none; }
+  html[data-sidebar-collapsed="true"] .site-header .desktop-navigation .tab { justify-content: center; padding: 0; gap: 0; }
+  html[data-sidebar-collapsed="true"] .site-header .desktop-navigation .nav-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  html[data-sidebar-collapsed="true"] .site-header .desktop-navigation .tab::after { content: attr(data-label); position: absolute; display: block; left: calc(100% + 12px); top: 50%; z-index: 70; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(-50%); transition: opacity .15s ease; }
+  html[data-sidebar-collapsed="true"] .site-header .desktop-navigation .tab:is(:hover, :focus-visible)::after { opacity: 1; }
   #main-content { margin-left: var(--app-rail-width); }
   .active-session-timer { padding-left: calc(var(--app-rail-width) + 32px); padding-right: 32px; }
   .medical-portal-ant-app footer { margin-left: calc(var(--app-rail-width) + 32px); margin-right: 32px; max-width: none; }
