@@ -127,13 +127,15 @@
   .note { left: -5%; }
 }
 @media (max-width: 760px) {
-  .hero.hero { grid-template-columns: 1fr; padding-top: 42px; gap: 16px; }
+  .hero.hero { grid-template-columns: 1fr; padding-top: 36px; gap: 24px; }
   .copy { max-width: 580px; }
   .copy h1 { font-size: clamp(45px, 9vw, 68px); }
   .copy h1 em { max-width: none; margin-top: 14px; font-size: .53em; }
   .copy > p { max-width: 43ch; font-size: 15px; }
   .signature { margin-top: 22px; }
-  .visual { width: min(100%, 440px); margin: 0 auto; height: 430px; }
+  .visual { width: min(100%, 440px); margin: 0 auto; height: 260px; overflow: clip; }
+  .scene { inset: 0 auto auto 50%; width: 400px; height: 430px; margin-left: -200px; transform: scale(.64); transform-origin: 50% 0; }
+  .orbit { width: 240px; height: 240px; top: 0; left: calc(50% - 120px); }
   .atlas { top: 28px; padding: 17px; }
   .specimen { height: 228px; }
   .heart { width: 140px; height: 152px; padding: 30px; border-radius: 34px; }
@@ -141,11 +143,11 @@
   .backSheet { height: 333px; }
   .studyCard { top: 296px; right: 0; left: 17%; }
   .note { top: 106px; }
-  .signal { bottom: 0; }
+  .signal { bottom: 0; height: 24px; }
 }
 @media (max-width: 380px) {
   .hero.hero { padding-inline: 20px; padding-bottom: 32px; }
-  .visual { height: 385px; }
+  .visual { height: 246px; }
   .atlas { width: 79%; left: 8%; }
   .atlasFooter b { font-size: 12px; }
   .studyCard { left: 4%; top: 293px; gap: 9px; padding: 12px; min-height: 76px; }
@@ -154,7 +156,7 @@
   .signal { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .scene { transform: none; }
+  .scene { --rotate-x: 0deg; --rotate-y: 0deg; }
   .hero *, .hero *::before, .hero *::after { animation: none !important; transition: none !important; }
   .action:hover, .action:hover span { transform: none; }
 }

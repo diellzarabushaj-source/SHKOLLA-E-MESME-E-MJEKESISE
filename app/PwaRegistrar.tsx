@@ -14,8 +14,11 @@ export default function PwaRegistrar() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [updateReady, setUpdateReady] = useState<ServiceWorker | null>(null);
   const [offline, setOffline] = useState(false);
+  const [dismissed, setDismissed] = useState<string | null>(null);
 
   useEffect(() => {
+    // Development asset URLs are mutable; a production worker would cache stale UI.
+    if (process.env.NODE_ENV === "development") return;
     if (!("serviceWorker" in navigator)) return;
 
     let registration: ServiceWorkerRegistration | null = null;
@@ -91,7 +94,8 @@ export default function PwaRegistrar() {
     updateReady?.postMessage({ type: "SKIP_WAITING" });
   }
 
-  if (!installEvent && !updateReady && !offline) return null;
+  const noticeKind = offline ? "offline" : updateReady ? "update" : installEvent ? "install" : null;
+  if (!noticeKind || dismissed === noticeKind) return null;
 
   return (
     <aside className={styles.notice} aria-live="polite">
@@ -99,14 +103,15 @@ export default function PwaRegistrar() {
         <strong>{offline ? "Je offline" : updateReady ? "Version i ri gati" : "Instalo portalin"}</strong>
         <span>
           {offline
-            ? "Mësimet dhe flashcards e hapura më parë vazhdojnë të funksionojnë."
+            ? "Lidhu sërish me internetin për të hapur PDF dhe përmbajtje të re."
             : updateReady
               ? "Përditësoje për ta marrë versionin më të ri."
               : "Hape si aplikacion direkt nga ekrani kryesor."}
         </span>
       </div>
-      {installEvent && <button type="button" onClick={() => void install()}>Instalo</button>}
-      {updateReady && <button type="button" onClick={update}>Përditëso</button>}
+      {!offline && !updateReady && installEvent && <button type="button" onClick={() => void install()}>Instalo</button>}
+      {!offline && updateReady && <button type="button" onClick={update}>Përditëso</button>}
+      <button className={styles.dismiss} type="button" aria-label="Mbyll njoftimin" onClick={() => setDismissed(noticeKind)}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg></button>
     </aside>
   );
 }

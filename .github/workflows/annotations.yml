@@ -26,12 +26,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
+          cache: true
       - name: Install application dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
       - name: Install Chromium
         run: |
-          npm install --no-save playwright@1.57.0
-          npx playwright install --with-deps chromium
+          pnpm exec playwright install --with-deps chromium
       - name: Build application
         run: npm run build
       - name: Run annotations browser audit

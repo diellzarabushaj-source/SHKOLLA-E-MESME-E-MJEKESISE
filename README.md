@@ -18,6 +18,24 @@ Platformë e klasës për mësim me flashcards, e organizuar në:
 
 https://www.sanity.io/@oZ3HX2fYf/studio/xwvsfazcnhh889nw18ldkuvk/default/
 
+## PDF / Harta mendore
+
+Çdo kapitull ka seksion të veçantë për PDF me hapje në skedë të re dhe shkarkim.
+Të gjitha PDF-të ruhen si file assets në Sanity (`u5d5zn7n/schoolv2`) dhe lidhen
+me fushën `pdfResources` të kapitullit përkatës. Tri PDF-të burimore (Osteologjia,
+Muskujt / Miologjia, Nyjet) i përkasin Klasës 10 → Anatomia dhe Fiziologjia e
+njeriut → 2. SISTEMI LOKOMOTOR.
+
+Për materiale të tjera: në Sanity Studio hap **Kapitujt → kapitulli përkatës →
+PDF / Harta mendore**, shto titullin, skedarin PDF dhe sipas dëshirës përshkrimin
+e numrin e faqeve, pastaj publiko kapitullin. Renditja e listës ruhet në portal.
+Fusha e re e administrimit bëhet e disponueshme pasi të publikohet versioni i
+Studio-s nga dosja `studio/`. Materialet dhe renditja e tyre menaxhohen tërësisht
+në Sanity; skedarët PDF nuk ruhen në repository.
+
+PDF-të ngarkohen vetëm kur vizitori zgjedh t'i hapë ose shkarkojë.
+Kontrolli i këtij seksioni: `node --experimental-strip-types scripts/test-chapter-pdfs.mjs`.
+
 ## Zhvillimi lokal
 
 ```bash

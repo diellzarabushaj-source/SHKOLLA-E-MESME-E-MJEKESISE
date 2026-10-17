@@ -11,6 +11,9 @@ import LessonAnnotations from "./LessonAnnotations";
 import LessonLearningExperience from "./LessonLearningExperience";
 import LessonTable, { type LessonTableBlock } from "./LessonTable";
 import MarkdownLessonBlock from "./MarkdownLessonContent";
+import ChapterPdfSection from "./ChapterPdfSection";
+import ChapterOverview from "./ChapterOverview";
+import type { ChapterPdf } from "@/lib/chapter-pdfs";
 
 // admin-table-paste-v1
 // markdown-lesson-formatting-v1
@@ -67,6 +70,7 @@ type Chapter = {
   title: string;
   slug: string;
   summary?: string;
+  pdfResources?: ChapterPdf[] | null;
   coverImage?: SanityImage;
   lessons: Lesson[];
 };
@@ -140,6 +144,13 @@ const portalQuery = `
             title,
             "slug": slug.current,
             summary,
+            pdfResources[] {
+              _key, title, description, pageCount,
+              "url": file.asset->url,
+              "originalFilename": file.asset->originalFilename,
+              "size": file.asset->size,
+              "coverUrl": coverImage.asset->url
+            },
             coverImage { alt, "asset": asset->{url} },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
               | order(order asc, title asc) {
@@ -525,7 +536,8 @@ export default function ClassicLearningPortal({
   }, [card, cardIndex, cards]);
 
   function scrollTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Wait for the new learning view to commit, then start at its heading.
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
   }
 
   function resetStudy() {
@@ -963,14 +975,9 @@ export default function ClassicLearningPortal({
           <span>{selectedChapter.title}</span>
         </div>
 
-        <section className="chapter-hero">
-          <span className="large-icon">§</span>
-          <div>
-            <span className="eyebrow">Kapitulli · {selectedGrade.title}</span>
-            <h1>{selectedChapter.title}</h1>
-            <p>{selectedChapter.summary || "Mësimet dhe flashcards e këtij kapitulli."}</p>
-          </div>
-        </section>
+        <ChapterOverview title={selectedChapter.title} summary={selectedChapter.summary} gradeTitle={selectedGrade.title} lessonCount={selectedChapter.lessons.length} flashcardCount={chapterCards} resources={selectedChapter.pdfResources} />
+
+        <ChapterPdfSection chapterId={selectedChapter._id} resources={selectedChapter.pdfResources} isAdmin={isAdmin} />
 
         <ModeChooser mode={contentMode} onChange={setContentMode} />
 

@@ -1,0 +1,77 @@
+/* Shared presentation finish; existing theme tokens remain the source of color. */
+:root { --premium-shadow: 0 4px 16px color-mix(in srgb, var(--text) 3%, transparent), inset 0 1px 0 color-mix(in srgb, var(--text) 3%, transparent); }
+#main-content { background: radial-gradient(ellipse at 94% 8%, color-mix(in srgb, var(--primary) 3%, transparent), transparent 55%); }
+.site-header { border-bottom-color: var(--line); box-shadow: 0 3px 16px color-mix(in srgb, var(--text) 2%, transparent); }
+.site-header .brand-mark { box-shadow: inset 0 1px 0 #ffffff24, 0 3px 10px color-mix(in srgb, var(--primary) 18%, transparent); }
+.site-header .brand b { font-weight: 700; letter-spacing: -.025em; }
+.site-header .brand small { letter-spacing: .04em; }
+.site-header .theme-switch.theme-control { position: relative; display: grid; place-items: center; flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); color: var(--muted); box-shadow: 0 1px 3px color-mix(in srgb, var(--text) 3%, transparent); cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease; }
+.theme-control > svg { grid-area: 1 / 1; width: 19px; height: 19px; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: opacity .2s ease, transform .2s ease; }
+html[data-theme="dark"] .theme-control .theme-moon, html[data-theme="light"] .theme-control .theme-sun { opacity: 0; transform: rotate(-30deg) scale(.7); }
+html[data-theme="light"] .theme-control .theme-moon, html[data-theme="dark"] .theme-control .theme-sun { opacity: 1; transform: none; }
+.site-header .theme-control:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.site-header .theme-control:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+.active-session-timer { opacity: .8; }
+.campus-home .stats-strip { padding-block: 28px; border-radius: 20px; background: linear-gradient(125deg, color-mix(in srgb, var(--panel-2) 30%, transparent), transparent), var(--panel); box-shadow: var(--premium-shadow); }
+.campus-home .stats-strip strong { font-weight: 700; }
+.campus-home [data-campus-grades] > div:first-child { padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.campus-home [data-campus-grades] h2 { font-weight: 750; }
+.medical-portal-ant-app [data-campus-card] { border-radius: 24px; padding: 28px; box-shadow: var(--premium-shadow); }
+.medical-portal-ant-app [data-campus-card]::after { right: 20px; top: 12px; font-size: 124px; font-weight: 650; }
+.medical-portal-ant-app [data-campus-card] > span { width: 48px; height: 48px; border-radius: 14px; }
+.medical-portal-ant-app [data-campus-card] h3 { font-size: 28px; font-weight: 700; }
+.medical-portal-ant-app [data-campus-card] > div { padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--line); }
+.medical-portal-ant-app [data-campus-card] > button { margin-top: 24px; min-height: 48px; border-radius: 12px; text-transform: none; font-size: 13px; letter-spacing: -.01em; }
+[data-campus-view] [data-campus-breadcrumb] { font-size: 11px; }
+[data-campus-view] [data-campus-breadcrumb] > span:not(:last-child) { color: var(--muted-2); opacity: .6; }
+.medical-portal-ant-app [data-campus-grade-hero], [data-campus-view] .subject-hero { border-radius: 26px; background: radial-gradient(ellipse at 96% 0, color-mix(in srgb, var(--primary) 9%, transparent), transparent 60%), var(--panel); box-shadow: var(--premium-shadow); }
+.medical-portal-ant-app [data-campus-grade-hero] h1, [data-campus-view] .subject-hero h1 { font-weight: 750; letter-spacing: -.045em; text-wrap: balance; }
+[data-campus-view] .subject-hero .subject-summary { background: color-mix(in srgb, var(--bg) 30%, transparent); border-radius: 16px; }
+[data-campus-view] .section-heading h2 { font-weight: 700; }
+[data-campus-view] .subject-card { border-radius: 24px; padding: 16px; box-shadow: var(--premium-shadow); }
+[data-campus-view] .subject-card .subject-top { height: 170px; border-radius: 15px; }
+[data-campus-view] .subject-card h3 { padding-inline: 6px; font-weight: 700; }
+[data-campus-view] .subject-card > p { padding-inline: 6px; }
+[data-campus-view] .subject-card .subject-meta { padding-inline: 6px; }
+[data-campus-view] .subject-card button { border-radius: 12px; min-height: 48px; }
+[data-campus-view] [data-campus-modes] { margin-block: 36px 0; padding-block: 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+[data-campus-view] [data-campus-modes] > div { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+[data-campus-view] [data-campus-modes] button { min-height: 44px; border-radius: 10px; color: var(--muted); }
+[data-campus-view] [data-campus-modes] button[aria-selected="true"] { background: color-mix(in srgb, var(--primary) 10%, var(--panel)); color: var(--accent); box-shadow: 0 2px 5px color-mix(in srgb, var(--text) 4%, transparent); }
+[data-campus-view] :is(.chapter-row, [data-campus-lesson]) { border-radius: 20px; box-shadow: var(--premium-shadow); }
+[data-campus-view] .chapter-row h3, [data-campus-view] [data-campus-lesson] h3 { font-weight: 650; letter-spacing: -.025em; }
+[data-campus-view] [data-campus-lesson] [class*="lessonIndex"] { border: 1px solid var(--line); border-radius: 12px; color: var(--muted); background: var(--bg-soft); font-variant-numeric: tabular-nums; }
+[data-campus-view] [data-campus-lesson] button { min-height: 46px; border-radius: 12px; text-transform: none; font-size: 12px; letter-spacing: 0; }
+[data-learning-experience] header[data-learning-chrome] { border-top-width: 1px; border-radius: 26px; background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--primary) 6%, transparent), transparent 55%), var(--panel); box-shadow: var(--premium-shadow); }
+[data-learning-experience] [class*="lessonBody"] { box-shadow: var(--premium-shadow); }
+[data-learning-experience] [class*="lessonBody"] :is(h2, h3, h4) { text-wrap: balance; }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 950px) {
+  .site-header .brand { gap: 10px; }
+  .site-header .brand b { font-size: 13px; }
+  .mobile-navigation { border-radius: 22px 22px 0 0; background: color-mix(in srgb, var(--panel) 96%, transparent); backdrop-filter: blur(18px); }
+  .mobile-navigation .mobile-navigation-item { position: relative; padding: 6px; min-height: 58px; border-radius: 14px; }
+  .mobile-navigation .mobile-navigation-item.is-active { color: var(--accent); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+  .mobile-navigation .mobile-navigation-item.is-active::before { content: ""; position: absolute; top: 0; left: calc(50% - 10px); width: 20px; height: 2px; border-radius: 2px; background: var(--accent); }
+  .mobile-navigation .mobile-navigation-label { font-size: 10px; letter-spacing: .01em; }
+  .campus-home .stats-strip { padding-block: 22px; }
+  .campus-home [data-campus-grades] { padding-top: 40px; }
+  .campus-home [data-campus-grades] > div:first-child { padding-bottom: 20px; }
+  .medical-portal-ant-app [data-campus-card] { min-height: 0; padding: 24px; border-radius: 22px; }
+  .medical-portal-ant-app [data-campus-card] h3 { margin-top: 20px; font-size: 27px; }
+  .medical-portal-ant-app [data-campus-card] > div { margin-top: 16px; padding-top: 16px; }
+  main.inner-page[data-campus-view] { padding-inline: 18px; }
+  .medical-portal-ant-app [data-campus-grade-hero], [data-campus-view] .subject-hero { border-radius: 22px; padding: 24px 20px; }
+  [data-campus-view] .subject-hero h1 { font-size: clamp(24px, 6.3vw, 30px); }
+  [data-campus-view] .subject-hero .subject-summary { background: transparent; border-radius: 0; }
+  [data-campus-view] .subject-card { border-radius: 22px; padding: 14px; }
+  [data-campus-view] .subject-card .subject-top { height: 160px; border-radius: 13px; }
+  [data-campus-view] [data-campus-modes] { margin-top: 28px; padding-block: 18px; gap: 12px; }
+  [data-campus-view] [data-campus-modes] > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-campus-view] [data-campus-modes] button { padding-inline: 10px; font-size: 12px; }
+  [data-campus-view] :is(.chapter-row, [data-campus-lesson]) { border-radius: 18px; }
+  [data-campus-view] [data-campus-lesson] { gap: 12px; }
+  [data-learning-experience] header[data-learning-chrome] { border-radius: 22px; }
+}
+@media (max-width: 359px) { main.inner-page[data-campus-view] { padding-inline: 12px; } .site-header .brand b { font-size: 12px; } }
+@media (hover: hover) and (pointer: fine) { [data-campus-view] [data-campus-lesson]:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--line)); } }
+@media (prefers-reduced-motion: reduce) { .theme-control > svg { transition: none; } }

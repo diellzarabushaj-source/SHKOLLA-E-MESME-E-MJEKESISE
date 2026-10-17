@@ -81,6 +81,13 @@ const optimizedDataLayer = `const portalQuery = \`
             title,
             "slug": slug.current,
             summary,
+            pdfResources[] {
+              _key, title, description, pageCount,
+              "url": file.asset->url,
+              "originalFilename": file.asset->originalFilename,
+              "size": file.asset->size,
+              "coverUrl": coverImage.asset->url
+            },
             coverImage { alt, "asset": asset->{url} },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]
               | order(order asc, title asc) {

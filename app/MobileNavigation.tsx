@@ -49,7 +49,8 @@ function resolveSection(pathname: string): NavigationSection {
   if (pathname !== "/") return "home";
 
   const hash = window.location.hash;
-  const hasSelectedGrade = Boolean(window.localStorage.getItem(SELECTED_GRADE_KEY));
+  let hasSelectedGrade = false;
+  try { hasSelectedGrade = Boolean(window.localStorage.getItem(SELECTED_GRADE_KEY)); } catch { /* Navigation still follows the visible learning page when storage is unavailable. */ }
   const isInsideLearningFlow = Boolean(document.querySelector("main.inner-page"));
 
   return hash === "#klasat" || hasSelectedGrade || isInsideLearningFlow ? "classes" : "home";

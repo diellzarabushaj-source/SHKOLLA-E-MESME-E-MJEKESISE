@@ -24,7 +24,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
+          cache: true
+      - run: pnpm install --frozen-lockfile
+      - name: Verify chapter PDF links and legacy content
+        run: node scripts/test-chapter-pdfs.mjs
       - name: Build application
         shell: bash
         run: |

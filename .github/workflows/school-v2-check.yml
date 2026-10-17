@@ -12,7 +12,8 @@ on:
       - scripts/harden-sanity-runtime.mjs
       - scripts/audit-sanity-runtime.mjs
       - package.json
-      - package-lock.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
       - tsconfig.json
       - .github/workflows/school-v2-check.yml
 
@@ -27,8 +28,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
+          cache: true
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Generate optimized portal
         run: npm run prepare:portal
       - name: Confirm generated data layer
@@ -61,4 +66,4 @@ jobs:
       - name: TypeScript check
         # prepare:portal already ran above. npm run typecheck would trigger
         # pretypecheck and regenerate the generated portal a second time.
-        run: npx tsc --noEmit
+        run: pnpm exec tsc --noEmit
