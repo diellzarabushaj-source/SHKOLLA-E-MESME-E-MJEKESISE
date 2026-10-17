@@ -1,5 +1,6 @@
 /* One application shell across learning, account, progress and system screens. */
 #main-content { min-height: calc(100dvh - 170px); }
+#main-content button[class*="startStudy"]:is(:hover, :active) { transform: none; }
 [data-app-screen="progress"] { padding: 26px 32px 60px; }
 [data-app-screen="progress"] [class*="hero"] h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.12; }
 [data-app-screen="progress"] [class*="loginCard"] { max-width: 620px; padding: 40px; text-align: left; border-radius: 24px; box-shadow: var(--premium-shadow); }
