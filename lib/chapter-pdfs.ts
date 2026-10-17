@@ -6,6 +6,7 @@ export type ChapterPdf = {
   url?: string;
   originalFilename?: string;
   size?: number;
+  coverUrl?: string;
 };
 
 export function isPdfUrl(value: string | undefined): value is string {
@@ -33,4 +34,16 @@ export function pdfDownloadUrl(pdf: ChapterPdf): string {
   const url = new URL(pdf.url);
   url.searchParams.set("dl", pdf.originalFilename || "material.pdf");
   return url.toString();
+}
+
+export function pdfCoverUrl(value?: string): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" || url.hostname !== "cdn.sanity.io" || !url.pathname.startsWith("/images/") || url.username || url.password) return undefined;
+    url.searchParams.set("w", "360");
+    url.searchParams.set("auto", "format");
+    url.searchParams.set("fit", "max");
+    return url.toString();
+  } catch { return undefined; }
 }

@@ -32,6 +32,7 @@ import "./grade-card-uiverse.css";
 import "./navigation-active.css";
 import "./design-system-polish.css";
 import "./campus-polish.css";
+import "./mobile-app.css";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
   keywords: ["mjekësi", "shkollë e mesme", "Pejë", "flashcards", "mësime", "anatomi", "fiziologji"],
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  icons: { icon: "/icon.svg", apple: "/icons/app-192.png" },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

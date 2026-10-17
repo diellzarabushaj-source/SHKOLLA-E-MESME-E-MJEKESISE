@@ -1,0 +1,65 @@
+/* Final mobile shell layer, shared by classes, chapters and lessons. */
+@media (max-width: 767px), (max-height: 500px) and (max-width: 950px) {
+  :root { --mobile-nav-height: 76px; }
+  html { scroll-padding-block: 76px calc(96px + env(safe-area-inset-bottom)); }
+  body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  input, select, textarea { font-size: max(16px, 1em); }
+  .site-header { min-height: calc(62px + env(safe-area-inset-top)); padding: calc(8px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); box-shadow: none; }
+  .site-header .brand { min-width: 0; gap: 9px; }
+  .site-header .brand b { font-size: 13px; max-width: 40vw; }
+  .site-header .brand small { display: none; }
+  .site-header .header-actions { gap: 8px; }
+  .desktop-navigation { display: none !important; }
+  .site-header .theme-switch { display: inline-flex; align-items: center; justify-content: center; height: 44px; min-height: 44px; width: 52px; min-width: 52px; overflow: visible; }
+  .site-header .theme-switch .theme-slider { inset: 6px 0; }
+  .site-header .ant-btn { min-width: 44px; min-height: 44px; align-items: center; }
+  .mobile-navigation { display: grid; left: 0; right: 0; bottom: 0; width: 100%; max-width: none; min-height: calc(76px + env(safe-area-inset-bottom)); padding: 7px max(16px, env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border: 0; border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; transform: none; background: color-mix(in srgb, var(--panel) 96%, transparent); box-shadow: 0 -6px 30px color-mix(in srgb, var(--text) 5%, transparent); }
+  .mobile-navigation-item { min-height: 58px; padding: 5px; gap: 3px; border: 0; border-radius: 13px; font-weight: 600; }
+  .mobile-navigation-item.is-active { color: var(--accent); border: 0; background: color-mix(in srgb, var(--primary) 9%, transparent); box-shadow: none; }
+  .mobile-navigation-item.is-active .mobile-navigation-icon { background: transparent; transform: none; }
+  .mobile-navigation-label { font-size: 11px; font-weight: 600; letter-spacing: 0; }
+  .mobile-navigation-icon svg { width: 23px; height: 23px; }
+  .active-session-timer { position: static; display: flex; justify-content: flex-end; min-width: 0; min-height: 20px; width: auto; max-width: 1280px; padding: 0 18px; margin: 8px auto 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; transform: none; backdrop-filter: none; color: var(--muted); }
+  .active-session-timer > span:last-child { display: inline-flex; align-items: center; gap: 6px; }
+  .active-session-timer small { display: inline; color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+  .active-session-timer strong { font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--muted); }
+  .active-session-dot { width: 5px; height: 5px; box-shadow: none; }
+  main.inner-page[data-campus-view] { padding: 8px 16px 40px; }
+  [data-campus-breadcrumb] { display: flex; flex-wrap: nowrap !important; gap: 7px; margin: 3px 0 16px !important; padding-block: 2px; overflow-x: auto; white-space: nowrap; scrollbar-width: none !important; font-size: 11px; -webkit-overflow-scrolling: touch; }
+  [data-campus-breadcrumb]::-webkit-scrollbar { display: none; }
+  [data-campus-breadcrumb] > * { flex-shrink: 0; }
+  [data-campus-breadcrumb] button { min-height: 44px; padding: 8px 10px; border-radius: 10px; }
+  [data-campus-view] :is(.subject-hero, .chapter-hero) { display: flex; align-items: center; gap: 12px; padding: 20px 18px; margin-top: 0; border-radius: 18px; box-shadow: none; }
+  [data-campus-view] .chapter-hero > .large-icon { display: none; }
+  [data-campus-view] .subject-hero { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: start; }
+  [data-campus-view] .subject-hero > .large-icon { width: 44px; height: 44px; border-radius: 12px; font-size: 24px; }
+  [data-campus-view] .subject-hero > div { min-width: 0; }
+  [data-campus-view] .subject-hero .subject-summary { grid-column: 1 / -1; display: flex; justify-content: flex-start; gap: 24px; width: 100%; min-width: 0; margin: 2px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); background: transparent; }
+  [data-campus-view] .subject-summary > div { min-width: 0; padding: 0; background: transparent; }
+  [data-campus-view] .subject-summary strong { font-size: 24px; line-height: 1.2; }
+  [data-campus-view] .subject-summary span { font-size: 10px; }
+  [data-campus-view] :is(.subject-hero, .chapter-hero) h1 { margin: 6px 0 8px; font-size: clamp(24px, 6.3vw, 30px); line-height: 1.18; letter-spacing: -.035em; overflow-wrap: anywhere; }
+  [data-campus-view] :is(.subject-hero, .chapter-hero) p { font-size: 13px; line-height: 1.6; }
+  [data-campus-view] .chapter-hero .eyebrow { font-size: 10px; }
+  [data-campus-view] .chapters-section { padding-top: 26px; }
+  [data-campus-view] .section-heading h2 { font-size: 22px; line-height: 1.3; }
+  [data-campus-view] :is(.chapter-row, [data-campus-lesson]) { border-radius: 15px; box-shadow: none; }
+  [data-campus-view] [data-campus-lesson] h3 { font-size: 16px; line-height: 1.45; }
+  [data-campus-view] [data-campus-lesson] p { font-size: 13px; line-height: 1.65; }
+  [data-campus-view] [data-campus-lesson] button { min-height: 48px; }
+  [data-campus-view] .chapter-open-button { min-height: 48px; }
+  [data-campus-view] .chapter-row-illustrated { display: grid; grid-template-columns: 58px minmax(0, 1fr); grid-template-areas: "image copy" "action action"; align-items: center; gap: 12px; padding: 16px; }
+  [data-campus-view] .chapter-row-illustrated .chapter-number, [data-campus-view] .chapter-row-illustrated .chapter-count { display: none; }
+  [data-campus-view] .chapter-row-illustrated .chapter-illustration { grid-area: image; display: grid; place-items: center; width: 58px; height: 72px; margin: 0; }
+  [data-campus-view] .chapter-illustration-image { display: block; width: 100%; height: 100%; object-fit: contain; }
+  [data-campus-view] .chapter-illustration-placeholder { position: static; transform: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; font-size: 24px; }
+  [data-campus-view] .chapter-row-illustrated .chapter-copy { grid-area: copy; min-width: 0; }
+  [data-campus-view] .chapter-row-illustrated .chapter-copy h3 { font-size: 16px; line-height: 1.4; }
+  [data-campus-view] .chapter-row-illustrated .chapter-count-mobile { display: block; margin-top: 5px; font-size: 11px; color: var(--muted); }
+  [data-campus-view] .chapter-row-illustrated .chapter-open-button { grid-area: action; width: 100%; }
+  footer { padding-bottom: 20px; }
+}
+@media (max-width: 390px) { .site-header:has([aria-label="Llogaria e kyçur"]) .brand b { max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+@media (max-width: 359px) { .site-header { padding-inline: 12px; } .site-header .brand b { font-size: 12px; } .site-header .header-actions { gap: 4px; } main.inner-page[data-campus-view] { padding-inline: 12px; } }
+@media (prefers-reduced-motion: reduce) { .mobile-navigation-item, .mobile-navigation-icon { transition: none; } .mobile-navigation-item:active { transform: none; } }

@@ -54,6 +54,7 @@ export const chapter = defineType({
           defineField({name: 'title', title: 'Titulli', type: 'string', validation: (rule) => rule.required().max(220)}),
           defineField({name: 'description', title: 'Përshkrimi', type: 'text', rows: 2, validation: (rule) => rule.max(1000)}),
           defineField({name: 'pageCount', title: 'Numri i faqeve', type: 'number', validation: (rule) => rule.integer().positive()}),
+          defineField({name: 'coverImage', title: 'Pamja paraprake e PDF-së', type: 'image', description: 'Pamja e faqes së parë për kartelën e materialit.'}),
           defineField({
             name: 'file', title: 'Skedari PDF', type: 'file',
             options: {accept: 'application/pdf'},

@@ -85,7 +85,8 @@ const optimizedDataLayer = `const portalQuery = \`
               _key, title, description, pageCount,
               "url": file.asset->url,
               "originalFilename": file.asset->originalFilename,
-              "size": file.asset->size
+              "size": file.asset->size,
+              "coverUrl": coverImage.asset->url
             },
             coverImage { alt, "asset": asset->{url} },
             "lessons": *[_type == "lesson" && chapter._ref == ^._id && isActive != false]

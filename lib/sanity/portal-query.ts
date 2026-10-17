@@ -34,7 +34,8 @@ export const PORTAL_QUERY = `
               _key, title, description, pageCount,
               "url": file.asset->url,
               "originalFilename": file.asset->originalFilename,
-              "size": file.asset->size
+              "size": file.asset->size,
+              "coverUrl": coverImage.asset->url
             },
             coverImage { alt, "asset": asset->{url} },
             chapterImage {

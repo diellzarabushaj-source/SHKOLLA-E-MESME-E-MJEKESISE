@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { chapterPdfs, pdfDownloadUrl } from '../lib/chapter-pdfs.ts';
+import { chapterPdfs, pdfCoverUrl, pdfDownloadUrl } from '../lib/chapter-pdfs.ts';
 
 // Sanity returns null for the new field on chapters created before this change.
 assert.equal(chapterPdfs(null).length, 0);
@@ -16,4 +16,8 @@ assert.equal(new URL(pdfDownloadUrl(uploaded)).searchParams.get('dl'), uploaded.
 for (const url of ['javascript:alert(1)', '//example.com/file.pdf', '/pdfs/../../file.pdf', 'https://cdn.sanity.io.evil.test/file.pdf']) {
   assert.equal(chapterPdfs([{...uploaded, url}]).length, 0);
 }
-console.log('PASS: existing chapters, chapter isolation, additional CMS files, duplicates and safe download links.');
+assert.equal(pdfCoverUrl('javascript:alert(1)'), undefined);
+assert.equal(pdfCoverUrl('https://cdn.sanity.io.evil.test/images/cover.png'), undefined);
+assert.equal(pdfCoverUrl(undefined), undefined);
+assert.equal(new URL(pdfCoverUrl('https://cdn.sanity.io/images/u5d5zn7n/schoolv2/cover.webp')).searchParams.get('w'), '360');
+console.log('PASS: existing chapters, CMS files, duplicates, safe cover URLs and download links.');
