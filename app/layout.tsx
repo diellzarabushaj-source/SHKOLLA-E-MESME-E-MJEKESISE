@@ -12,6 +12,7 @@ import MobileNavigation from "./MobileNavigation";
 import NavigationSafety from "./NavigationSafety";
 import ProgressTracker from "./ProgressTracker";
 import PwaRegistrar from "./PwaRegistrar";
+import SidebarToggle from "./SidebarToggle";
 import StethoscopeLogo from "./StethoscopeLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./globals.css";
@@ -93,6 +94,9 @@ export const dynamic = "force-dynamic";
 
 const themeScript = `
   try {
+    document.documentElement.dataset.sidebarCollapsed = String(localStorage.getItem("medical-portal-sidebar-collapsed") === "true");
+  } catch (_) {}
+  try {
     const saved = localStorage.getItem("flashcards-theme");
     const theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.dataset.theme = theme;
@@ -103,7 +107,7 @@ const themeScript = `
 
 function NavigationLinks({ className, label }: { className: string; label: string }) {
   return (
-    <nav className={`navigation-card ${className}`} aria-label={label}>
+    <nav id="desktop-navigation" className={`navigation-card ${className}`} aria-label={label}>
       <Link className="tab" href="/" aria-label="Ballina" data-label="Ballina" data-navigation-section="home">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 10.8 9-7.3 9 7.3v8.7a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /></svg><span className="nav-label">Ballina</span>
       </Link>
@@ -133,6 +137,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <span className="brand-mark"><StethoscopeLogo /></span>
             <span><b>Portali Mësimor</b><small>Mjekësi Pejë</small></span>
           </Link>
+          <SidebarToggle />
           <div className="header-actions">
             <NavigationLinks className="desktop-navigation" label="Navigimi kryesor" />
             <AuthControls username={username} />
