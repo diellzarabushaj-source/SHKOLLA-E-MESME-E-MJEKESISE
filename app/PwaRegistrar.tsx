@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./pwa.module.css";
 
 type BeforeInstallPromptEvent = Event & {
@@ -16,6 +16,7 @@ export default function PwaRegistrar({ release = "mobile-webapp-v1" }: { release
   const [offline, setOffline] = useState(false);
   const [dismissed, setDismissed] = useState<string | null>(null);
   const [deploymentUpdate, setDeploymentUpdate] = useState(false);
+  const updateRequested = useRef(false);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
@@ -96,7 +97,7 @@ export default function PwaRegistrar({ release = "mobile-webapp-v1" }: { release
       navigator.serviceWorker.controller?.postMessage({ type: "FLUSH_PROGRESS_QUEUE" });
     };
     const onOffline = () => setOffline(true);
-    const onControllerChange = () => { if (hadController) window.location.reload(); };
+    const onControllerChange = () => { if (hadController || updateRequested.current) window.location.reload(); };
 
     setOffline(!navigator.onLine);
     window.addEventListener("beforeinstallprompt", onInstallPrompt);
@@ -123,7 +124,8 @@ export default function PwaRegistrar({ release = "mobile-webapp-v1" }: { release
   }
 
   function update() {
-    if (updateReady) updateReady.postMessage({ type: "SKIP_WAITING" });
+    updateRequested.current = true;
+    if (updateReady?.state === "installed") updateReady.postMessage({ type: "SKIP_WAITING" });
     else window.location.reload();
   }
 
