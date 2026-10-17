@@ -33,6 +33,7 @@ import "./navigation-active.css";
 import "./design-system-polish.css";
 import "./campus-polish.css";
 import "./mobile-app.css";
+import "./premium-portal.css";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],

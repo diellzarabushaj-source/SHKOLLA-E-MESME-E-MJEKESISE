@@ -23,6 +23,7 @@ import LessonDiagram, { type LessonDiagramBlock } from "./LessonDiagram";
 import MarkdownLessonBlock from "./MarkdownLessonContent";
 import SanitizedLessonHeading from "./SanitizedLessonHeading";
 import ChapterPdfSection from "./ChapterPdfSection";
+import ChapterOverview from "./ChapterOverview";
 import type { ChapterPdf } from "@/lib/chapter-pdfs";
 
 // admin-table-paste-v1
@@ -1395,14 +1396,7 @@ export default function ClassicLearningPortal({
           <span>{selectedChapter.title}</span>
         </div>
 
-        <section className="chapter-hero">
-          <span className="large-icon">§</span>
-          <div>
-            <span className="eyebrow">Kapitulli · {selectedGrade.title}</span>
-            <h1>{selectedChapter.title}</h1>
-            <p>{selectedChapter.summary || "Mësimet dhe flashcards e këtij kapitulli."}</p>
-          </div>
-        </section>
+        <ChapterOverview title={selectedChapter.title} summary={selectedChapter.summary} gradeTitle={selectedGrade.title} lessonCount={selectedChapter.lessons.length} flashcardCount={chapterCards} resources={selectedChapter.pdfResources} />
 
         <ChapterPdfSection chapterId={selectedChapter._id} resources={selectedChapter.pdfResources} isAdmin={isAdmin} />
 

@@ -21,7 +21,7 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
       </div>
       {pdfs.length ? (
         <div className={styles.grid}>
-          {pdfs.map((pdf) => {
+          {pdfs.map((pdf, index) => {
             const cover = pdfCoverUrl(pdf.coverUrl);
             const title = pdf.title || pdf.originalFilename || "Material PDF";
             return (
@@ -29,6 +29,7 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
               <div className={styles.cover} aria-hidden="true">
                 {cover ? <img src={cover} alt="" width={260} height={360} loading="lazy" decoding="async" /> : <svg viewBox="0 0 48 56" fill="none"><path d="M9 2h21l13 13v37a2 2 0 0 1-2 2H9a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2"/><path d="M29 2v14h14M15 29h18M15 36h18M15 43h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
                 <span className={styles.fileType}>PDF</span>
+                <span className={styles.index}>{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className={styles.copy}>
                 <h3>{title}</h3>

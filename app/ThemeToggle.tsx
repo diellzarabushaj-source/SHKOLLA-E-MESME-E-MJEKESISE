@@ -29,36 +29,14 @@ export default function ThemeToggle() {
     <button
       aria-label={title}
       aria-pressed={theme === "dark"}
-      className="theme-switch"
+      className="theme-switch theme-control"
       data-theme-state={theme}
       onClick={toggleTheme}
       title={title}
       type="button"
     >
-      <span className="sr-only">{title}</span>
-      <span className="theme-slider round" aria-hidden="true">
-        <span className="sun-moon">
-          <svg id="moon-dot-1" className="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="moon-dot-2" className="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="moon-dot-3" className="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="light-ray-1" className="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="light-ray-2" className="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="light-ray-3" className="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-1" className="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-2" className="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-3" className="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-4" className="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-5" className="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-          <svg id="cloud-6" className="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" /></svg>
-        </span>
-        <span className="stars">
-          {[1, 2, 3, 4].map((star) => (
-            <svg id={`star-${star}`} className="star" viewBox="0 0 20 20" key={star}>
-              <path d="M 0 10 C 10 10,10 10,0 10 C 10 10,10 10,10 20 C 10 10,10 10,20 10 C 10 10,10 10,10 0 C 10 10,10 10,0 10 Z" />
-            </svg>
-          ))}
-        </span>
-      </span>
+      <svg className="theme-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+      <svg className="theme-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.6 13.1A8.8 8.8 0 0 1 10.9 3.4 8.8 8.8 0 1 0 20.6 13.1Z" /></svg>
     </button>
   );
 }
