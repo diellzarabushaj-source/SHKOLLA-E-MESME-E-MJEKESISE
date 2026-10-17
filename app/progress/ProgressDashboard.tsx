@@ -346,7 +346,7 @@ export default function ProgressDashboard({
 
   if (loading) {
     return (
-      <main className={styles.page}>
+      <main className={styles.page} data-app-screen="progress">
         <div className={styles.loadingCard}>
           <span className={styles.loader} />
           Duke përgatitur dashboard-in tënd…
@@ -357,7 +357,7 @@ export default function ProgressDashboard({
 
   if (error || !data) {
     return (
-      <main className={styles.page}>
+      <main className={styles.page} data-app-screen="progress">
         <section className={styles.loginCard}>
           <span className={styles.eyebrow}>Gabim</span>
           <h1>Progresi nuk u ngarkua</h1>
@@ -451,7 +451,7 @@ export default function ProgressDashboard({
   const latestActivity = timestampCandidates.sort().at(-1) || null;
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-app-screen="progress">
       <div className={styles.shell}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>

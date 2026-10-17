@@ -41,16 +41,16 @@ export default function PortalHero() {
   }
 
   return (
-    <section className={`hero ${styles.hero}`} aria-labelledby="portal-welcome">
+    <section className={`hero ${styles.hero}`} aria-labelledby="portal-welcome" data-app-welcome>
       <div className={styles.copy}>
         <span className={styles.eyebrow}><i aria-hidden="true" /> Portali i shkollës sonë</span>
-        <h1 id="portal-welcome">Mësime dhe<br />flashcards.<em>Të ndara sipas klasës.</em></h1>
+        <h1 id="portal-welcome">Mësime dhe<br />{" "}flashcards.<em>Të ndara sipas klasës.</em></h1>
         <p>Zgjidhe klasën tënde. Klasa ruhet dhe pastaj i sheh të gjitha lëndët e saj.</p>
         <a className={styles.action} href="#klasat">Zgjidh klasën <span aria-hidden="true">↗</span></a>
         <div className={styles.signature} aria-hidden="true"><span />Mjekësi Pejë<span /></div>
       </div>
 
-      <div className={styles.visual} onPointerMove={followPointer} onPointerLeave={resetPerspective} onPointerCancel={resetPerspective} aria-hidden="true">
+      <div className={styles.visual} data-app-illustration onPointerMove={followPointer} onPointerLeave={resetPerspective} onPointerCancel={resetPerspective} aria-hidden="true">
         <div className={styles.grid} />
         <div className={styles.orbit}><i /><i /></div>
         <div className={styles.scene} ref={scene}>

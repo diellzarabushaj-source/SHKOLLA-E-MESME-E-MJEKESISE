@@ -53,7 +53,7 @@ export default function ResetPasswordForm({
   }
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-app-auth>
       <div className={styles.shell}>
         <Link className={styles.backLink} href={authPageHref("/auth/sign-in", returnTo)}><span aria-hidden="true">←</span> Kthehu te kyçja</Link>
         <section className={styles.card} aria-labelledby="reset-password-title">

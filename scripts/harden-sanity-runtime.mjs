@@ -54,7 +54,7 @@ const serviceWorkerPath = "public/sw.js";
 let serviceWorker = read(serviceWorkerPath);
 serviceWorker = serviceWorker.replace(
   /const VERSION = "medical-portal-v\d+";/,
-  'const VERSION = "medical-portal-v9";',
+  'const VERSION = "medical-portal-v10";',
 );
 
 const staleSanityBlock = `  const isSanityCdn = url.hostname.endsWith("apicdn.sanity.io") || url.hostname.endsWith("cdn.sanity.io");
@@ -84,14 +84,14 @@ const registrarPath = "app/PwaRegistrar.tsx";
 let registrar = read(registrarPath);
 registrar = registrar.replace(
   /const SERVICE_WORKER_URL = "\/sw\.js\?v=\d+";/,
-  'const SERVICE_WORKER_URL = "/sw.js?v=9";',
+  'const SERVICE_WORKER_URL = "/sw.js?v=10";',
 );
 write(registrarPath, registrar);
 
 const validations = [
   ["portal", portal, ['projectId: "u5d5zn7n"', 'dataset: "schoolv2"', "useCdn: false", "if (showLoader) setError"]],
-  ["service worker", serviceWorker, ['medical-portal-v9', "GROQ/query JSON must never be served stale", "event.respondWith(fetch(request))"]],
-  ["PWA registrar", registrar, ['const SERVICE_WORKER_URL = "/sw.js?v=9"']],
+  ["service worker", serviceWorker, ['medical-portal-v10', "GROQ/query JSON must never be served stale", "event.respondWith(fetch(request))"]],
+  ["PWA registrar", registrar, ['const SERVICE_WORKER_URL = "/sw.js?v=10"']],
 ];
 
 for (const [label, source, markers] of validations) {
@@ -100,4 +100,4 @@ for (const [label, source, markers] of validations) {
   }
 }
 
-console.log("Hardened Sanity runtime: fixed project/dataset, fresh queries, safe background refreshes and cache v9.");
+console.log("Hardened Sanity runtime: fixed project/dataset, fresh queries, safe background refreshes and cache v10.");

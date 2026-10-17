@@ -57,7 +57,7 @@ export default function SignUpForm({ returnTo }: SignUpFormProps) {
   }, [confirmPassword, password]);
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-app-auth>
       <div className={styles.shell}>
         <Link className={styles.backLink} href={returnTo}><span aria-hidden="true">←</span> Kthehu në portal</Link>
         <section className={styles.card} aria-labelledby="sign-up-title">

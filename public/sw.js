@@ -1,4 +1,4 @@
-const VERSION = "medical-portal-v9";
+const VERSION = "medical-portal-v10";
 const SHELL_CACHE = `${VERSION}-shell`;
 const CONTENT_CACHE = `${VERSION}-content`;
 const MEDIA_CACHE = `${VERSION}-media`;
@@ -26,7 +26,8 @@ self.addEventListener("install", (event) => {
         // Offline fallback is best-effort. A temporary network failure must
         // not block installation of an otherwise valid service worker.
       }
-      await self.skipWaiting();
+      // Updates wait for the learner's "Përditëso" action. Replacing a worker
+      // immediately could reload a lesson while a note is being edited.
     }),
   );
 });

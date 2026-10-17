@@ -40,7 +40,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
   }, [state]);
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-app-auth>
       <div className={styles.shell}>
         <Link className={styles.backLink} href={returnTo}><span aria-hidden="true">←</span> Kthehu në portal</Link>
 
@@ -48,7 +48,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
           <div className={styles.brand} aria-hidden="true"><StethoscopeLogo /></div>
           <span className={styles.eyebrow}>Mirë se u ktheve</span>
           <h1 className={styles.title} id="sign-in-title">Kyçu</h1>
-          <p className={styles.subtitle}>Përdor Google ose username/email dhe password. Llogaria shfaqet menjëherë në portal.</p>
+          <p className={styles.subtitle}>Vazhdo aty ku e ke lënë mësimin.</p>
 
           {notice && <Alert className={`${styles.notice} ${styles[`notice-${noticeTone}`]}`} type={noticeTone} message={notice} showIcon role="status" />}
 
@@ -117,7 +117,7 @@ export default function SignInForm({ returnTo, notice, noticeTone = "info" }: Si
           <p className={styles.switchText}>Nuk ke llogari? <Link href={authPageHref("/auth/sign-up", returnTo)}>Regjistrohu</Link></p>
           <Divider className={styles.divider} plain>ose</Divider>
           <Link className={styles.guest} href={returnTo}>Vazhdo pa llogari</Link>
-          <p className={styles.privacy}>Administratori njihet vetëm nga emaili i autorizuar dhe verifikohet në server.</p>
+          <p className={styles.privacy}>Progresi dhe shënimet e tua lidhen me llogarinë tënde.</p>
         </section>
       </div>
     </main>
