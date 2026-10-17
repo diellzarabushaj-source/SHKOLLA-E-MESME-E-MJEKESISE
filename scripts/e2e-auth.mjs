@@ -37,7 +37,7 @@ async function auditSignIn(browser) {
     const forgotHref = await main.getByRole("link", { name: "E harrove password-in?" }).getAttribute("href");
     assert(forgotHref?.includes("/auth/forgot-password?returnTo=%2F%23klasat"), `forgot-password link lost returnTo: ${forgotHref}`);
     assert(!/gmail\.com/i.test((await main.textContent()) || ""), "administrator email leaked into the public sign-in page");
-    assert((await main.textContent() || "").includes("Administratori njihet vetëm"), "server-side administrator boundary is not explained");
+    assert((await main.textContent() || "").includes("Progresi dhe shënimet e tua lidhen me llogarinë tënde."), "account privacy explanation is missing");
 
     await page.goto(`${baseURL}/auth/sign-in?returnTo=https%3A%2F%2Fevil.example%2Fsteal`, { waitUntil: "domcontentloaded" });
     const safeMain = page.locator("main");

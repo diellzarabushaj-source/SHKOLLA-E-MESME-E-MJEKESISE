@@ -163,7 +163,11 @@
   body.flashcard-study-active { padding-bottom: 0; }
   body.flashcard-study-active :is(.site-header, .mobile-navigation, footer) { display: none !important; }
   body.flashcard-study-active #main-content { min-height: 100dvh; margin-left: 0; }
-  body.flashcard-study-active .study-page { max-width: none; padding: calc(10px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom)); }
+  body.flashcard-study-active .study-page { max-width: none; padding: calc(10px + env(safe-area-inset-top)) 14px calc(64px + env(safe-area-inset-bottom)); }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] { padding-right: 100px; }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] > button:last-of-type { flex: 0 1 auto; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] > span:last-child { display: none; }
+  body.flashcard-study-active .progress-sync-badge { position: fixed; top: auto; bottom: calc(10px + env(safe-area-inset-bottom)); left: 14px; right: 14px; width: max-content; max-width: calc(100vw - 28px); margin-inline: auto; padding: 8px 12px; font-size: 10px; }
   body.flashcard-study-active .active-session-timer { position: fixed; top: calc(10px + env(safe-area-inset-top)); right: 14px; left: auto; width: auto; min-width: 74px; margin: 0; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; z-index: 340; }
   body.flashcard-study-active .active-session-timer small { display: none; }
   body.flashcard-study-active .study-toolbar { margin-bottom: 12px; }
