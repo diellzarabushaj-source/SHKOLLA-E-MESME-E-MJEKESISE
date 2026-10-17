@@ -8,6 +8,7 @@ on:
       - app/MarkdownLessonContent.module.css
       - app/LessonLearningExperience.tsx
       - app/LessonLearningExperience.module.css
+      - app/webapp-shell.css
       - app/learning-experience-audit/**
       - scripts/add-learning-experience.mjs
       - scripts/add-markdown-lesson-formatting.mjs

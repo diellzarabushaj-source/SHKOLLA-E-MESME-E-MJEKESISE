@@ -102,7 +102,10 @@ async function assertGradeCards(page, label) {
     assert(geometry.display !== "none", `${label}: Klasa ${gradeNumber} uses display:none`);
     assert(geometry.visibility !== "hidden", `${label}: Klasa ${gradeNumber} uses visibility:hidden`);
     assert(geometry.opacity > 0, `${label}: Klasa ${gradeNumber} is transparent`);
-    assert(geometry.width >= 180 && geometry.height >= 180, `${label}: Klasa ${gradeNumber} has invalid geometry ${JSON.stringify(geometry)}`);
+    const compact = page.viewportSize().width <= 767;
+    assert(geometry.width >= 180 && geometry.height >= (compact ? 96 : 180), `${label}: Klasa ${gradeNumber} has invalid geometry ${JSON.stringify(geometry)}`);
+    const target = await button.boundingBox();
+    assert(target && target.width >= 44 && target.height >= 44, `${label}: Klasa ${gradeNumber} open button is too small for touch`);
   }
 }
 

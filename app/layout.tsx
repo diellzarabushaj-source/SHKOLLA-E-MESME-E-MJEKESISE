@@ -34,6 +34,7 @@ import "./design-system-polish.css";
 import "./campus-polish.css";
 import "./mobile-app.css";
 import "./premium-portal.css";
+import "./webapp-shell.css";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -121,7 +122,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const username = typeof user?.name === "string" && user.name.trim() ? user.name.trim() : null;
 
   return (
-    <html lang="sq" className={inter.variable} suppressHydrationWarning>
+    <html lang="sq" className={inter.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body>
         <AntdRegistry>
@@ -144,7 +145,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <EnhancedTestResults />
         <InteractionEnhancements />
         {username && <LearningActivityTracker />}
-        <PwaRegistrar />
+        <PwaRegistrar release={process.env.VERCEL_GIT_COMMIT_SHA || "mobile-webapp-v1"} />
         <div id="main-content" tabIndex={-1}>{children}</div>
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Platformë mësimore për nxënësit</span></footer>
           </AntDesignProvider>

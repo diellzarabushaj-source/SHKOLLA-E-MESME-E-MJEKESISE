@@ -76,7 +76,7 @@ export default async function ProgressPage() {
 
   if (!session?.user || !username) {
     return (
-      <main className={styles.page}>
+      <main className={styles.page} data-app-screen="progress">
         <section className={styles.loginCard}>
           <span className={styles.eyebrow}>Progres privat</span>
           <h1>Kyçu për ta parë progresin tënd</h1>

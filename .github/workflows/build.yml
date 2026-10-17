@@ -31,6 +31,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Verify chapter PDF links and legacy content
         run: node scripts/test-chapter-pdfs.mjs
+      - name: Verify app release updates
+        run: node scripts/test-app-updates.mjs
       - name: Build application
         shell: bash
         run: |

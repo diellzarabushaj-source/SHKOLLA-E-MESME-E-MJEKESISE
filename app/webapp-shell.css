@@ -1,0 +1,195 @@
+/* One application shell across learning, account, progress and system screens. */
+#main-content { min-height: calc(100dvh - 170px); }
+[data-app-screen="progress"] { padding: 26px 32px 60px; }
+[data-app-screen="progress"] [class*="hero"] h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.12; }
+[data-app-screen="progress"] [class*="loginCard"] { max-width: 620px; padding: 40px; text-align: left; border-radius: 24px; box-shadow: var(--premium-shadow); }
+[data-app-screen="progress"] [class*="loginCard"] h1 { font-size: clamp(30px, 4vw, 42px); line-height: 1.12; }
+[data-app-screen="progress"] [class*="loginCard"] [class*="actions"] { justify-content: flex-start; }
+[data-app-screen="progress"] :is([class*="primaryButton"], [class*="secondaryButton"]) { font-weight: 650; min-height: 48px; border-radius: 12px; }
+[data-app-screen="progress"] [class*="hero"], [data-app-screen="progress"] [class*="kpiCard"] { box-shadow: var(--premium-shadow); }
+[data-app-auth] section[aria-labelledby] { box-shadow: var(--premium-shadow); }
+[data-app-auth] :is([class*="label"], [class*="submit"], [class*="googleButton"]) { font-weight: 650; }
+[data-app-auth] [class*="passwordField"] { position: relative; }
+[data-app-auth] button[class*="passwordToggle"] { position: absolute; top: 4px; right: 4px; width: 64px; min-width: 64px; min-height: 44px; height: 44px; padding: 0 8px; font-size: 11px; border-radius: 10px; background: transparent; border: 0; }
+[data-app-auth] [class*="passwordField"] input { padding-right: 76px; }
+
+/* Keep the existing navigation and its history semantics; place it in a rail. */
+@media (min-width: 1180px) {
+  :root { --app-rail-width: 224px; }
+  body::before { content: ""; position: fixed; z-index: 0; left: 0; top: 76px; bottom: 0; width: var(--app-rail-width); border-right: 1px solid var(--line); background: var(--panel); pointer-events: none; }
+  .site-header { min-height: 76px; padding-inline: 24px 32px; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .site-header .brand { min-width: 200px; }
+  .site-header .header-actions { margin-left: auto; }
+  .site-header .desktop-navigation { position: fixed; left: 16px; top: 104px; width: 192px; height: auto; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: stretch; gap: 8px; border: 0; background: transparent; border-radius: 0; box-shadow: none; }
+  .site-header .desktop-navigation .tab { justify-content: flex-start; min-height: 48px; height: 48px; width: 100%; gap: 12px; padding: 0 16px; border-radius: 12px; font-size: 13px; font-weight: 600; }
+  .site-header .desktop-navigation .tab svg { width: 20px; height: 20px; }
+  .site-header .desktop-navigation .tab.is-active { color: var(--accent); border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--line)); background: color-mix(in srgb, var(--primary) 8%, var(--panel)); box-shadow: none; }
+  #main-content { margin-left: var(--app-rail-width); }
+  .active-session-timer { padding-left: calc(var(--app-rail-width) + 32px); padding-right: 32px; }
+  .medical-portal-ant-app footer { margin-left: calc(var(--app-rail-width) + 32px); margin-right: 32px; max-width: none; }
+  main.inner-page[data-campus-view] { padding-inline: 32px; }
+  .campus-home [data-app-welcome] { padding-inline: 32px; gap: 24px; }
+  .campus-home [data-app-welcome] h1 { font-size: clamp(44px, 4.5vw, 68px); }
+  .campus-home [data-campus-grades] { padding-inline: 32px; }
+  .campus-home .stats-strip { width: calc(100% - 64px); }
+  [data-app-screen="progress"] [class*="kpiGrid"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px), (max-height: 500px) and (max-width: 950px) {
+  :root { --mobile-nav-height: 68px; }
+  html { scroll-padding-block: 76px calc(88px + env(safe-area-inset-bottom)); }
+  body { min-height: 100dvh; padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+  #main-content { min-height: calc(100dvh - 150px); }
+  .site-header { min-height: calc(64px + env(safe-area-inset-top)); padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right)); background: var(--header); }
+  .site-header .brand-mark { width: 36px; height: 36px; }
+  .site-header .brand b { font-size: 13px; max-width: none; }
+  .site-header .theme-switch.theme-control { width: 42px; min-width: 42px; flex-basis: 42px; border-radius: 12px; }
+  .mobile-navigation { min-height: calc(68px + env(safe-area-inset-bottom)); padding: 5px max(16px, env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); gap: 10px; border-radius: 20px 20px 0 0; }
+  .mobile-navigation .mobile-navigation-item { min-height: 56px; gap: 2px; }
+  .mobile-navigation .mobile-navigation-label { font-size: 10px; }
+  body:has(input:not([type="hidden"]):focus) .mobile-navigation { visibility: hidden; pointer-events: none; }
+  .medical-portal-ant-app > footer { display: none; }
+  body:has(.campus-home) .active-session-timer, body:has([data-app-auth]) .active-session-timer { display: none; }
+  .active-session-timer { margin-top: 5px; min-height: 18px; }
+  main.inner-page[data-campus-view] { padding: 4px 16px 28px; }
+  [data-campus-view] [data-campus-breadcrumb] { margin: 0 0 12px !important; padding: 0; min-height: 44px; overflow: visible; }
+  [data-campus-view] [data-campus-breadcrumb] > * { display: none; }
+  [data-campus-view] [data-campus-breadcrumb] > button:last-of-type { display: inline-flex; align-items: center; gap: 9px; max-width: 100%; min-height: 44px; padding: 8px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; font-weight: 600; border: 0; background: transparent; }
+  [data-campus-view] [data-campus-breadcrumb] > button:last-of-type::before { content: "←"; flex: 0 0 auto; color: var(--accent); font-size: 20px; font-weight: 400; }
+
+  /* Start with the learning choices, rather than a full marketing screen. */
+  .campus-home [data-app-welcome] { display: block; padding: 28px 20px 24px; min-height: 0; }
+  .campus-home [data-app-illustration] { display: none; }
+  .campus-home [data-app-welcome] h1 { margin: 16px 0 14px; font-size: clamp(30px, 8vw, 36px); line-height: 1.1; letter-spacing: -.045em; }
+  .campus-home [data-app-welcome] h1 br { display: none; }
+  .campus-home [data-app-welcome] h1 em { margin-top: 10px; font-size: 20px; line-height: 1.25; font-weight: 550; }
+  .campus-home [data-app-welcome] p { max-width: 42ch; font-size: 13px; line-height: 1.65; }
+  .campus-home [data-app-welcome] a { display: flex; width: 100%; min-height: 48px; margin-top: 20px; padding-inline: 18px; border-radius: 13px; }
+  .campus-home [data-app-welcome] [class*="signature"] { display: none; }
+  .campus-home .stats-strip { width: calc(100% - 32px); padding: 18px 4px; border-radius: 18px; }
+  .campus-home .stats-strip > div { gap: 5px; padding-inline: 5px; }
+  .campus-home .stats-strip strong { font-size: 22px; }
+  .campus-home .stats-strip span { font-size: 9px; }
+  .campus-home [data-campus-grades] { padding: 28px 16px 24px; }
+  .campus-home [data-campus-grades] > div:first-child { margin-bottom: 18px; padding-bottom: 0; border: 0; }
+  .campus-home [data-campus-grades] h2 { margin-block: 7px; font-size: 26px; }
+  .campus-home [data-campus-grades] > div:first-child > p { font-size: 12px; line-height: 1.6; }
+  .campus-home [data-campus-grades] [class*="gradeGrid"] { grid-template-columns: 1fr; gap: 12px; }
+  .medical-portal-ant-app [data-campus-card] { display: grid; grid-template-columns: 48px minmax(0, 1fr); grid-template-rows: auto auto auto; column-gap: 14px; row-gap: 5px; min-height: 0; padding: 18px; border-radius: 19px; }
+  .medical-portal-ant-app [data-campus-card]::after { display: none; }
+  .medical-portal-ant-app [data-campus-card] > span { grid-column: 1; grid-row: 1 / 4; width: 48px; height: 48px; align-self: center; border-radius: 14px; }
+  .medical-portal-ant-app [data-campus-card] h3 { grid-column: 2; margin: 0; padding-right: 24px; font-size: 20px; line-height: 1.25; }
+  .medical-portal-ant-app [data-campus-card] p { grid-column: 2; margin: 0; font-size: 12px; line-height: 1.5; }
+  .medical-portal-ant-app [data-campus-card] > div { grid-column: 2; margin: 5px 0 0; padding: 0; border: 0; gap: 14px; font-size: 10px; }
+  .medical-portal-ant-app [data-campus-card] > div b { font-size: 12px; }
+  .medical-portal-ant-app [data-campus-card] > button { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: inherit; color: transparent; background: transparent; box-shadow: none; font-size: 0; }
+  .medical-portal-ant-app [data-campus-card] > button::after { position: absolute; right: 18px; top: 18px; color: var(--accent); font-size: 22px; }
+  .medical-portal-ant-app [data-campus-card] > button:hover { background: transparent; color: transparent; }
+  .medical-portal-ant-app [data-campus-card]:focus-within { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+  .medical-portal-ant-app [data-campus-grade-hero] { padding: 24px 20px; gap: 20px; }
+  .medical-portal-ant-app [data-campus-grade-hero] h1 { font-size: 34px; margin: 10px 0; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalActions"] { margin-top: 16px; }
+  .medical-portal-ant-app [data-campus-grade-hero] [class*="portalStats"] > div { padding-block: 12px; }
+  [data-campus-view] [data-campus-modes] { margin-top: 20px; padding-block: 14px; }
+  [data-campus-view] :is(.subjects-section, .chapters-section) { padding-top: 24px; }
+  [data-campus-view] .section-heading h2 { font-size: 23px; }
+  [data-campus-view] .subject-grid { grid-template-columns: 1fr; gap: 14px; }
+  [data-campus-view] .subject-card { display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-rows: auto auto auto auto; gap: 7px 14px; min-height: 0; padding: 16px; border-radius: 19px; }
+  [data-campus-view] .subject-card .subject-top { grid-column: 1; grid-row: 1 / 4; width: 64px; height: 78px; margin: 0; padding: 7px; align-self: center; border-radius: 13px; }
+  [data-campus-view] .subject-card .subject-top::before, [data-campus-view] .subject-card .subject-top > span { display: none; }
+  [data-campus-view] .subject-card .subject-top i { display: grid; place-items: center; width: 100%; height: 100%; margin: 0; font-size: 32px; }
+  [data-campus-view] .subject-card .subject-top i img { max-width: 100%; max-height: 100%; }
+  [data-campus-view] .subject-card h3 { grid-column: 2; margin: 0; padding: 0; font-size: 16px; line-height: 1.35; }
+  [data-campus-view] .subject-card > p { grid-column: 2; min-height: 0; margin: 0; padding: 0; font-size: 12px; line-height: 1.5; }
+  [data-campus-view] .subject-card .subject-meta { grid-column: 2; grid-row: 3; margin: 0; padding: 0; border: 0; gap: 12px; font-size: 10px; }
+  [data-campus-view] .subject-card .subject-meta b { font-size: 12px; }
+  [data-campus-view] .subject-card button { grid-column: 1 / -1; grid-row: 4; width: 100%; margin-top: 6px; min-height: 46px; border-radius: 11px; font-size: 12px; }
+  [data-campus-view] [data-chapter-overview] { padding: 23px 20px 20px; }
+  [data-campus-view] [data-chapter-overview] h1 { font-size: 27px; }
+  [data-campus-view] [data-chapter-overview] dl { margin-top: 18px; padding-top: 16px; }
+  [data-campus-view] [data-chapter-overview] dd { font-size: 19px; }
+  [data-campus-view] [data-campus-lesson] { grid-template-columns: 36px minmax(0, 1fr); padding: 16px; gap: 12px; }
+  [data-campus-view] [data-campus-lesson] [class*="lessonIndex"] { width: 36px; height: 36px; font-size: 12px; border-radius: 10px; }
+  [data-campus-view] [data-campus-lesson] button { grid-column: 1 / -1; width: 100%; min-height: 46px; }
+  [data-campus-view] [class*="deckCard"] { border-radius: 19px; padding: 19px; box-shadow: var(--premium-shadow); }
+  [data-campus-view] [class*="deckCard"] h3 { font-size: 17px; line-height: 1.4; }
+  [data-campus-view] [class*="deckCard"] button { min-height: 48px; font-weight: 650; }
+  [data-learning-experience] header[data-learning-chrome] { padding: 20px 16px; border-radius: 19px; }
+  [data-learning-experience] [class*="heroActions"] { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 8px; }
+  [data-learning-experience] [class*="heroActions"] button { width: 100%; min-width: 0; min-height: 48px; padding-inline: 9px; font-size: 12px; }
+  [data-learning-experience] [class*="lessonMeta"] { margin-block: 14px 20px; padding: 14px; }
+  [data-learning-experience] [class*="lessonBody"] { padding: 20px 16px; border-radius: 18px; font-size: 16px; line-height: 1.85; }
+
+  [data-app-screen="progress"] { min-height: 0; padding: 20px 16px 28px; background: transparent; }
+  [data-app-screen="progress"] [class*="hero"] { min-height: 0; }
+  [data-app-screen="progress"] section[class*="hero"] { padding: 24px 20px; border-radius: 20px; gap: 20px; }
+  [data-app-screen="progress"] [class*="hero"] h1 { font-size: 30px; line-height: 1.15; }
+  [data-app-screen="progress"] [class*="heroStatus"] { padding: 14px; }
+  [data-app-screen="progress"] [class*="statusRing"] { width: 76px; }
+  [data-app-screen="progress"] [class*="heroTopline"] { flex-wrap: wrap; gap: 8px; }
+  [data-app-screen="progress"] [class*="kpiGrid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  [data-app-screen="progress"] [class*="kpiCard"] { min-width: 0; min-height: 116px; padding: 15px; border-radius: 16px; }
+  [data-app-screen="progress"] [class*="kpiCard"] > strong { font-size: 26px; }
+  [data-app-screen="progress"] [class*="kpiCard"] small { font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+  [data-app-screen="progress"] [class*="loginCard"] { margin: 16px 0; padding: 28px 24px; border-radius: 22px; }
+  [data-app-screen="progress"] [class*="loginCard"] h1 { margin: 14px 0; font-size: 32px; line-height: 1.15; }
+  [data-app-screen="progress"] [class*="loginCard"] p { font-size: 14px; line-height: 1.75; }
+  [data-app-screen="progress"] [class*="loginCard"] [class*="actions"] { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 24px; }
+  [data-app-screen="progress"] [class*="loginCard"] [class*="actions"] a { width: 100%; margin-top: 0; }
+  [data-app-screen="progress"] :is([class*="chartCard"], [class*="sectionCard"], [class*="distributionCard"]) { padding: 18px 16px; border-radius: 18px; box-shadow: var(--premium-shadow); }
+  [data-app-screen="progress"] [class*="tab"] { min-height: 44px; }
+
+  main[data-app-auth] { min-height: 0; padding: 12px 16px 28px; background: transparent; }
+  [data-app-auth] [class*="backLink"] { margin-bottom: 12px; padding-left: 0; font-size: 12px; }
+  [data-app-auth] section[aria-labelledby] { padding: 24px 20px; border-radius: 22px; backdrop-filter: none; }
+  [data-app-auth] [class*="brand"] { display: none; }
+  [data-app-auth] [class*="eyebrow"] { font-size: 9px; letter-spacing: .14em; }
+  [data-app-auth] h1 { margin: 10px 0 12px; font-size: 32px; line-height: 1.1; }
+  [data-app-auth] [class*="subtitle"] { margin-bottom: 20px; font-size: 13px; line-height: 1.65; }
+  [data-app-auth] [class*="form"] { gap: 16px; }
+  [data-app-auth] [class*="field"] { gap: 7px; }
+  [data-app-auth] label { font-size: 12px; font-weight: 600; }
+  [data-app-auth] input:not([type="hidden"]) { min-height: 52px; border-radius: 12px; font-size: 16px; padding-block: 13px; }
+  [data-app-auth] :is([class*="submit"], [class*="googleButton"], [class*="guest"]) { min-height: 48px; height: auto; border-radius: 12px; font-size: 14px; }
+  [data-app-auth] [class*="divider"] { margin-block: 18px; font-size: 10px; }
+  [data-app-auth] [class*="switchText"] { margin-block: 12px 0; font-size: 12px; }
+  [data-app-auth] [class*="privacy"] { margin-top: 18px; font-size: 10px; line-height: 1.6; }
+  .system-page { min-height: calc(100dvh - 170px); padding: 24px 16px; }
+  .system-card { padding: 28px 24px; border-radius: 22px; }
+  .system-card h1 { font-size: 32px; line-height: 1.1; }
+  .system-card p { font-size: 14px; }
+
+  body.flashcard-study-active { padding-bottom: 0; }
+  body.flashcard-study-active :is(.site-header, .mobile-navigation, footer) { display: none !important; }
+  body.flashcard-study-active #main-content { min-height: 100dvh; margin-left: 0; }
+  body.flashcard-study-active .study-page { max-width: none; padding: calc(10px + env(safe-area-inset-top)) 14px calc(64px + env(safe-area-inset-bottom)); }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] { padding-right: 100px; }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] > button:last-of-type { flex: 0 1 auto; max-width: 100%; min-height: 44px; overflow: hidden; text-overflow: ellipsis; }
+  body.flashcard-study-active .study-page [data-campus-breadcrumb] > span:last-child { display: none; }
+  body.flashcard-study-active .progress-sync-badge { position: fixed; top: auto; bottom: calc(10px + env(safe-area-inset-bottom)); left: 14px; right: 14px; width: max-content; max-width: calc(100vw - 28px); margin-inline: auto; transform: none; padding: 8px 12px; font-size: 10px; }
+  body.flashcard-study-active .active-session-timer { position: fixed; top: calc(10px + env(safe-area-inset-top)); right: 14px; left: auto; width: auto; min-width: 74px; margin: 0; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; z-index: 340; }
+  body.flashcard-study-active .active-session-timer small { display: none; }
+  body.flashcard-study-active .study-toolbar { margin-bottom: 12px; }
+  body.flashcard-study-active .study-shell { margin-top: 12px; }
+  body.flashcard-study-active .flashcard { height: clamp(330px, 53dvh, 540px); border-radius: 23px; }
+  body.flashcard-study-active .flashcard-face { border-radius: 23px; padding: 24px 20px; }
+  body.flashcard-study-active .reveal-button { min-height: 52px; border-radius: 14px; }
+  body.flashcard-study-active .rating-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 8px 0; border-radius: 16px; }
+  body.flashcard-study-active .rating-actions button { min-height: 60px; border-radius: 12px; }
+  body.flashcard-study-active .study-stats { font-size: 10px; gap: 12px; }
+}
+@media (max-width: 359px) {
+  .site-header { padding-inline: 12px; }
+  .site-header .brand b { font-size: 12px; }
+  .campus-home [data-app-welcome] { padding-inline: 16px; }
+  main.inner-page[data-campus-view] { padding-inline: 12px; }
+  .medical-portal-ant-app [data-campus-card] { padding: 16px; column-gap: 12px; }
+  [data-campus-view] .subject-card { grid-template-columns: 56px minmax(0, 1fr); gap: 7px 12px; padding: 14px; }
+  [data-campus-view] .subject-card .subject-top { width: 56px; height: 70px; }
+  [data-app-auth] section[aria-labelledby] { padding: 22px 18px; }
+}
+@media (max-height: 500px) and (max-width: 950px) {
+  body.flashcard-study-active .flashcard { height: clamp(250px, 65dvh, 350px); }
+  body.flashcard-study-active .rating-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
