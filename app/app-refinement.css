@@ -53,7 +53,7 @@ body.flashcard-study-active .back-to-top { display: none; }
   .medical-portal-ant-app .campus-home [data-app-welcome] { width: calc(100% - 32px); margin: 16px 16px 0; padding: 22px 20px; border: 1px solid var(--line); border-radius: 24px; background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--primary) 8%, transparent), transparent 65%), var(--panel); }
   .medical-portal-ant-app .campus-home [data-app-welcome] h1 { margin-block: 12px; font-size: 30px; line-height: 1.08; }
   .medical-portal-ant-app .campus-home [data-app-welcome] h1 em { margin-top: 8px; font-size: 18px; line-height: 1.25; }
-  .medical-portal-ant-app .campus-home [data-app-welcome] p { font-size: 12px; line-height: 1.65; }
+  .medical-portal-ant-app .campus-home [data-app-welcome] p { display: none; }
   .medical-portal-ant-app .campus-home [data-app-welcome] a { margin-top: 16px; }
   .medical-portal-ant-app .campus-home .stats-strip { width: calc(100% - 32px); margin: 14px 16px 0; padding: 18px 10px; gap: 0; border-radius: 18px; }
   .medical-portal-ant-app .campus-home .stats-strip strong { font-size: 22px; }
