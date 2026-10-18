@@ -5,6 +5,7 @@ import Link from "next/link";
 import { currentSessionUser } from "@/lib/admin/server";
 import AntDesignProvider from "./AntDesignProvider";
 import AuthControls from "./AuthControls";
+import BackToTop from "./BackToTop";
 import EnhancedTestResults from "./EnhancedTestResults";
 import InteractionEnhancements from "./InteractionEnhancements";
 import LearningActivityTracker from "./LearningActivityTracker";
@@ -36,6 +37,7 @@ import "./campus-polish.css";
 import "./mobile-app.css";
 import "./premium-portal.css";
 import "./webapp-shell.css";
+import "./app-refinement.css";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -152,6 +154,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {username && <LearningActivityTracker />}
         <PwaRegistrar release={process.env.VERCEL_GIT_COMMIT_SHA || "mobile-webapp-v1"} />
         <div id="main-content" tabIndex={-1}>{children}</div>
+        <BackToTop />
         <footer><span>Shkolla e Mesme e Mjekësisë, Pejë</span><span>Platformë mësimore për nxënësit</span></footer>
           </AntDesignProvider>
         </AntdRegistry>

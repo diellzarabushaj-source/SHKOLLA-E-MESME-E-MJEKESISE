@@ -9,6 +9,8 @@ on:
       - app/LessonLearningExperience.tsx
       - app/LessonLearningExperience.module.css
       - app/webapp-shell.css
+      - app/app-refinement.css
+      - app/BackToTop.tsx
       - app/learning-experience-audit/**
       - scripts/add-learning-experience.mjs
       - scripts/add-markdown-lesson-formatting.mjs

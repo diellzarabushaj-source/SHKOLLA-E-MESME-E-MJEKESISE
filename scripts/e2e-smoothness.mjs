@@ -286,6 +286,41 @@ async function auditCollapsibleSidebar(browser) {
   }
 }
 
+async function auditAppRefinement(browser) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block", reducedMotion: "reduce" });
+  await installSanityFixture(context);
+  const page = await context.newPage();
+  watchPage(page, "app refinement");
+  try {
+    await page.goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
+    await page.locator("[data-campus-card]").first().waitFor({ state: "visible" });
+    for (const width of [320, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      const geometry = await page.evaluate(() => ({
+        width: innerWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        brandRight: document.querySelector(".brand").getBoundingClientRect().right,
+        actionsLeft: document.querySelector(".header-actions").getBoundingClientRect().left,
+      }));
+      assert(geometry.scrollWidth <= geometry.width + 2, `refined shell overflows at ${width}px`);
+      assert(geometry.brandRight <= geometry.actionsLeft + 2, `header controls overlap the brand at ${width}px`);
+    }
+    await page.setViewportSize({ width: 390, height: 360 });
+    await page.locator("[data-campus-card]").last().scrollIntoViewIfNeeded();
+    const topButton = page.getByRole("button", { name: "Kthehu në krye", exact: true });
+    await topButton.waitFor({ state: "visible" });
+    const box = await topButton.boundingBox();
+    assert(box && box.width >= 44 && box.height >= 44, "back-to-top touch target is too small");
+    await topButton.click();
+    await page.waitForFunction(() => window.scrollY === 0);
+    assert(await page.evaluate(() => document.activeElement?.id === "main-content"), "back-to-top did not return keyboard focus to content");
+    await topButton.waitFor({ state: "hidden" });
+    console.log("✓ refined shell at 320/390/768/1024/1440px and accessible reduced-motion return to top");
+  } finally {
+    await context.close();
+  }
+}
+
 async function auditMobileShell(browser) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   await installSanityFixture(context);
@@ -324,6 +359,7 @@ try {
   await auditServiceWorkerRegistration(browser).catch((error) => failures.push(error instanceof Error ? error.message : "service worker audit failed"));
   await auditThemeAndDesktop(browser).catch((error) => failures.push(error instanceof Error ? error.message : "desktop smoothness audit failed"));
   await auditCollapsibleSidebar(browser).catch((error) => failures.push(error instanceof Error ? error.message : "sidebar collapse audit failed"));
+  await auditAppRefinement(browser).catch((error) => failures.push(error instanceof Error ? error.message : "app refinement audit failed"));
   await auditMobileShell(browser).catch((error) => failures.push(error instanceof Error ? error.message : "mobile smoothness audit failed"));
 } finally {
   await browser.close();
