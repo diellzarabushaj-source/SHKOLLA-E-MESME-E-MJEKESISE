@@ -314,7 +314,7 @@ async function auditAppRefinement(browser) {
     await topButton.click();
     await page.waitForFunction(() => window.scrollY === 0);
     assert(await page.evaluate(() => document.activeElement?.id === "main-content"), "back-to-top did not return keyboard focus to content");
-    assert(!await topButton.isVisible(), "back-to-top stayed visible at the beginning of the page");
+    await topButton.waitFor({ state: "hidden" });
     console.log("✓ refined shell at 320/390/768/1024/1440px and accessible reduced-motion return to top");
   } finally {
     await context.close();
