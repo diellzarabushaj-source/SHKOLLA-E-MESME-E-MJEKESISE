@@ -1,0 +1,15 @@
+{
+  "_id": "kujdesi-shendetesor-10",
+  "title": "Kujdesi shëndetësor",
+  "slug": {
+    "_type": "slug",
+    "current": "kujdesi-shendetesor"
+  },
+  "description": "Shënime mësimore për klasën e 10-të: shëndeti, infermieria, nivelet e mbrojtjes shëndetësore, organizimi i spitaleve, pranimi e lëshimi i pacientëve dhe dhoma e të sëmurit. Sipas PDF-së së ngarkuar.",
+  "grade": {
+    "_type": "reference",
+    "_ref": "f1055c3a-7b10-4017-81f0-d95200d02684"
+  },
+  "order": 6,
+  "isActive": true
+}

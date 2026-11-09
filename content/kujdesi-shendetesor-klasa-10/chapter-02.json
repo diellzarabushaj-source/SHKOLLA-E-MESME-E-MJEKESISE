@@ -1,0 +1,2121 @@
+{
+  "chapter": {
+    "_id": "kujdesi-shendetesor-10-ch-2",
+    "title": "2. MBROJTJA SHËNDETËSORE DHE SHËRBIMI SHËNDETËSOR – ORGANIZIMI I SHËRBIMIT SHËNDETËSOR",
+    "slug": {
+      "_type": "slug",
+      "current": "2-mbrojtja-shendetesore-dhe-sherbimi-shendetesor-organizimi-i-sherbimit-shendetesor"
+    },
+    "description": "Materiali mësimor për kapitullin 2, sipas PDF-së së dhënë (faqet përkatëse të librit janë shënuar në mësime).",
+    "subject": {
+      "_type": "reference",
+      "_ref": "kujdesi-shendetesor-10"
+    },
+    "order": 2,
+    "isActive": true
+  },
+  "lessons": [
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-1",
+      "title": "2.1 PËRKUFIZIMI DHE PËRMBAJTJA E MBROJTJES SHËNDETËSORE",
+      "slug": {
+        "_type": "slug",
+        "current": "2-1-perkufizimi-dhe-permbajtja-e-mbrojtjes-shendetesore"
+      },
+      "summary": "Mbrojtja shëndetësore – “veprimtari, e cila ndërmerret me qëllim të përparimit dhe të ruajtjes së shëndetit të popullatës, parandalimit dhe eliminimit të sëmundjeve dhe dëmtimeve të shëndetit, zbulimit të hershëm të sëmundjeve dhe mjekimit adekuat dhe të shpejtë dhe zvogëlimit apo eliminimit të pasojave të sëmundjeve apo lëndimeve përmes rehabilitimit.” (f. 23)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 1,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-5a5fb2ac1a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mbrojtja shëndetësore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“veprimtari, e cila ndërmerret me qëllim të përparimit dhe të ruajtjes së shëndetit të popullatës, parandalimit dhe eliminimit të sëmundjeve dhe dëmtimeve të shëndetit, zbulimit të hershëm të sëmundjeve dhe mjekimit adekuat dhe të shpejtë dhe zvogëlimit apo eliminimit të pasojave të sëmundjeve apo lëndimeve përmes rehabilitimit.” (f. 23)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3856b3e946",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë përfshin – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Parandalimin, zbulimin e hershëm, mjekimin dhe rehabilitimin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-87084eeb63",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kushtet e jetesës – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Shëndeti lidhet edhe me ushqimin, arsimin, banimin, punën, pushimin dhe kujdesin social."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-475dc16db3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Pjesëmarrësit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Përveç shërbimit shëndetësor, libri përmend individin, familjen, institucionet arsimore, organizatat e punës, sigurimin shëndetësor, komunën dhe shtetin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-042facdf8b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Grupet me përparësi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Fëmijët, të rinjtë, gratë gjatë shtatzënisë, punëtorët e ekspozuar ndaj rrezikut, të moshuarit dhe personat me sëmundje me rëndësi sociale e mjekësore."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-cc5a228d8a",
+          "title": "Mbrojtja shëndetësore",
+          "front": "Çfarë është / çfarë nënkupton “Mbrojtja shëndetësore”?",
+          "back": "“veprimtari, e cila ndërmerret me qëllim të përparimit dhe të ruajtjes së shëndetit të popullatës, parandalimit dhe eliminimit të sëmundjeve dhe dëmtimeve të shëndetit, zbulimit të hershëm të sëmundjeve dhe mjekimit adekuat dhe të shpejtë dhe zvogëlimit apo eliminimit të pasojave të sëmundjeve apo lëndimeve përmes rehabilitimit.” (f. 23)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-1388ea8d73",
+          "title": "Çfarë përfshin",
+          "front": "Cilat janë katër veprimtaritë kryesore të mbrojtjes shëndetësore?",
+          "back": "Parandalimin, zbulimin e hershëm, mjekimin dhe rehabilitimin.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-f3d3a297ce",
+          "title": "Kushtet e jetesës",
+          "front": "Cilat kushte të jetesës ndikojnë në shëndetin e popullatës?",
+          "back": "Shëndeti lidhet edhe me ushqimin, arsimin, banimin, punën, pushimin dhe kujdesin social.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-821cdce3b8",
+          "title": "Pjesëmarrësit",
+          "front": "Kush merr pjesë në mbrojtjen shëndetësore, përveç shërbimeve mjekësore?",
+          "back": "Përveç shërbimit shëndetësor, libri përmend individin, familjen, institucionet arsimore, organizatat e punës, sigurimin shëndetësor, komunën dhe shtetin.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.1"
+          ],
+          "order": 4,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-2",
+      "title": "2.2 KUPTIMET SHKENCORE BASHKËKOHORE LIDHUR ME NIVELET E MBROJTJES SHËNDETËSORE",
+      "slug": {
+        "_type": "slug",
+        "current": "2-2-kuptimet-shkencore-bashkekohore-lidhur-me-nivelet-e-mbrojtjes-shendetesore"
+      },
+      "summary": "Ndarja në nivele – Shërbimet organizohen sipas shpeshtësisë, ndërlikueshmërisë dhe shpërndarjes territoriale të nevojave.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 2,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-3b1eed637d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Ndarja në nivele – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Shërbimet organizohen sipas shpeshtësisë, ndërlikueshmërisë dhe shpërndarjes territoriale të nevojave."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-634396b182",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shpeshtësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Nevojat ndryshojnë sipas moshës, vendbanimit dhe zhvillimit ekonomik e kulturor."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f81f865879",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Pesha dhe ndërlikueshmëria – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Libri dallon kërkesat e thjeshta, ato që kërkojnë ekip specialistësh dhe rastet që kërkojnë nivelin më të lartë subspecialistik."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-8167a30ea7",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shpërndarja territoriale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Planifikimi merr parasysh dendësinë e banimit, lidhjen me institucionet dhe mundësinë e qasjes gjatë gjithë vitit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-7dbcc4a370",
+          "title": "Ndarja në nivele",
+          "front": "Sipas cilave kritere organizohen nivelet e mbrojtjes shëndetësore?",
+          "back": "Shërbimet organizohen sipas shpeshtësisë, ndërlikueshmërisë dhe shpërndarjes territoriale të nevojave.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8e76749a69",
+          "title": "Shpeshtësia",
+          "front": "Nga cilët faktorë ndryshon shpeshtësia e nevojave shëndetësore?",
+          "back": "Nevojat ndryshojnë sipas moshës, vendbanimit dhe zhvillimit ekonomik e kulturor.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-0eefbb0927",
+          "title": "Pesha dhe ndërlikueshmëria",
+          "front": "Si ndryshon ndërlikueshmëria e nevojave shëndetësore?",
+          "back": "Libri dallon kërkesat e thjeshta, ato që kërkojnë ekip specialistësh dhe rastet që kërkojnë nivelin më të lartë subspecialistik.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-2-1",
+      "title": "2.2.1 Niveli i mbrojtjes primare shëndetësore",
+      "slug": {
+        "_type": "slug",
+        "current": "2-2-1-niveli-i-mbrojtjes-primare-shendetesore"
+      },
+      "summary": "Përkufizimi – “Mbrojtja primare shëndetësore është niveli primar i kontaktit të secilit individ, familjes apo i bashkësisë me sistemin kombëtar të mbrojtjes shëndetësore dhe ka për qëllim që mbrojtjen shëndetësore t'ia afrojë popullatës apo shfrytëzuesve duke ia bërë më të lehtë shfrytëzimin e saj.” (f. 26)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 3,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-069c238b3f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Mbrojtja primare shëndetësore është niveli primar i kontaktit të secilit individ, familjes apo i bashkësisë me sistemin kombëtar të mbrojtjes shëndetësore dhe ka për qëllim që mbrojtjen shëndetësore t'ia afrojë popullatës apo shfrytëzuesve duke ia bërë më të lehtë shfrytëzimin e saj.” (f. 26)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0e36bd010b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Masat në komunitet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Libri përmend ushqimin, furnizimin me ujë të pijshëm, largimin e mbeturinave, masat higjienike e kundërepidemike, mbrojtjen stomatologjike dhe vizitat sistematike për grupet e rrezikuara."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-1c014f4bd9",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Organizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Në libër, shtëpia e shëndetit bashkon praktikën e përgjithshme dhe shërbimet për gratë, fëmijët, punëtorët dhe grupe të tjera të popullatës."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-36b08ffb26",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet niveli i mbrojtjes primare shëndetësore?",
+          "back": "“Mbrojtja primare shëndetësore është niveli primar i kontaktit të secilit individ, familjes apo i bashkësisë me sistemin kombëtar të mbrojtjes shëndetësore dhe ka për qëllim që mbrojtjen shëndetësore t'ia afrojë popullatës apo shfrytëzuesve duke ia bërë më të lehtë shfrytëzimin e saj.” (f. 26)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ad6c949fee",
+          "title": "Masat në komunitet",
+          "front": "Cilat janë masat në komunitet në temën “niveli i mbrojtjes primare shëndetësore”?",
+          "back": "Libri përmend ushqimin, furnizimin me ujë të pijshëm, largimin e mbeturinave, masat higjienike e kundërepidemike, mbrojtjen stomatologjike dhe vizitat sistematike për grupet e rrezikuara.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d53f364b22",
+          "title": "Organizimi",
+          "front": "Çfarë përfshin “Organizimi” në temën “niveli i mbrojtjes primare shëndetësore”?",
+          "back": "Në libër, shtëpia e shëndetit bashkon praktikën e përgjithshme dhe shërbimet për gratë, fëmijët, punëtorët dhe grupe të tjera të popullatës.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.1"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-2-2",
+      "title": "2.2.2 Niveli i mbrojtjes sekondare shëndetësore",
+      "slug": {
+        "_type": "slug",
+        "current": "2-2-2-niveli-i-mbrojtjes-sekondare-shendetesore"
+      },
+      "summary": "Përkufizimi – “Në këtë nivel të mbrojtjes shëndetësore mund të numërojmë ato aktivitete shëndetësore, të cilat mund të realizohen përmes shërbimit spitalor dhe specialistiko konsultativ.” (f. 26)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 4,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-12d22498e6",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Në këtë nivel të mbrojtjes shëndetësore mund të numërojmë ato aktivitete shëndetësore, të cilat mund të realizohen përmes shërbimit spitalor dhe specialistiko konsultativ.” (f. 26)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f29bcdb963",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shtrirja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Nga aspekti organizativ libri e lidh këtë nivel me spitalin e përgjithshëm ose qendrën medicinale. Nga aspekti territorial, zakonisht mbulon një rajon me disa komuna."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-ea7bd3c534",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vazhdimësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Shërbimet specialistike e konsultative lidhen me nivelin primar dhe mbështesin diagnostikimin e mjekimin e rasteve më të ndërlikuara."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a5d8ae94ae",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet niveli i mbrojtjes sekondare shëndetësore?",
+          "back": "“Në këtë nivel të mbrojtjes shëndetësore mund të numërojmë ato aktivitete shëndetësore, të cilat mund të realizohen përmes shërbimit spitalor dhe specialistiko konsultativ.” (f. 26)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d7ff4d4b6c",
+          "title": "Shtrirja",
+          "front": "Çfarë shtrirjeje territoriale dhe organizative ka ky nivel i mbrojtjes?",
+          "back": "Nga aspekti organizativ libri e lidh këtë nivel me spitalin e përgjithshëm ose qendrën medicinale. Nga aspekti territorial, zakonisht mbulon një rajon me disa komuna.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-e730baafc7",
+          "title": "Vazhdimësia",
+          "front": "Si lidhet niveli sekondar me kujdesin primar?",
+          "back": "Shërbimet specialistike e konsultative lidhen me nivelin primar dhe mbështesin diagnostikimin e mjekimin e rasteve më të ndërlikuara.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.2"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-2-3",
+      "title": "2.2.3 Mbrojtja shëndetësore terciare",
+      "slug": {
+        "_type": "slug",
+        "current": "2-2-3-mbrojtja-shendetesore-terciare"
+      },
+      "summary": "Përkufizimi – “Me këtë nivel kuptojmë mbrojtjen shëndetësore të subspecializuar apo medicinën e lartë - të superspecializuar.” (f. 27)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 5,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-922f84fabc",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Me këtë nivel kuptojmë mbrojtjen shëndetësore të subspecializuar apo medicinën e lartë - të superspecializuar.” (f. 27)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-667360d2b7",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembuj – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Neurokirurgjia, onkologjia, transplantimi dhe mjekësia bërthamore."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-b0b0d5623f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shtrirja dhe institucionet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Mbulon rajone më të gjera. Libri përmend klinikat, institutet dhe entet speciale, me kuadër të profilizuar në fusha të ngushta."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-1928d2ccfd",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet mbrojtja shëndetësore terciare?",
+          "back": "“Me këtë nivel kuptojmë mbrojtjen shëndetësore të subspecializuar apo medicinën e lartë - të superspecializuar.” (f. 27)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.3"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8bf04edcd4",
+          "title": "Shembuj",
+          "front": "Cilat janë shembuj në temën “mbrojtja shëndetësore terciare”?",
+          "back": "Neurokirurgjia, onkologjia, transplantimi dhe mjekësia bërthamore.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.3"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d27ea9e50f",
+          "title": "Shtrirja dhe institucionet",
+          "front": "Çfarë duhet të mbash mend për “Shtrirja dhe institucionet” në temën “mbrojtja shëndetësore terciare”?",
+          "back": "Mbulon rajone më të gjera. Libri përmend klinikat, institutet dhe entet speciale, me kuadër të profilizuar në fusha të ngushta.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.2.3"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1",
+      "title": "2.3.1 LLOJET E ORGANIZATAVE PËR MBROJTJEN SHËNDETËSORE",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-llojet-e-organizatave-per-mbrojtjen-shendetesore"
+      },
+      "summary": "Format e organizimit – Institucionet dallohen sipas shërbimeve, popullatës që mbulojnë dhe nivelit të kujdesit.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 6,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-78f0f9b237",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Format e organizimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Institucionet dallohen sipas shërbimeve, popullatës që mbulojnë dhe nivelit të kujdesit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-7e3eff9776",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembuj – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Shtëpitë e shëndetit, dispanseritë, entet, barnatoret, spitalet, klinikat dhe institutet."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-72f1a98a29",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Organizimi sipas shërbimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Përveç institucioneve të zakonshme, libri përmend dispanseritë për punëtorët, qendrat e rehabilitimit, qendrat spitalore klinike dhe qendrat klinike universitare."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-083e3248c4",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shtëpia e shëndetit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "“Shtëpia e shëndetit është organizatë shëndetësore e tipit ambulancë poliklinike, e cila realizon detyrat e mbrojtjes primare shëndetësore, duke zbatuar metodën dispanserike të punës.” (f. 29)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-cc733d0330",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Metoda dispanserike sipas librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "“Me fjalën metodë dispanserike të punës kuptojmë zbatimin praktik të metodës epidemiologjike dhe socialo - medicinale në punën e përditshme.” (f. 29)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9ac0c899bf",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Detyrat – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Përcjell gjendjen shëndetësore dhe kushtet e jetesës, zbaton masa parandaluese dhe organizon kontrolle e mbrojtje për grupe të veçanta."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a84f9db2c3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Enti për mbrojtjen shëndetësore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Përcjell sëmundjet, higjienën, ushqimin dhe kushtet e jetesës. Propozon masa parandaluese."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-52654bf4bb",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë vlerëson – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "Shkaqet dhe përhapjen e sëmundjeve, kushtet higjienike, ajrin, ujin, tokën dhe ushqimin e popullatës."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c4689f42c3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Entet e specializuara dhe institutet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "“Entet e specializuara u ofrojnë mbrojtjen shëndetësore kategorive të veçanta të popullatës dhe mbrojtjen shëndetësore e cila përfshin pengimin dhe eliminimin e sëmundjeve të caktuara.” (f. 32)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f3d4be97be",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-208d3106d3",
+              "marks": [
+                "strong"
+              ],
+              "text": "Veprimtaria – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4f96d7010c",
+              "marks": [],
+              "text": "Përcjell problemet e fushës për të cilën është themeluar, propozon masa, zhvillon metoda dhe ndihmon profesionalisht institucione të tjera."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-1d9be49d92",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-c55ada1818",
+              "marks": [
+                "strong"
+              ],
+              "text": "Barnatorja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-29e53134f0",
+              "marks": [],
+              "text": "“Barnatorja është organizatë shëndetësore, e cila ushtron veprimtarinë farmaceutike” (f. 33)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3bc8c7b788",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-5807efefb1",
+              "marks": [
+                "strong"
+              ],
+              "text": "Detyrat sipas librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-88b5ee997c",
+              "marks": [],
+              "text": "Furnizimi i popullatës me barna e materiale, përgatitja e preparateve galenike e magjistrale, ruajtja, dhënia dhe këshillimi për përdorim."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-fbcc957af3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-6597d4a255",
+              "marks": [
+                "strong"
+              ],
+              "text": "Sanatoriumi natyror – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-1d5f6effb7",
+              "marks": [],
+              "text": "“Sanatoriumi natyror është organizatë shëndetësore, në të cilën bëhet mjekimi dhe rehabilitimi, duke shfrytëzuar komponentët e faktorëve shërues natyrorë si uji mineral, gazi, peloidi apo balta shëruese dhe faktorët e caktuar klimatikë p.sh. lartësia mbidetare, afërsia e detit etj.” (f. 34)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9e7395132c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-aab7eee76c",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mjekimi stacionar – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-1f83b8d50a",
+              "marks": [],
+              "text": "Libri e lidh me sigurimin e shtretërve, shërbimeve përcjellëse, personelit dhe aparaturës përkatëse."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-53bb1a477f",
+          "title": "Format e organizimit",
+          "front": "Çfarë duhet të mbash mend për “Format e organizimit” në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "Institucionet dallohen sipas shërbimeve, popullatës që mbulojnë dhe nivelit të kujdesit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d36c377ffe",
+          "title": "Shembuj",
+          "front": "Cilat janë shembuj në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "Shtëpitë e shëndetit, dispanseritë, entet, barnatoret, spitalet, klinikat dhe institutet.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-388229cb48",
+          "title": "Organizimi sipas shërbimit",
+          "front": "Çfarë përfshin “Organizimi sipas shërbimit” në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "Përveç institucioneve të zakonshme, libri përmend dispanseritë për punëtorët, qendrat e rehabilitimit, qendrat spitalore klinike dhe qendrat klinike universitare.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-208f82edaf",
+          "title": "Shtëpia e shëndetit",
+          "front": "Çfarë është / çfarë nënkupton “Shtëpia e shëndetit”?",
+          "back": "“Shtëpia e shëndetit është organizatë shëndetësore e tipit ambulancë poliklinike, e cila realizon detyrat e mbrojtjes primare shëndetësore, duke zbatuar metodën dispanserike të punës.” (f. 29)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8d0a8c13a3",
+          "title": "Metoda dispanserike sipas librit",
+          "front": "Si përshkruhet “Metoda dispanserike sipas librit”?",
+          "back": "“Me fjalën metodë dispanserike të punës kuptojmë zbatimin praktik të metodës epidemiologjike dhe socialo - medicinale në punën e përditshme.” (f. 29)",
+          "difficulty": "hard",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 5,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-9a38fc97b1",
+          "title": "Detyrat",
+          "front": "Cilat janë detyrat në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "Përcjell gjendjen shëndetësore dhe kushtet e jetesës, zbaton masa parandaluese dhe organizon kontrolle e mbrojtje për grupe të veçanta.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 6,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-3649af8dec",
+          "title": "Enti për mbrojtjen shëndetësore",
+          "front": "Çfarë duhet të mbash mend për “Enti për mbrojtjen shëndetësore” në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "Përcjell sëmundjet, higjienën, ushqimin dhe kushtet e jetesës. Propozon masa parandaluese.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 7,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-22f11318a9",
+          "title": "Entet e specializuara dhe institutet",
+          "front": "Çfarë duhet të mbash mend për “Entet e specializuara dhe institutet” në temën “llojet e organizatave për mbrojtjen shëndetësore”?",
+          "back": "“Entet e specializuara u ofrojnë mbrojtjen shëndetësore kategorive të veçanta të popullatës dhe mbrojtjen shëndetësore e cila përfshin pengimin dhe eliminimin e sëmundjeve të caktuara.” (f. 32)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 8,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-657ebe9fc2",
+          "title": "Barnatorja",
+          "front": "Çfarë është / çfarë nënkupton “Barnatorja”?",
+          "back": "“Barnatorja është organizatë shëndetësore, e cila ushtron veprimtarinë farmaceutike” (f. 33)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 9,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-2c257c3131",
+          "title": "Sanatoriumi natyror",
+          "front": "Çfarë është / çfarë nënkupton “Sanatoriumi natyror”?",
+          "back": "“Sanatoriumi natyror është organizatë shëndetësore, në të cilën bëhet mjekimi dhe rehabilitimi, duke shfrytëzuar komponentët e faktorëve shërues natyrorë si uji mineral, gazi, peloidi apo balta shëruese dhe faktorët e caktuar klimatikë p.sh. lartësia mbidetare, afërsia e detit etj.” (f. 34)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1"
+          ],
+          "order": 10,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-1",
+      "title": "2.3.1.1 Institucionet shëndetësore stacionare",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-1-institucionet-shendetesore-stacionare"
+      },
+      "summary": "Përkufizimi – “Këto organizata shëndetësore karakterizohen me diagnostifikimin, mjekimin dhe rehabilitimin e të sëmurëve, të cilët gjatë mjekimit janë të shtrirë apo të stacionuar.” (f. 34)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 7,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-d190e2abdd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Këto organizata shëndetësore karakterizohen me diagnostifikimin, mjekimin dhe rehabilitimin e të sëmurëve, të cilët gjatë mjekimit janë të shtrirë apo të stacionuar.” (f. 34)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-769a13aea0",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Llojet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Spitali i përgjithshëm, spitali special dhe qendra medicinale me shtretër për mjekim."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0ef88fdb63",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Funksionet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Mjekimi, parandalimi, edukimi i personelit dhe veprimtaria hulumtuese."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-8c9432bdae",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Spitali – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "“Spitali është organizatë shëndetësore e tipit stacionar, e cila pos mjekimit stacionar i ofron popullatës edhe vizita specialistike konsultative.” (f. 35)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-219ef81dd1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Detyrat e spitalit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Diagnostikimi, mjekimi dhe rehabilitimi, pjesëmarrja në programe parandaluese, edukimi i pacientëve dhe aftësimi i personelit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0b5ff25347",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Spitali i përgjithshëm – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "“Në spitalin e përgjithshëm i ofrohet ndihma mjekësore personave të sëmurë apo të lënduar të të gjitha moshave dhe shërimi nga sëmundjet e ndryshme.” (f. 36)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-7bd72a9fbe",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Repartet që përmend libri – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Sëmundjet e brendshme, kirurgjia e përgjithshme, gjinekologjia dhe akusheria, pediatria, sëmundjet ngjitëse, fiziatria dhe rehabilitimi."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0b53116dc4",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shërbimet përcjellëse – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "Laboratori klinik, radiologjia, patologjia, anesteziologjia, transfuzioni dhe shërbimet e furnizimit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5ef233393a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Spitali special – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "“Spitali special është organizatë shëndetësore, e cila i ofron mbrojtjen shëndetësore personave të sëmurë nga sëmundjet e caktuara apo grupeve të popullatës me moshë të caktuar.” (f. 37)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-4d21c16900",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-208d3106d3",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kriteret e organizimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4f96d7010c",
+              "marks": [],
+              "text": "Sipas sëmundjes, si sëmundjet infektive, reumatike ose malinje. Sipas grupmoshës, si pediatria dhe geriatria."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-94ac940f0d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-c55ada1818",
+              "marks": [
+                "strong"
+              ],
+              "text": "Sistemi i tipit montazh – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-29e53134f0",
+              "marks": [],
+              "text": "Struktura të montueshme shtojnë shpejt kapacitetin në raste emergjente."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-628016a797",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-5807efefb1",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përdorimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-88b5ee997c",
+              "marks": [],
+              "text": "Libri përmend rastet e vërshimeve, tërmeteve dhe epidemive. Ndërtesat mund të montohen shpejt, të çmontohen dhe të barten sipas nevojës."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-890a9e830c",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet institucionet shëndetësore stacionare?",
+          "back": "“Këto organizata shëndetësore karakterizohen me diagnostifikimin, mjekimin dhe rehabilitimin e të sëmurëve, të cilët gjatë mjekimit janë të shtrirë apo të stacionuar.” (f. 34)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-af607fe3ed",
+          "title": "Llojet",
+          "front": "Cilat janë llojet në temën “institucionet shëndetësore stacionare”?",
+          "back": "Spitali i përgjithshëm, spitali special dhe qendra medicinale me shtretër për mjekim.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ddb2fca987",
+          "title": "Funksionet",
+          "front": "Çfarë përfshin “Funksionet” në temën “institucionet shëndetësore stacionare”?",
+          "back": "Mjekimi, parandalimi, edukimi i personelit dhe veprimtaria hulumtuese.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-9232f04f05",
+          "title": "Spitali",
+          "front": "Çfarë është / çfarë nënkupton “Spitali”?",
+          "back": "“Spitali është organizatë shëndetësore e tipit stacionar, e cila pos mjekimit stacionar i ofron popullatës edhe vizita specialistike konsultative.” (f. 35)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-80f34bbb41",
+          "title": "Detyrat e spitalit",
+          "front": "Cilat janë detyrat e spitalit në temën “institucionet shëndetësore stacionare”?",
+          "back": "Diagnostikimi, mjekimi dhe rehabilitimi, pjesëmarrja në programe parandaluese, edukimi i pacientëve dhe aftësimi i personelit.",
+          "difficulty": "hard",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 5,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-568f486fe6",
+          "title": "Spitali i përgjithshëm",
+          "front": "Çfarë është / çfarë nënkupton “Spitali i përgjithshëm”?",
+          "back": "“Në spitalin e përgjithshëm i ofrohet ndihma mjekësore personave të sëmurë apo të lënduar të të gjitha moshave dhe shërimi nga sëmundjet e ndryshme.” (f. 36)",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 6,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c1d3f7b44c",
+          "title": "Repartet që përmend libri",
+          "front": "Cilat janë repartet që përmend libri në temën “institucionet shëndetësore stacionare”?",
+          "back": "Sëmundjet e brendshme, kirurgjia e përgjithshme, gjinekologjia dhe akusheria, pediatria, sëmundjet ngjitëse, fiziatria dhe rehabilitimi.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 7,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-7c5aeb1521",
+          "title": "Sistemi i tipit montazh",
+          "front": "Çfarë duhet të mbash mend për “Sistemi i tipit montazh” në temën “institucionet shëndetësore stacionare”?",
+          "back": "Struktura të montueshme shtojnë shpejt kapacitetin në raste emergjente.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.1"
+          ],
+          "order": 8,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-2",
+      "title": "2.3.1.2 Qendra medicinale",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-2-qendra-medicinale"
+      },
+      "summary": "Përkufizimi – “Qendra medicinale është një organizatë e përbërë nga dy nivelet apo ngandonjëherë edhe nga të tri nivelet e mbrojtjes shëndetësore.” (f. 43)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 8,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-780bea16dd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Qendra medicinale është një organizatë e përbërë nga dy nivelet apo ngandonjëherë edhe nga të tri nivelet e mbrojtjes shëndetësore.” (f. 43)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9814299b84",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Bashkërendimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Në një territor lidh kujdesin parandalues e terapeutik dhe shërbimet ambulatore e spitalore. Njësitë diagnostike, teknike dhe administrative mund të shfrytëzohen bashkërisht."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a62ffca706",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet qendra medicinale?",
+          "back": "“Qendra medicinale është një organizatë e përbërë nga dy nivelet apo ngandonjëherë edhe nga të tri nivelet e mbrojtjes shëndetësore.” (f. 43)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-dec55519a0",
+          "title": "Bashkërendimi",
+          "front": "Çfarë duhet të mbash mend për “Bashkërendimi” në temën “qendra medicinale”?",
+          "back": "Në një territor lidh kujdesin parandalues e terapeutik dhe shërbimet ambulatore e spitalore. Njësitë diagnostike, teknike dhe administrative mund të shfrytëzohen bashkërisht.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.2"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-3",
+      "title": "2.3.1.3 Klinika",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-3-klinika"
+      },
+      "summary": "Përkufizimi – “Klinika është institucion shëndetësor, i cili ofron mbrojtje shëndetësore me specializim të lartë” (f. 45)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 9,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-d15a170107",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Klinika është institucion shëndetësor, i cili ofron mbrojtje shëndetësore me specializim të lartë” (f. 45)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-018ba2448a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Veprimtaritë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Vizita specialistike, diagnostikim, mjekim dhe rehabilitim në një ose më shumë degë. Libri përfshin edhe edukimin shëndetësor, arsimin profesional dhe hulumtimin e metodave të reja."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-e2272ca5f6",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet klinika?",
+          "back": "“Klinika është institucion shëndetësor, i cili ofron mbrojtje shëndetësore me specializim të lartë” (f. 45)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.3"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-53bc82739e",
+          "title": "Veprimtaritë",
+          "front": "Çfarë duhet të mbash mend për “Veprimtaritë” në temën “klinika”?",
+          "back": "Vizita specialistike, diagnostikim, mjekim dhe rehabilitim në një ose më shumë degë. Libri përfshin edhe edukimin shëndetësor, arsimin profesional dhe hulumtimin e metodave të reja.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.3"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-4",
+      "title": "2.3.1.4 Instituti",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-4-instituti"
+      },
+      "summary": "Përkufizimi – “Instituti është institucion shëndetësor me detyrë që të:” (f. 45)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 10,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-6ff45a2642",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Instituti është institucion shëndetësor me detyrë që të:” (f. 45)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-8e17ad2c4c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Detyrat – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Përcjell sëmundjet e lëndimet në fushën përkatëse. Zbaton masa mbrojtëse, mban regjistra, propozon metoda dhe organizon edukim e arsimim."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-001554e6ab",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet instituti?",
+          "back": "“Instituti është institucion shëndetësor me detyrë që të:” (f. 45)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.4"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-fcc7a1230c",
+          "title": "Detyrat",
+          "front": "Cilat janë detyrat në temën “instituti”?",
+          "back": "Përcjell sëmundjet e lëndimet në fushën përkatëse. Zbaton masa mbrojtëse, mban regjistra, propozon metoda dhe organizon edukim e arsimim.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.4"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-5",
+      "title": "2.3.1.5 Qendra spitalore klinike",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-5-qendra-spitalore-klinike"
+      },
+      "summary": "Përkufizimi – “Kjo organizatë komplekse formohet në qytete ku ka reparte të specializuara apo klinika në të cilat bëhet mjekimi i të sëmurëve dhe arsimimi i punëtorëve të ardhshëm mjekësorë.” (f. 46)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 11,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-c5a3577f2a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Kjo organizatë komplekse formohet në qytete ku ka reparte të specializuara apo klinika në të cilat bëhet mjekimi i të sëmurëve dhe arsimimi i punëtorëve të ardhshëm mjekësorë.” (f. 46)"
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d4767c2408",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet qendra spitalore klinike?",
+          "back": "“Kjo organizatë komplekse formohet në qytete ku ka reparte të specializuara apo klinika në të cilat bëhet mjekimi i të sëmurëve dhe arsimimi i punëtorëve të ardhshëm mjekësorë.” (f. 46)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.5"
+          ],
+          "order": 1,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-2-3-1-6",
+      "title": "2.3.1.6 Qendra klinike universitare",
+      "slug": {
+        "_type": "slug",
+        "current": "2-3-1-6-qendra-klinike-universitare"
+      },
+      "summary": "Përkufizimi – “Kjo organizatë komplekse formohet në qytete të cilat kanë fakultetin e mjekësisë dhe në kuadër të sajë bëjnë pjesë klinikat dhe institutet ekzistuese.” (f. 46)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-2"
+      },
+      "order": 12,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-8b4447a0bc",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Kjo organizatë komplekse formohet në qytete të cilat kanë fakultetin e mjekësisë dhe në kuadër të sajë bëjnë pjesë klinikat dhe institutet ekzistuese.” (f. 46)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-26f04da9c0",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Detyra parësore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Mjekimi dhe shkollimi i kuadrit mjekësor. Libri e dallon nga qendra spitalore klinike për nivelin profesional dhe shkencor më të avancuar."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c01c651e69",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet qendra klinike universitare?",
+          "back": "“Kjo organizatë komplekse formohet në qytete të cilat kanë fakultetin e mjekësisë dhe në kuadër të sajë bëjnë pjesë klinikat dhe institutet ekzistuese.” (f. 46)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.6"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-7973030a9e",
+          "title": "Detyra parësore",
+          "front": "Çfarë duhet të mbash mend për “Detyra parësore” në temën “qendra klinike universitare”?",
+          "back": "Mjekimi dhe shkollimi i kuadrit mjekësor. Libri e dallon nga qendra spitalore klinike për nivelin profesional dhe shkencor më të avancuar.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-2",
+            "tema-2.3.1.6"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}

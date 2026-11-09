@@ -1,0 +1,1030 @@
+{
+  "chapter": {
+    "_id": "kujdesi-shendetesor-10-ch-1",
+    "title": "1. SHËNDETI, KUJDESI SHËNDETËSOR DHE INFERMIERIA SI VEPRIMTARI PROFESIONALE",
+    "slug": {
+      "_type": "slug",
+      "current": "1-shendeti-kujdesi-shendetesor-dhe-infermieria-si-veprimtari-profesionale"
+    },
+    "description": "Materiali mësimor për kapitullin 1, sipas PDF-së së dhënë (faqet përkatëse të librit janë shënuar në mësime).",
+    "subject": {
+      "_type": "reference",
+      "_ref": "kujdesi-shendetesor-10"
+    },
+    "order": 1,
+    "isActive": true
+  },
+  "lessons": [
+    {
+      "_id": "kujdesi-shendetesor-10-les-1-1",
+      "title": "1.1 PËRKUFIZIMI I SHËNDETIT",
+      "slug": {
+        "_type": "slug",
+        "current": "1-1-perkufizimi-i-shendetit"
+      },
+      "summary": "Shëndeti sipas OBSH-së – “Mirëqenie komplete fizike, mentale dhe sociale e jo vetëm mungesë e sëmundjes apo e dobësisë” (f. 5)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-1"
+      },
+      "order": 1,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-2db25d12eb",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shëndeti sipas OBSH-së – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Mirëqenie komplete fizike, mentale dhe sociale e jo vetëm mungesë e sëmundjes apo e dobësisë” (f. 5)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-bcb7a1040e",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë përfshin shëndeti – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Libri e lidh me integritetin e organizmit, funksionimin, përshtatjen dhe mënyrën si e përjeton individi shëndetin në familje, në punë dhe në bashkësi."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-82f5b81f27",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mbrojtja shëndetësore sipas librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "“Mbrojtja shëndetësore është kuptim i masave dhe i aktiviteteve, të cilat, i ndërmerr shoqëria e organizuar, e cila ndërhyn në këto dy elemente të përbëra nga individi dhe bashkësia shoqërore në kuptim të gjerë të saj.” (f. 5)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-d877cecb8f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Tri grupet e faktorëve – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Faktorët e jashtëm, faktorët që lidhen me vetë njeriun dhe faktorët e ambientit të jashtëm."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-69d2a66c10",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Faktorët e jashtëm – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Biologjikë, kimikë, fizikë dhe ushqimorë. Libri jep si shembuj mikroorganizmat, temperaturën, rrezatimet dhe cilësinë e sasinë e ushqimit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-fe69cb82da",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Individi dhe ambienti – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Mosha, gjinia, trashëgimia, fuqitë mbrojtëse dhe veset nga njëra anë."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9fe1faf530",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-5ea652dc6f",
+              "marks": [],
+              "text": "Ambientit te jashtem :Kushtet ekonomike, sociale dhe ndotja e ambientit nga ana tjetër."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-24945ee19f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Individi dhe bashkësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "Ruajtja e shëndetit përfshin pjesëmarrjen aktive të individit dhe mbështetjen e familjes e të shoqërisë, veçanërisht për anëtarët më të ndjeshëm."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-4232846d8a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Nevojat bazë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "Ushqimi i rregullt, eliminimi, higjiena personale, pushimi dhe gjumi, aktiviteti fizik, nevojat psikike e emocionale dhe edukimi i vazhdueshëm."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-fb7ecba3a2",
+          "title": "Shëndeti sipas OBSH-së",
+          "front": "Si e përkufizon OBSH-ja shëndetin?",
+          "back": "“Mirëqenie komplete fizike, mentale dhe sociale e jo vetëm mungesë e sëmundjes apo e dobësisë” (f. 5)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-786bb2a5eb",
+          "title": "Çfarë përfshin shëndeti",
+          "front": "Çfarë përfshin koncepti i shëndetit përtej mungesës së sëmundjes?",
+          "back": "Libri e lidh me integritetin e organizmit, funksionimin, përshtatjen dhe mënyrën si e përjeton individi shëndetin në familje, në punë dhe në bashkësi.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-0f25b3586a",
+          "title": "Mbrojtja shëndetësore sipas librit",
+          "front": "Si përshkruhet “Mbrojtja shëndetësore sipas librit”?",
+          "back": "“Mbrojtja shëndetësore është kuptim i masave dhe i aktiviteteve, të cilat, i ndërmerr shoqëria e organizuar, e cila ndërhyn në këto dy elemente të përbëra nga individi dhe bashkësia shoqërore në kuptim të gjerë të saj.” (f. 5)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-25e38bf310",
+          "title": "Tri grupet e faktorëve",
+          "front": "Cilat janë tri grupet e faktorëve që ndikojnë në shëndet?",
+          "back": "Faktorët e jashtëm, faktorët që lidhen me vetë njeriun dhe faktorët e ambientit të jashtëm.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.1"
+          ],
+          "order": 4,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-1-2",
+      "title": "1.2 LËNDA, DETYRAT, PËRMBAJTJA DHE ROLI I KUJDESIT SHËNDETËSOR",
+      "slug": {
+        "_type": "slug",
+        "current": "1-2-lenda-detyrat-permbajtja-dhe-roli-i-kujdesit-shendetesor"
+      },
+      "summary": "Kujdesi shëndetësor – “Me fjalën kujdes shëndetësor kuptojmë të gjitha ato aktivitete që bëhen nga punëtorët shëndetësorë e që kanë për qëllim rikthimin e shëndetit tek i sëmuri.” (f. 7)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-1"
+      },
+      "order": 2,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-6ca9b4365b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kujdesi shëndetësor – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Me fjalën kujdes shëndetësor kuptojmë të gjitha ato aktivitete që bëhen nga punëtorët shëndetësorë e që kanë për qëllim rikthimin e shëndetit tek i sëmuri.” (f. 7)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c9e23a7aca",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Si ofrohet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Me njohuri, shkathtësi, respekt dhe përgatitje teorike e praktike."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f16ac5a504",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Zhvillimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Nga kujdesi familjar, te ndihma bamirëse e më pas te kujdesi profesional."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a463b25804",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përmbajtja e kujdesit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Libri përfshin kujdesin pa barna dhe kujdesin me barna kur ato i cakton mjeku. Përmend aspektin shëndetësor, estetik dhe etik."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0452a993ab",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Aftësimi profesional – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Pjesa teorike përgatit për punën praktike, nga kontakti i parë me pacientin te dhënia e kujdesit më të ndërlikuar. Zhvillimi i pajisjeve kërkon edukim të vazhdueshëm."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-9348b693f5",
+          "title": "Kujdesi shëndetësor",
+          "front": "Çfarë është / çfarë nënkupton “Kujdesi shëndetësor”?",
+          "back": "“Me fjalën kujdes shëndetësor kuptojmë të gjitha ato aktivitete që bëhen nga punëtorët shëndetësorë e që kanë për qëllim rikthimin e shëndetit tek i sëmuri.” (f. 7)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-3f2a49b749",
+          "title": "Si ofrohet",
+          "front": "Me çfarë njohurish dhe cilësish ofrohet kujdesi shëndetësor?",
+          "back": "Me njohuri, shkathtësi, respekt dhe përgatitje teorike e praktike.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-63a09dcd0a",
+          "title": "Zhvillimi",
+          "front": "Si është zhvilluar historikisht kujdesi shëndetësor?",
+          "back": "Nga kujdesi familjar, te ndihma bamirëse e më pas te kujdesi profesional.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.2"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-095314bb47",
+          "title": "Përmbajtja e kujdesit",
+          "front": "Çfarë përfshin “Përmbajtja e kujdesit” në temën “lënda, detyrat, përmbajtja dhe roli i kujdesit shëndetësor”?",
+          "back": "Libri përfshin kujdesin pa barna dhe kujdesin me barna kur ato i cakton mjeku. Përmend aspektin shëndetësor, estetik dhe etik.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.2"
+          ],
+          "order": 4,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-1-3",
+      "title": "1.3 DETYRAT E PËRGJITHSHME, PARIMET E KUJDESIT DHE TË INFERMIERISË, ETIKA E MOTRËS MEDICINALE – TEKNIKUT MEDICINAL",
+      "slug": {
+        "_type": "slug",
+        "current": "1-3-detyrat-e-pergjithshme-parimet-e-kujdesit-dhe-te-infermierise-etika-e-motres-medicinal"
+      },
+      "summary": "Motra medicinale – tekniku medicinal – “Motra medicinale – tekniku medicinal është individ, i cili ka të kryer shkollën medicinale dhe që ka fituar dijeni, aftësi dhe shkathtësi që në mënyrë të kualifikuar të ofrojë dhe realizojë detyra që janë të orientuara drejt përparimit dhe ruajtjes së shëndetit, diagnostifikimit dhe mjekimit adekuat si dhe rehabilitimit e kujdesit shëndetësor të individit dhe të bashkësisë së gjerë.” (f. 8)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-1"
+      },
+      "order": 3,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-fae49eb61f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Motra medicinale – tekniku medicinal – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Motra medicinale – tekniku medicinal është individ, i cili ka të kryer shkollën medicinale dhe që ka fituar dijeni, aftësi dhe shkathtësi që në mënyrë të kualifikuar të ofrojë dhe realizojë detyra që janë të orientuara drejt përparimit dhe ruajtjes së shëndetit, diagnostifikimit dhe mjekimit adekuat si dhe rehabilitimit e kujdesit shëndetësor të individit dhe të bashkësisë së gjerë.” (f. 8)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0a8795f1b4",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Bashkëpunimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Puna me ekipin shëndetësor, aftësimi i personelit dhe pjesëmarrja në planifikimin e shërbimeve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-927c825377",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mjediset – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Shtëpia, ambulanca, spitali dhe institucionet arsimore ose sociale."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e241dba5d9",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vëzhgimi dhe edukimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Infermierja vëren faktorët që ndikojnë negativisht në shëndet dhe merr pjesë në edukimin shëndetësor të individit, familjes dhe bashkësisë."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0c12b311fa",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Planifikimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Libri përfshin pjesëmarrjen në organizimin e detyrave, në planifikimin e kapaciteteve dhe në përzgjedhjen e pajisjeve të përshtatshme për punë."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8fb99f8e5c",
+          "title": "Motra medicinale – tekniku medicinal",
+          "front": "Çfarë është / çfarë nënkupton “Motra medicinale – tekniku medicinal”?",
+          "back": "“Motra medicinale – tekniku medicinal është individ, i cili ka të kryer shkollën medicinale dhe që ka fituar dijeni, aftësi dhe shkathtësi që në mënyrë të kualifikuar të ofrojë dhe realizojë detyra që janë të orientuara drejt përparimit dhe ruajtjes së shëndetit, diagnostifikimit dhe mjekimit adekuat si dhe rehabilitimit e kujdesit shëndetësor të individit dhe të bashkësisë së gjerë.” (f. 8)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-864377d4a6",
+          "title": "Bashkëpunimi",
+          "front": "Në çfarë përbëhet bashkëpunimi i infermierit me ekipin shëndetësor?",
+          "back": "Puna me ekipin shëndetësor, aftësimi i personelit dhe pjesëmarrja në planifikimin e shërbimeve.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-76beba5e5b",
+          "title": "Vëzhgimi dhe edukimi",
+          "front": "Çfarë detyrash ka infermierja në vëzhgimin dhe edukimin shëndetësor?",
+          "back": "Infermierja vëren faktorët që ndikojnë negativisht në shëndet dhe merr pjesë në edukimin shëndetësor të individit, familjes dhe bashkësisë.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-1-3-1",
+      "title": "1.3.1 PARIMET E KUJDESIT SHËNDETËSOR DHE TË INFERMIERISË",
+      "slug": {
+        "_type": "slug",
+        "current": "1-3-1-parimet-e-kujdesit-shendetesor-dhe-te-infermierise"
+      },
+      "summary": "Dinjiteti – Mbrohen vetëbesimi dhe barazia e të sëmurit.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-1"
+      },
+      "order": 4,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-0ce3cc0c1e",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dinjiteti – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Mbrohen vetëbesimi dhe barazia e të sëmurit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5516c01a76",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kompetenca – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Njohuritë dhe shkathtësitë ndihmojnë në përshtatjen e kujdesit me nevojat e pacientit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e98fba9199",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përshtatja e pacientit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Kompetenca profesionale ndihmon në kuptimin e ndryshimeve fiziologjike, emocionale dhe sociale që shoqërojnë sëmundjen ose shtrimin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5e717b3301",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkushtimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Kujdesi vazhdon pavarësisht përfundimit të sëmundjes."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0342bd145c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përgjegjësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Çdo anëtar i ekipit punon brenda detyrave dhe kompetencave të veta."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-fd8d95b406",
+          "title": "Dinjiteti",
+          "front": "Çfarë kërkon parimi i dinjitetit në kujdesin shëndetësor?",
+          "back": "Mbrohen vetëbesimi dhe barazia e të sëmurit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-4bd969b817",
+          "title": "Kompetenca",
+          "front": "Çfarë nënkupton kompetenca profesionale në kujdesin infermieror?",
+          "back": "Njohuritë dhe shkathtësitë ndihmojnë në përshtatjen e kujdesit me nevojat e pacientit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-cc2cada662",
+          "title": "Përkushtimi",
+          "front": "Çfarë nënkupton përkushtimi ndaj pacientit?",
+          "back": "Kujdesi vazhdon pavarësisht përfundimit të sëmundjes.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-abff6112ca",
+          "title": "Përgjegjësia",
+          "front": "Si zbatohet përgjegjësia brenda ekipit shëndetësor?",
+          "back": "Çdo anëtar i ekipit punon brenda detyrave dhe kompetencave të veta.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.3.1"
+          ],
+          "order": 4,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-1-4",
+      "title": "1.4 ETIKA E PUNËTORËVE SHËNDETËSORË DHE FIGURA E PUNËTORIT SHËNDETËSOR – MOTRËS APO TEKNIKUT MEDICINAL",
+      "slug": {
+        "_type": "slug",
+        "current": "1-4-etika-e-punetoreve-shendetesore-dhe-figura-e-punetorit-shendetesor-motres-apo-teknikut"
+      },
+      "summary": "Etika shëndetësore – “Me fjalën etikë shëndetësore kuptojmë përgjegjësinë morale dhe ndërgjegjen e punëtorit shëndetësor gjatë punës së tij.” (f. 10)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-1"
+      },
+      "order": 5,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-12df37aafa",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Etika shëndetësore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Me fjalën etikë shëndetësore kuptojmë përgjegjësinë morale dhe ndërgjegjen e punëtorit shëndetësor gjatë punës së tij.” (f. 10)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-066fbc75d6",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Në praktikë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Ruajtja e dinjitetit, ndërgjegjja profesionale dhe bashkëpunimi në shërbim të pacientit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3f8dc4940a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dy parimet që dallon libri – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Profesionaliteti i punëtorëve shëndetësorë dhe parimi i humanitetit e i etikës shëndetësore."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c463df502f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Betimi i Hipokratit në greqisht – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Versioni në greqisht paraqitet në skanimin e faqes 11 të librit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ea9cf3b54f",
+          "title": "Etika shëndetësore",
+          "front": "Çfarë është / çfarë nënkupton “Etika shëndetësore”?",
+          "back": "“Me fjalën etikë shëndetësore kuptojmë përgjegjësinë morale dhe ndërgjegjen e punëtorit shëndetësor gjatë punës së tij.” (f. 10)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.4"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-f5b90a0851",
+          "title": "Në praktikë",
+          "front": "Si shfaqet etika profesionale në praktikën e përditshme?",
+          "back": "Ruajtja e dinjitetit, ndërgjegjja profesionale dhe bashkëpunimi në shërbim të pacientit.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.4"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d3a6915fa7",
+          "title": "Betimi i Hipokratit në greqisht",
+          "front": "Ku paraqitet në material Betimi i Hipokratit në greqisht?",
+          "back": "Versioni në greqisht paraqitet në skanimin e faqes 11 të librit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-1",
+            "tema-1.4"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}

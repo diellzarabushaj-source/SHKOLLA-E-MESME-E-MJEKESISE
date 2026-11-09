@@ -1,0 +1,1814 @@
+{
+  "chapter": {
+    "_id": "kujdesi-shendetesor-10-ch-3",
+    "title": "3. ORGANIZIMI I BRENDSHËM I INSTITUCIONEVE SHËNDETËSORE",
+    "slug": {
+      "_type": "slug",
+      "current": "3-organizimi-i-brendshem-i-institucioneve-shendetesore"
+    },
+    "description": "Materiali mësimor për kapitullin 3, sipas PDF-së së dhënë (faqet përkatëse të librit janë shënuar në mësime).",
+    "subject": {
+      "_type": "reference",
+      "_ref": "kujdesi-shendetesor-10"
+    },
+    "order": 3,
+    "isActive": true
+  },
+  "lessons": [
+    {
+      "_id": "kujdesi-shendetesor-10-les-3-1",
+      "title": "3.1 ORGANIZIMI I SPITALEVE",
+      "slug": {
+        "_type": "slug",
+        "current": "3-1-organizimi-i-spitaleve"
+      },
+      "summary": "Organizimi i brendshëm – Në qendër të organizimit dhe funksionimit të spitalit është interesi i të sëmurit.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-3"
+      },
+      "order": 1,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-6e42826911",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Organizimi i brendshëm – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Në qendër të organizimit dhe funksionimit të spitalit është interesi i të sëmurit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-50dea9b009",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mbështetja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Shërbimet teknike dhe administrative i mundësojnë pjesës profesionale të kryejë punën."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-69595d6731",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Tri pjesët në terminologjinë e librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Pjesa dinamike, pjesa stacionare dhe pjesa teknike-administrative. Dy të parat i takojnë pjesës profesionale medicinale."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d595dfa3f7",
+          "title": "Organizimi i brendshëm",
+          "front": "Çfarë përfshin “Organizimi i brendshëm” në temën “organizimi i spitaleve”?",
+          "back": "Në qendër të organizimit dhe funksionimit të spitalit është interesi i të sëmurit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-03e721097e",
+          "title": "Mbështetja",
+          "front": "Çfarë duhet të mbash mend për “Mbështetja” në temën “organizimi i spitaleve”?",
+          "back": "Shërbimet teknike dhe administrative i mundësojnë pjesës profesionale të kryejë punën.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-cd18502074",
+          "title": "Tri pjesët në terminologjinë e librit",
+          "front": "Cilat janë tri pjesët në terminologjinë e librit në temën “organizimi i spitaleve”?",
+          "back": "Pjesa dinamike, pjesa stacionare dhe pjesa teknike-administrative. Dy të parat i takojnë pjesës profesionale medicinale.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-3-1-1",
+      "title": "3.1.1 Pjesa dinamike e spitalit",
+      "slug": {
+        "_type": "slug",
+        "current": "3-1-1-pjesa-dinamike-e-spitalit"
+      },
+      "summary": "Roli sipas librit – “Pjesa dinamike e spitalit u shërben kryesisht pacientëve që mjekohen në ambulancën dhe për këtë qëllim vendoset në pjesën e parterit ashtu që të mos ketë komunikime me pjesët e tjera të spitalit.” (f. 47)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-3"
+      },
+      "order": 2,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-64fab748ca",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli sipas librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Pjesa dinamike e spitalit u shërben kryesisht pacientëve që mjekohen në ambulancën dhe për këtë qëllim vendoset në pjesën e parterit ashtu që të mos ketë komunikime me pjesët e tjera të spitalit.” (f. 47)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-2f4814b1b8",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Njësitë e pjesës dinamike – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Zyra e pranimit, ambulanca poliklinike me shërbime specialistike, diagnostika me laboratorin e kabinetin e rëntgenit dhe dokumentacioni medicinal."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c0eb0a216f",
+          "title": "Roli sipas librit",
+          "front": "Si përshkruhet “Roli sipas librit”?",
+          "back": "“Pjesa dinamike e spitalit u shërben kryesisht pacientëve që mjekohen në ambulancën dhe për këtë qëllim vendoset në pjesën e parterit ashtu që të mos ketë komunikime me pjesët e tjera të spitalit.” (f. 47)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8aaa3faba2",
+          "title": "Njësitë e pjesës dinamike",
+          "front": "Cilat janë njësitë e pjesës dinamike në temën “pjesa dinamike e spitalit”?",
+          "back": "Zyra e pranimit, ambulanca poliklinike me shërbime specialistike, diagnostika me laboratorin e kabinetin e rëntgenit dhe dokumentacioni medicinal.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.1"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-3-1-2",
+      "title": "3.1.2 Pjesa stacionare e spitalit",
+      "slug": {
+        "_type": "slug",
+        "current": "3-1-2-pjesa-stacionare-e-spitalit"
+      },
+      "summary": "Përkufizimi – “Pjesa stacionare e spitalit - është pjesa më e madhe në kuadër të spitalit, e cila shërben për mjekimin stacionar (shtrirjen apo hospitalizimin e të sëmurëve)” (f. 49)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-3"
+      },
+      "order": 3,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-9f79e71a0c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Pjesa stacionare e spitalit - është pjesa më e madhe në kuadër të spitalit, e cila shërben për mjekimin stacionar (shtrirjen apo hospitalizimin e të sëmurëve)” (f. 49)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-b8a68e012f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Repartet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Sëmundjet e brendshme, fëmijët, gjinekologjia e akusheria, kirurgjia, traumatologjia, ortopedia dhe reparti infektiv."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a19fa9b9ac",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Si caktohen kapacitetet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Numri e lloji i reparteve varen nga popullata, sëmundjet, personeli, teknologjia dhe mundësitë financiare."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f42780f0d0",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Ambulanca e spitalit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "“Është hapësirë e pjesës stacionare të spitalit dhe ka funksionin e kontrollimeve shëndetësore të të sëmurëve të shtrirë në spital.” (f. 49)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-b7898c940d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Pajisja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Ndryshon sipas veprimtarisë së repartit. Libri dallon pajisjet e ambulancës kirurgjike nga ato të repartit internist."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-171d6ecb93",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Reparti i intervencave medicinale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Kryen ndërhyrje mjekësore dhe infermierore dhe ka pajisjet për ndihmë urgjente."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-54d29afbb0",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Funksionet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Përgatitja e pacientëve, procedurat diagnostike e medicinale-teknike, ndihma urgjente dhe reanimimi."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-928f53901d",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet pjesa stacionare e spitalit?",
+          "back": "“Pjesa stacionare e spitalit - është pjesa më e madhe në kuadër të spitalit, e cila shërben për mjekimin stacionar (shtrirjen apo hospitalizimin e të sëmurëve)” (f. 49)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-aab75f4720",
+          "title": "Repartet",
+          "front": "Cilat janë repartet në temën “pjesa stacionare e spitalit”?",
+          "back": "Sëmundjet e brendshme, fëmijët, gjinekologjia e akusheria, kirurgjia, traumatologjia, ortopedia dhe reparti infektiv.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c917f9471f",
+          "title": "Si caktohen kapacitetet",
+          "front": "Si caktohen kapacitetet?",
+          "back": "Numri e lloji i reparteve varen nga popullata, sëmundjet, personeli, teknologjia dhe mundësitë financiare.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.2"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-83bba960e4",
+          "title": "Ambulanca e spitalit",
+          "front": "Çfarë duhet të mbash mend për “Ambulanca e spitalit” në temën “pjesa stacionare e spitalit”?",
+          "back": "“Është hapësirë e pjesës stacionare të spitalit dhe ka funksionin e kontrollimeve shëndetësore të të sëmurëve të shtrirë në spital.” (f. 49)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.2"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c50f361dc5",
+          "title": "Reparti i intervencave medicinale",
+          "front": "Çfarë duhet të mbash mend për “Reparti i intervencave medicinale” në temën “pjesa stacionare e spitalit”?",
+          "back": "Kryen ndërhyrje mjekësore dhe infermierore dhe ka pajisjet për ndihmë urgjente.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.1.2"
+          ],
+          "order": 5,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-3-2",
+      "title": "3.2 Organizimi i punës në spital",
+      "slug": {
+        "_type": "slug",
+        "current": "3-2-organizimi-i-punes-ne-spital"
+      },
+      "summary": "Përgatitja e punës – Kontrollohen materialet, pajisjet dhe afatet e përdorimit. Pacienti informohet dhe përgatitet për procedurën.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-3"
+      },
+      "order": 4,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-abd5c589f7",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përgatitja e punës – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Kontrollohen materialet, pajisjet dhe afatet e përdorimit. Pacienti informohet dhe përgatitet për procedurën."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-923b5badd3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përgatitja e pacientit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Verifikohet dokumentacioni, pacienti vendoset në dhomën e caktuar dhe merr shpjegime për procedurën dhe qëndrimin në repart."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-ecaecc37cd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përgatitja e infermieres – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Përgatitja përfshin uniformën, higjienën e duarve, gatishmërinë për detyrat dhe përgjegjësinë profesionale."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-fe27f213ce",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përgatitja personale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Libri përmend rregullimin e uniformës, pamjes dhe duarve, si dhe gatishmërinë psikike për detyrat e përditshme."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5d6cdd5a02",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Laboratori i spitalit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Përpunon mostrat dhe siguron të dhëna që ndihmojnë diagnostikimin, mjekimin dhe përcjelljen e pacientëve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-2f7f598837",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Fushat dhe evidenca – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Libri përmend biokiminë medicinale, patologjinë dhe mikrobiologjinë. Evidenca lidh repartin e spitalit, zyrën e pranimit dhe protokollin laboratorik."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5e0a2bbc02",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Rëntgen kabineti – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Kryen ekzaminime radiologjike në hapësira të përshtatura për aparaturën."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-90c7de5418",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Hapësirat – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "Përfshin aparaturën e rëntgenit, hapësirat e ekzaminimit dhe kthinat ndihmëse për pacientët e materialet."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-222f37f9c9",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kabinetet speciale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "Kryejnë shërbime të specializuara, si transfuzioni i gjakut dhe ekzaminime të veçanta diagnostike."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-38e5bd0c77",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-208d3106d3",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembuj – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4f96d7010c",
+              "marks": [],
+              "text": "Libri përmend transfuzionin, elektrokardiografinë, ultrasonografinë dhe terapi fizikale me rehabilitim."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-cb2311c412",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-c55ada1818",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kabineti i terapisë fizikale dhe rehabilitimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-29e53134f0",
+              "marks": [],
+              "text": "Ndihmon rikthimin e aftësive me terapi fizikale dhe rehabilitim sipas gjendjes së të sëmurit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5c228d0d62",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-5807efefb1",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vendndodhja e kujdesit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-88b5ee997c",
+              "marks": [],
+              "text": "Kur gjendja nuk lejon përdorimin e hapësirës së rehabilitimit, libri përmend se kujdesi mund të ofrohet edhe pranë shtratit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-02ac562e6d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-6597d4a255",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kabinetet për EKG, EMG, EEG, ECHO – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-1d5f6effb7",
+              "marks": [],
+              "text": "Kryejnë ekzaminime të specializuara. EKG-ja regjistron aktivitetin elektrik të zemrës, EMG-ja atë të muskujve, EEG-ja atë të trurit, ndërsa ECHO përdor ultratinguj."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3a61c509d9",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-aab7eee76c",
+              "marks": [
+                "strong"
+              ],
+              "text": "Barnatorja e spitalit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-1f83b8d50a",
+              "marks": [],
+              "text": "“Është njësi themelore e secilit spital dhe ka për detyrë që të bëjë furnizimin, shpërndarjen dhe ruajtjen e medikamenteve, materialit sanitar dhe pajisjes medicinale.” (f. 54)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-183090e0cc",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-8d955bbdd5",
+              "marks": [
+                "strong"
+              ],
+              "text": "Furnizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-a4875f2dc0",
+              "marks": [],
+              "text": "Sasia e materialit dhe e barnave varet nga kërkesat e reparteve, ambulancave specialistike dhe kabineteve të veçanta."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-7ded101242",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-cdf5d93602",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kuzhina qendrore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3142da10ec",
+              "marks": [],
+              "text": "Përgatit dhe shpërndan racionet sipas dietës së përcaktuar për pacientin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-6fe0c6938b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-618c15e736",
+              "marks": [
+                "strong"
+              ],
+              "text": "Organizimi i ushqimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9a63afc5fb",
+              "marks": [],
+              "text": "Kuzhina qendrore përgatit dietat e përcaktuara për pacientët. Kuzhina e repartit ndihmon në shpërndarjen dhe shërbimin e racioneve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-fcb584afc7",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-d4215b33d3",
+              "marks": [
+                "strong"
+              ],
+              "text": "Salla e ngrënies – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d7b1936081",
+              "marks": [],
+              "text": "“Është pjesë e çdo reparti në spital, ku organizohet ushqimi i të sëmurëve.” (f. 57)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-88e278e35c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-1a0a07181d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Higjiena – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-39c8f030ca",
+              "marks": [],
+              "text": "Afërsia me kuzhinën lehtëson shpërndarjen. Organizimi i ngrënies në këtë hapësirë lehtëson pastrimin dhe kufizon mbetjet ushqimore në dhoma."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5aee57c708",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-a288c8aeb8",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dhoma e mjekut – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-ca052948cb",
+              "marks": [],
+              "text": "Përdoret për konsultime, dokumentacion dhe punën profesionale të mjekut."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-62eec5f401",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-917f5cb09f",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dokumentacioni – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-77e66f9112",
+              "marks": [],
+              "text": "Libri përmend historinë e të sëmurit, epikrizën dhe fletëlëshimin, krahas konsultimeve dhe punës profesionale."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-33bac8404a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-03af92cb75",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dhoma e motrës kryesore – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-2f7b9576cd",
+              "marks": [],
+              "text": "“Është hapësirë, e cila i shërben motrës kryesore të repartit për të udhëhequr pjesën administrative të organizimit të punës në repart, ndërsa pas orarit të punës dhe gjatë natës ajo është dhoma e motrës kujdestare.” (f. 57)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-62cdf6b2da",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-02aa18d982",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dhoma e punës e motrës medicinale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-76640a856e",
+              "marks": [],
+              "text": "Përdoret për përgatitjen e materialit dhe kryerjen e procedurave."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9516c197d1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-2511305865",
+              "marks": [
+                "strong"
+              ],
+              "text": "Pajisjet dhe ndarja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9704b96563",
+              "marks": [],
+              "text": "Ka materiale për përgatitjen e procedurave, dollapë për barna dhe mjete për matje e kujdes. Pjesa e pastër ndahet nga pjesa e papastër."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-8a36f86cb2",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-624981c73c",
+              "marks": [
+                "strong"
+              ],
+              "text": "Hapësirat për qëndrimin ditor, pushimin dhe argëtimin e të sëmurëve të hospitalizuar – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-656f262eeb",
+              "marks": [],
+              "text": "Këto hapësira u mundësojnë pacientëve të pushojnë, të argëtohen dhe të kenë kontakte shoqërore gjatë qëndrimit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-d8223dc7a0",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-b4ab754a2d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli për pacientin – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-af01b69569",
+              "marks": [],
+              "text": "Pushimi dhe veprimtaritë e përshtatura ndihmojnë në përshtatjen me ambientin e spitalit dhe në zvogëlimin e ndjenjës së vetmisë."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f5fc9a3e40",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-d7dc38c90d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Biblioteka – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-1b31a7e900",
+              "marks": [],
+              "text": "Ofron lexim për pacientët dhe literaturë profesionale për personelin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e5c5b0bda4",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-02fd91223e",
+              "marks": [
+                "strong"
+              ],
+              "text": "Materialet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-c1b59c696d",
+              "marks": [],
+              "text": "Libra, broshura, gazeta dhe revista për pacientët, si edhe literaturë profesionale për personelin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5d7e384f2a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-a93081a355",
+              "marks": [
+                "strong"
+              ],
+              "text": "Nyjat sanitare me WC – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-ef9ebf2355",
+              "marks": [],
+              "text": "Mundësojnë higjienën personale dhe mirëmbahen për të kufizuar përhapjen e infeksioneve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-031b6b5fef",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-43ac444010",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përbërja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-e2d29b7500",
+              "marks": [],
+              "text": "Libri përmend lavabon, banjën me dush, ujin e ngrohtë e të ftohtë dhe ajrosjen."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c00f28bc51",
+          "title": "Përgatitja e punës",
+          "front": "Çfarë përfshin “Përgatitja e punës” në temën “organizimi i punës në spital”?",
+          "back": "Kontrollohen materialet, pajisjet dhe afatet e përdorimit. Pacienti informohet dhe përgatitet për procedurën.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ff4ed085bc",
+          "title": "Përgatitja e pacientit",
+          "front": "Çfarë përfshin “Përgatitja e pacientit” në temën “organizimi i punës në spital”?",
+          "back": "Verifikohet dokumentacioni, pacienti vendoset në dhomën e caktuar dhe merr shpjegime për procedurën dhe qëndrimin në repart.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d4313b10ff",
+          "title": "Përgatitja e infermieres",
+          "front": "Çfarë përfshin “Përgatitja e infermieres” në temën “organizimi i punës në spital”?",
+          "back": "Përgatitja përfshin uniformën, higjienën e duarve, gatishmërinë për detyrat dhe përgjegjësinë profesionale.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-5ce723eff6",
+          "title": "Përgatitja personale",
+          "front": "Çfarë përfshin “Përgatitja personale” në temën “organizimi i punës në spital”?",
+          "back": "Libri përmend rregullimin e uniformës, pamjes dhe duarve, si dhe gatishmërinë psikike për detyrat e përditshme.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a9b8c7b2d6",
+          "title": "Laboratori i spitalit",
+          "front": "Çfarë duhet të mbash mend për “Laboratori i spitalit” në temën “organizimi i punës në spital”?",
+          "back": "Përpunon mostrat dhe siguron të dhëna që ndihmojnë diagnostikimin, mjekimin dhe përcjelljen e pacientëve.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 5,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-092f33109f",
+          "title": "Rëntgen kabineti",
+          "front": "Çfarë duhet të mbash mend për “Rëntgen kabineti” në temën “organizimi i punës në spital”?",
+          "back": "Kryen ekzaminime radiologjike në hapësira të përshtatura për aparaturën.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 6,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a7c287e5bb",
+          "title": "Kabinetet speciale",
+          "front": "Çfarë duhet të mbash mend për “Kabinetet speciale” në temën “organizimi i punës në spital”?",
+          "back": "Kryejnë shërbime të specializuara, si transfuzioni i gjakut dhe ekzaminime të veçanta diagnostike.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 7,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-9bfc50888b",
+          "title": "Kabineti i terapisë fizikale dhe rehabilitimit",
+          "front": "Çfarë duhet të mbash mend për “Kabineti i terapisë fizikale dhe rehabilitimit” në temën “organizimi i punës në spital”?",
+          "back": "Ndihmon rikthimin e aftësive me terapi fizikale dhe rehabilitim sipas gjendjes së të sëmurit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 8,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-25531e2787",
+          "title": "Kabinetet për EKG, EMG, EEG, ECHO",
+          "front": "Çfarë duhet të mbash mend për “Kabinetet për EKG, EMG, EEG, ECHO” në temën “organizimi i punës në spital”?",
+          "back": "Kryejnë ekzaminime të specializuara. EKG-ja regjistron aktivitetin elektrik të zemrës, EMG-ja atë të muskujve, EEG-ja atë të trurit, ndërsa ECHO përdor ultratinguj.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 9,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-bda65bf5f0",
+          "title": "Barnatorja e spitalit",
+          "front": "Çfarë është / çfarë nënkupton “Barnatorja e spitalit”?",
+          "back": "“Është njësi themelore e secilit spital dhe ka për detyrë që të bëjë furnizimin, shpërndarjen dhe ruajtjen e medikamenteve, materialit sanitar dhe pajisjes medicinale.” (f. 54)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 10,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8b081d1927",
+          "title": "Kuzhina qendrore",
+          "front": "Çfarë duhet të mbash mend për “Kuzhina qendrore” në temën “organizimi i punës në spital”?",
+          "back": "Përgatit dhe shpërndan racionet sipas dietës së përcaktuar për pacientin.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 11,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-b18b05d4d5",
+          "title": "Salla e ngrënies",
+          "front": "Çfarë duhet të mbash mend për “Salla e ngrënies” në temën “organizimi i punës në spital”?",
+          "back": "“Është pjesë e çdo reparti në spital, ku organizohet ushqimi i të sëmurëve.” (f. 57)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 12,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-0ace659cfc",
+          "title": "Dhoma e mjekut",
+          "front": "Çfarë duhet të mbash mend për “Dhoma e mjekut” në temën “organizimi i punës në spital”?",
+          "back": "Përdoret për konsultime, dokumentacion dhe punën profesionale të mjekut.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 13,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c581f2e4f9",
+          "title": "Dhoma e motrës kryesore",
+          "front": "Çfarë duhet të mbash mend për “Dhoma e motrës kryesore” në temën “organizimi i punës në spital”?",
+          "back": "“Është hapësirë, e cila i shërben motrës kryesore të repartit për të udhëhequr pjesën administrative të organizimit të punës në repart, ndërsa pas orarit të punës dhe gjatë natës ajo është dhoma e motrës kujdestare.” (f. 57)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 14,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8716d17f7d",
+          "title": "Dhoma e punës e motrës medicinale",
+          "front": "Çfarë duhet të mbash mend për “Dhoma e punës e motrës medicinale” në temën “organizimi i punës në spital”?",
+          "back": "Përdoret për përgatitjen e materialit dhe kryerjen e procedurave.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 15,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-e350bc38d3",
+          "title": "Hapësirat për qëndrimin ditor, pushimin dhe argëtimin e të sëmurëve të hospitalizuar",
+          "front": "Cilat janë hapësirat për qëndrimin ditor, pushimin dhe argëtimin e të sëmurëve të hospitalizuar në temën “organizimi i punës në spital”?",
+          "back": "Këto hapësira u mundësojnë pacientëve të pushojnë, të argëtohen dhe të kenë kontakte shoqërore gjatë qëndrimit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 16,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a8f8bfa74c",
+          "title": "Biblioteka",
+          "front": "Çfarë duhet të mbash mend për “Biblioteka” në temën “organizimi i punës në spital”?",
+          "back": "Ofron lexim për pacientët dhe literaturë profesionale për personelin.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 17,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-4ebda4b4a7",
+          "title": "Nyjat sanitare me WC",
+          "front": "Çfarë duhet të mbash mend për “Nyjat sanitare me WC” në temën “organizimi i punës në spital”?",
+          "back": "Mundësojnë higjienën personale dhe mirëmbahen për të kufizuar përhapjen e infeksioneve.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2"
+          ],
+          "order": 18,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-3-2-1",
+      "title": "3.2.1 Njësitë ndihmëse teknike",
+      "slug": {
+        "_type": "slug",
+        "current": "3-2-1-njesite-ndihmese-teknike"
+      },
+      "summary": "Roli – Mbështesin punën e përditshme të reparteve me furnizim, pastrim, shërbime teknike dhe komunikim.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-3"
+      },
+      "order": 5,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-727f5dc4c5",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Mbështesin punën e përditshme të reparteve me furnizim, pastrim, shërbime teknike dhe komunikim."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-ab6f5c3408",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Depoja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Ruan dhe shpërndan materiale sipas kërkesave të reparteve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-25eeee0567",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë ruhet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Materialet e higjienës, dezinfektuesit, detergjentet, çarçafët, ndërresat dhe materialet e zyrës."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-dfd59828b1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Rrobalarësja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Grumbullon, lan dhe shpërndan tekstilet. Rrobat e ndotura mbahen veç nga ato të pastra."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-8a5d031677",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Rrjedha e punës – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Mbledhja e rrobave të përdorura, bartja, larja dhe shpërndarja e rrobave të pastra në reparte."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c52d2fe037",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Prosektura – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Kryen obduksionin për të sqaruar shkakun e vdekjes dhe rrjedhën e sëmundjes."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-263c6e3f45",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Rëndësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Libri dallon rëndësinë medicinale, deontologjike dhe mjekoligjore. Obduksioni ndihmon në vlerësimin e shkakut të vdekjes dhe ecurisë së sëmundjes."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-dcd86491fd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shërbimi i komunikimit dhe lidhjeve – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "“Me fjalën komunikim në spital kuptojmë lëvizjen e informatave brenda spitalit në mes të shërbimit mjekësor dhe pacientëve, punëtorëve shëndetësorë dhe pacientëve në mes veti.” (f. 61)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a5d3d54e5a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dy drejtimet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "Komunikimi i brendshëm lidh pacientët, personelin dhe shërbimet. Ai i jashtëm mundëson kontaktin me kolegët, familjarët dhe personat jashtë spitalit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-6b7e77231a",
+          "title": "Roli",
+          "front": "Çfarë përfshin “Roli” në temën “njësitë ndihmëse teknike”?",
+          "back": "Mbështesin punën e përditshme të reparteve me furnizim, pastrim, shërbime teknike dhe komunikim.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-3274ae23ad",
+          "title": "Depoja",
+          "front": "Çfarë duhet të mbash mend për “Depoja” në temën “njësitë ndihmëse teknike”?",
+          "back": "Ruan dhe shpërndan materiale sipas kërkesave të reparteve.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-05d3e4eb41",
+          "title": "Çfarë ruhet",
+          "front": "Çfarë ruhet?",
+          "back": "Materialet e higjienës, dezinfektuesit, detergjentet, çarçafët, ndërresat dhe materialet e zyrës.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-967c0d3d23",
+          "title": "Rrobalarësja",
+          "front": "Çfarë duhet të mbash mend për “Rrobalarësja” në temën “njësitë ndihmëse teknike”?",
+          "back": "Grumbullon, lan dhe shpërndan tekstilet. Rrobat e ndotura mbahen veç nga ato të pastra.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c9068f83c0",
+          "title": "Prosektura",
+          "front": "Çfarë duhet të mbash mend për “Prosektura” në temën “njësitë ndihmëse teknike”?",
+          "back": "Kryen obduksionin për të sqaruar shkakun e vdekjes dhe rrjedhën e sëmundjes.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 5,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-2e11ecbdc5",
+          "title": "Shërbimi i komunikimit dhe lidhjeve",
+          "front": "Çfarë duhet të mbash mend për “Shërbimi i komunikimit dhe lidhjeve” në temën “njësitë ndihmëse teknike”?",
+          "back": "“Me fjalën komunikim në spital kuptojmë lëvizjen e informatave brenda spitalit në mes të shërbimit mjekësor dhe pacientëve, punëtorëve shëndetësorë dhe pacientëve në mes veti.” (f. 61)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-3",
+            "tema-3.2.1"
+          ],
+          "order": 6,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}
