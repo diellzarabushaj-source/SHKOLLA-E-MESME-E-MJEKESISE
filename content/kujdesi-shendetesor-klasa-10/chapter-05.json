@@ -1,0 +1,152 @@
+{
+  "chapter": {
+    "_id": "kujdesi-shendetesor-10-ch-5",
+    "title": "5. DHOMA E TË SËMURIT DHE VEÇORITË THEMELORE",
+    "slug": {
+      "_type": "slug",
+      "current": "5-dhoma-e-te-semurit-dhe-vecorite-themelore"
+    },
+    "description": "Materiali mësimor për kapitullin 5, sipas PDF-së së dhënë (faqet përkatëse të librit janë shënuar në mësime).",
+    "subject": {
+      "_type": "reference",
+      "_ref": "kujdesi-shendetesor-10"
+    },
+    "order": 5,
+    "isActive": true
+  },
+  "lessons": [
+    {
+      "_id": "kujdesi-shendetesor-10-les-5",
+      "title": "5. DHOMA E TË SËMURIT DHE VEÇORITË THEMELORE",
+      "slug": {
+        "_type": "slug",
+        "current": "5-dhoma-e-te-semurit-dhe-vecorite-themelore"
+      },
+      "summary": "Përkufizimi – “Dhoma e të sëmurit është lokal ku njeriu i sëmurë kalon një kohë më të gjatë, shpesh edhe tërë kohën e qëndrimit të tij në spital.” (f. 77)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-5"
+      },
+      "order": 1,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-de10324a73",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përkufizimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Dhoma e të sëmurit është lokal ku njeriu i sëmurë kalon një kohë më të gjatë, shpesh edhe tërë kohën e qëndrimit të tij në spital.” (f. 77)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9d545ca39e",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli për personelin dhe nxënësit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Dhoma është vendi ku infermierja kryen kujdesin dhe ku nxënësit zbatojnë në praktikë njohuritë teorike."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-81af09a384",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli për pacientin – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Një dhomë e këndshme dhe komode ndihmon gjendjen psikike. Libri e përshkruan dhomën si pjesë përbërëse të kujdesit dhe të shërimit"
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-2e12b9e896",
+          "title": "Përkufizimi",
+          "front": "Si përkufizohet dhoma e të sëmurit dhe veçoritë themelore?",
+          "back": "“Dhoma e të sëmurit është lokal ku njeriu i sëmurë kalon një kohë më të gjatë, shpesh edhe tërë kohën e qëndrimit të tij në spital.” (f. 77)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-5",
+            "tema-5"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-580b1ad0b7",
+          "title": "Roli për personelin dhe nxënësit",
+          "front": "Çfarë përfshin “Roli për personelin dhe nxënësit” në temën “dhoma e të sëmurit dhe veçoritë themelore”?",
+          "back": "Dhoma është vendi ku infermierja kryen kujdesin dhe ku nxënësit zbatojnë në praktikë njohuritë teorike.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-5",
+            "tema-5"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-08a9a6d2d4",
+          "title": "Roli për pacientin",
+          "front": "Çfarë përfshin “Roli për pacientin” në temën “dhoma e të sëmurit dhe veçoritë themelore”?",
+          "back": "Një dhomë e këndshme dhe komode ndihmon gjendjen psikike. Libri e përshkruan dhomën si pjesë përbërëse të kujdesit dhe të shërimit",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-5",
+            "tema-5"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}
