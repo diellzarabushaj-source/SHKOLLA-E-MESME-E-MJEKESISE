@@ -1,0 +1,2175 @@
+{
+  "chapter": {
+    "_id": "kujdesi-shendetesor-10-ch-4",
+    "title": "4. PRANIMI, VENDOSJA DHE LËSHIMI I TË SËMURIT",
+    "slug": {
+      "_type": "slug",
+      "current": "4-pranimi-vendosja-dhe-leshimi-i-te-semurit"
+    },
+    "description": "Materiali mësimor për kapitullin 4, sipas PDF-së së dhënë (faqet përkatëse të librit janë shënuar në mësime).",
+    "subject": {
+      "_type": "reference",
+      "_ref": "kujdesi-shendetesor-10"
+    },
+    "order": 4,
+    "isActive": true
+  },
+  "lessons": [
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1",
+      "title": "4.1 PRANIMI I TË SËMURIT NË SPITAL",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-pranimi-i-te-semurit-ne-spital"
+      },
+      "summary": "Kontakti i parë – Pritja, komunikimi i qartë dhe një ambient i rregullt ndihmojnë pacientin të ndihet i sigurt.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 1,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-be0afebff9",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kontakti i parë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Pritja, komunikimi i qartë dhe një ambient i rregullt ndihmojnë pacientin të ndihet i sigurt."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f0070bf392",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Në pranim – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Mblidhen të dhënat dhe pacienti orientohet drejt vlerësimit e repartit përkatës."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-d7ec836d32",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kontakti me repartin – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Kontakti i parë me personelin e ambulancës-poliklinikës, shpjegimi i procedurave dhe qëndrimi miqësor ndihmojnë në krijimin e besimit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-b71adce34e",
+          "title": "Kontakti i parë",
+          "front": "Çfarë duhet të mbash mend për “Kontakti i parë” në temën “pranimi i të sëmurit në spital”?",
+          "back": "Pritja, komunikimi i qartë dhe një ambient i rregullt ndihmojnë pacientin të ndihet i sigurt.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-5bde1ff890",
+          "title": "Në pranim",
+          "front": "Çfarë duhet të mbash mend për “Në pranim” në temën “pranimi i të sëmurit në spital”?",
+          "back": "Mblidhen të dhënat dhe pacienti orientohet drejt vlerësimit e repartit përkatës.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-4e004949f0",
+          "title": "Kontakti me repartin",
+          "front": "Çfarë duhet të mbash mend për “Kontakti me repartin” në temën “pranimi i të sëmurit në spital”?",
+          "back": "Kontakti i parë me personelin e ambulancës-poliklinikës, shpjegimi i procedurave dhe qëndrimi miqësor ndihmojnë në krijimin e besimit.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1-1",
+      "title": "4.1.1 Dokumentacioni medicinal në institucionin stacionar",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-1-dokumentacioni-medicinal-ne-institucionin-stacionar"
+      },
+      "summary": "Dokumenti themelor – “Dokumenti themelor i institucionit stacionar shëndetësor është historiati, i cili evidencohet dhe përcillet për secilin të sëmurë veç e veç.” (f. 67)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 2,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-c743437a37",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dokumenti themelor – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Dokumenti themelor i institucionit stacionar shëndetësor është historiati, i cili evidencohet dhe përcillet për secilin të sëmurë veç e veç.” (f. 67)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0fa25269e3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përdorimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Dokumentacioni ndihmon përcjelljen e shërbimit, vlerësimin e mjekimit dhe analizën e sëmundshmërisë e vdekshmërisë."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-864b635c1d",
+          "title": "Dokumenti themelor",
+          "front": "Cili është dokumenti themelor i institucionit stacionar?",
+          "back": "“Dokumenti themelor i institucionit stacionar shëndetësor është historiati, i cili evidencohet dhe përcillet për secilin të sëmurë veç e veç.” (f. 67)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-bfaa377fa7",
+          "title": "Përdorimi",
+          "front": "Çfarë duhet të mbash mend për “Përdorimi” në temën “dokumentacioni medicinal në institucionin stacionar”?",
+          "back": "Dokumentacioni ndihmon përcjelljen e shërbimit, vlerësimin e mjekimit dhe analizën e sëmundshmërisë e vdekshmërisë.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1"
+          ],
+          "order": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1-1-1",
+      "title": "4.1.1.1 Historiati i sëmundjes",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-1-1-historiati-i-semundjes"
+      },
+      "summary": "Përmbajtja – Anamneza, kontrolli objektiv, ekzaminimet dhe të dhënat për sëmundjet e mëparshme.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 3,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-92402d10d3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përmbajtja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Anamneza, kontrolli objektiv, ekzaminimet dhe të dhënat për sëmundjet e mëparshme."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-ac32dd109b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Anamneza – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Të dhënat personale dhe familjare."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-dc082a056d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kontrolli dhe ekzaminimet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Gjendja e përgjithshme, statusi lokal, diagnoza e punës dhe analizat përkatëse."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a1ad55129b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 3,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembuj – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Analizat laboratorike, radiologjia dhe endoskopia."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-4bce0a3aa3",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Sëmundjet e mëparshme – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Shënohen kohëzgjatja dhe rezultati i trajtimit, lloji e data e operacionit dhe rrjedha pas operacionit, kur ka të dhëna të tilla."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c1e084407a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Decursus morbi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "“rrjedhja e sëmundjes dhe dhënia e terapisë.” (f. 67)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3dd2eb2c7b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Gjendja në lëshim – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Shënohen diagnoza përfundimtare dhe gjendja e të sëmurit në momentin e lëshimit nga institucioni stacionar."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-8e92b8a781",
+          "title": "Përmbajtja",
+          "front": "Çfarë përfshin “Përmbajtja” në temën “historiati i sëmundjes”?",
+          "back": "Anamneza, kontrolli objektiv, ekzaminimet dhe të dhënat për sëmundjet e mëparshme.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-b698795e04",
+          "title": "Anamneza",
+          "front": "Çfarë duhet të mbash mend për “Anamneza” në temën “historiati i sëmundjes”?",
+          "back": "Të dhënat personale dhe familjare.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-b2dc1dcd40",
+          "title": "Kontrolli dhe ekzaminimet",
+          "front": "Çfarë duhet të mbash mend për “Kontrolli dhe ekzaminimet” në temën “historiati i sëmundjes”?",
+          "back": "Gjendja e përgjithshme, statusi lokal, diagnoza e punës dhe analizat përkatëse.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-2e6a8f3195",
+          "title": "Sëmundjet e mëparshme",
+          "front": "Çfarë duhet të mbash mend për “Sëmundjet e mëparshme” në temën “historiati i sëmundjes”?",
+          "back": "Shënohen kohëzgjatja dhe rezultati i trajtimit, lloji e data e operacionit dhe rrjedha pas operacionit, kur ka të dhëna të tilla.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.1.1"
+          ],
+          "order": 4,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1-2",
+      "title": "4.1.2 Reparti i pranimit – diagnostika e spitalit",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-2-reparti-i-pranimit-diagnostika-e-spitalit"
+      },
+      "summary": "Roli – Bashkon pranimin, vlerësimin fillestar dhe përgatitjen e pacientit për vendosje në repart.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 4,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-786250d647",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Roli – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Bashkon pranimin, vlerësimin fillestar dhe përgatitjen e pacientit për vendosje në repart."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-c02ca25bbb",
+          "title": "Roli",
+          "front": "Çfarë përfshin “Roli” në temën “reparti i pranimit – diagnostika e spitalit”?",
+          "back": "Bashkon pranimin, vlerësimin fillestar dhe përgatitjen e pacientit për vendosje në repart.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2"
+          ],
+          "order": 1,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1-2-1",
+      "title": "4.1.2.1 Blloku i ambulancës – poliklinikës",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-2-1-blloku-i-ambulances-poliklinikes"
+      },
+      "summary": "Përbërja – Garderoba, pritja, bokset, ambulanca dhe hapësirat e përpunimit sanitar.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 5,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-844f98e928",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përbërja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Garderoba, pritja, bokset, ambulanca dhe hapësirat e përpunimit sanitar."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e45dcff6d8",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Udhëzimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Libri përshkruan ardhjen me dërgesë të mjekut ose me udhëzim nga institucioni shëndetësor dhe veçon rastet urgjente."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-de6c9688dd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Lokali për zhveshje (garderoba) – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Merr në ruajtje dhe identifikon sendet e pacientit ose të shoqëruesve gjatë kontrollit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a4eccd4ac1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Evidentimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Sendet dorëzohen, identifikohen me numër dhe kthehen pas kontrollit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-af8cac82c4",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Lokali për pritje – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "Ofron pritje të rregullt dhe materiale edukative."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e55c5515b1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Mjedisi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "Lokali mbahet i pastër dhe i rregullt. Udhëzimet, fotografitë dhe materialet për lexim shërbejnë për edukim shëndetësor."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c9611aa114",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Bokset speciale – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Mundësojnë zhveshjen me privatësi para ekzaminimit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-75e00be86b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-81146e9564",
+              "marks": [
+                "strong"
+              ],
+              "text": "Ambulanca – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-5bb93d312b",
+              "marks": [],
+              "text": "“Shërben për kontrollimin profesional të të sëmurëve.” (f. 69)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5fbf695384",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-da431131f6",
+              "marks": [
+                "strong"
+              ],
+              "text": "Takimi i parë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-26c240bf22",
+              "marks": [],
+              "text": "Pacienti takohet me motrën medicinale dhe mjekun. Ai dhe përcjellësit informohen për procedurat e pranimit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-3fcdc161e7",
+          "title": "Përbërja",
+          "front": "Çfarë duhet të mbash mend për “Përbërja” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "Garderoba, pritja, bokset, ambulanca dhe hapësirat e përpunimit sanitar.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-4901575307",
+          "title": "Udhëzimi",
+          "front": "Çfarë duhet të mbash mend për “Udhëzimi” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "Libri përshkruan ardhjen me dërgesë të mjekut ose me udhëzim nga institucioni shëndetësor dhe veçon rastet urgjente.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-0c1085d677",
+          "title": "Lokali për zhveshje (garderoba)",
+          "front": "Çfarë duhet të mbash mend për “Lokali për zhveshje (garderoba)” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "Merr në ruajtje dhe identifikon sendet e pacientit ose të shoqëruesve gjatë kontrollit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-13ae65ab56",
+          "title": "Lokali për pritje",
+          "front": "Çfarë duhet të mbash mend për “Lokali për pritje” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "Ofron pritje të rregullt dhe materiale edukative.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-6a09ae7afb",
+          "title": "Bokset speciale",
+          "front": "Çfarë duhet të mbash mend për “Bokset speciale” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "Mundësojnë zhveshjen me privatësi para ekzaminimit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 5,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-692a50b943",
+          "title": "Ambulanca",
+          "front": "Çfarë duhet të mbash mend për “Ambulanca” në temën “blloku i ambulancës – poliklinikës”?",
+          "back": "“Shërben për kontrollimin profesional të të sëmurëve.” (f. 69)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.1"
+          ],
+          "order": 6,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-1-2-2",
+      "title": "4.1.2.2 Reparti për përpunimin sanitar (higjienik)",
+      "slug": {
+        "_type": "slug",
+        "current": "4-1-2-2-reparti-per-perpunimin-sanitar-higjienik"
+      },
+      "summary": "Qëllimi – Përgatitja higjienike para vendosjes në repart, sipas gjendjes së pacientit.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 6,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-6c86b1b917",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Qëllimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Përgatitja higjienike para vendosjes në repart, sipas gjendjes së pacientit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-70608af61d",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Njësitë – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Pritja, zhveshja, larja dhe veshja me rroba të përshtatshme për repartin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-36b4c86eaa",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Lokali për pritje – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "“shërben për të sëmurët që të kalojnë kohën e tyre derisa të shkojnë në përpunimin sanitar.” (f. 70)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-0fa7f83b31",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përparësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Motra medicinale i ndan pacientët sipas gjendjes dhe u jep përparësi të sëmurëve rëndë."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a919874392",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-e1b7a4c1da",
+              "marks": [
+                "strong"
+              ],
+              "text": "Lokali për zhveshje – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-803d31c3d6",
+              "marks": [],
+              "text": "“shërben për zhveshjen e të sëmurit dhe dorëzimin e teshave, e prej këtu shkon në banjo.” (f. 70)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f95321f90e",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-fa99e3e57d",
+              "marks": [
+                "strong"
+              ],
+              "text": "Banja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4fbcc5ff4d",
+              "marks": [],
+              "text": "“Banjoja shërben për larjen e të sëmurëve, e cila është e furnizuar me mjete dhe instrumente të nevojshme.” (f. 70)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-dd0f45100a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-64d2adf084",
+              "marks": [
+                "strong"
+              ],
+              "text": "Pajisjet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3b2cdd015b",
+              "marks": [],
+              "text": "Libri përmend bokset me dusha dhe tryezën e mbuluar për larjen e të sëmurëve rëndë."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-2f0569f4c9",
+          "title": "Qëllimi",
+          "front": "Çfarë përfshin “Qëllimi” në temën “reparti për përpunimin sanitar (higjienik)”?",
+          "back": "Përgatitja higjienike para vendosjes në repart, sipas gjendjes së pacientit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-43c320247c",
+          "title": "Njësitë",
+          "front": "Cilat janë njësitë në temën “reparti për përpunimin sanitar (higjienik)”?",
+          "back": "Pritja, zhveshja, larja dhe veshja me rroba të përshtatshme për repartin.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-efe4fbe981",
+          "title": "Lokali për pritje",
+          "front": "Çfarë duhet të mbash mend për “Lokali për pritje” në temën “reparti për përpunimin sanitar (higjienik)”?",
+          "back": "“shërben për të sëmurët që të kalojnë kohën e tyre derisa të shkojnë në përpunimin sanitar.” (f. 70)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.2"
+          ],
+          "order": 3,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-df6e9ebd5b",
+          "title": "Lokali për zhveshje",
+          "front": "Çfarë duhet të mbash mend për “Lokali për zhveshje” në temën “reparti për përpunimin sanitar (higjienik)”?",
+          "back": "“shërben për zhveshjen e të sëmurit dhe dorëzimin e teshave, e prej këtu shkon në banjo.” (f. 70)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.2"
+          ],
+          "order": 4,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-59655ec536",
+          "title": "Banja",
+          "front": "Çfarë duhet të mbash mend për “Banja” në temën “reparti për përpunimin sanitar (higjienik)”?",
+          "back": "“Banjoja shërben për larjen e të sëmurëve, e cila është e furnizuar me mjete dhe instrumente të nevojshme.” (f. 70)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.1.2.2"
+          ],
+          "order": 5,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-2",
+      "title": "4.2 VENDOSJA (STREHIMI) E TË SËMURIT NË REPART",
+      "slug": {
+        "_type": "slug",
+        "current": "4-2-vendosja-strehimi-e-te-semurit-ne-repart"
+      },
+      "summary": "Vendosja – Vendosja organizohet sipas gjendjes, sëmundjes dhe gjinisë, siç e përshkruan libri.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 7,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-57ecebd5b7",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vendosja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Vendosja organizohet sipas gjendjes, sëmundjes dhe gjinisë, siç e përshkruan libri."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-571f51d2d8",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përshtatja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Mbështetja emocionale ndihmon pacientin të orientohet në mjedisin e ri. Te fëmijët përgatitja përshtatet me moshën."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-15ddce0d51",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dorëzimi në repart – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Motra e pranimit ia dorëzon pacientin motrës së repartit dhe i jep informatë të shkurtër për sëmundjen. Shtrati përgatitet sipas gjendjes."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-eddf4d47cd",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Orientimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Pacientit i shpjegohen rregullat, i tregohen hapësirat dhe, kur është e përshtatshme, njihet me të sëmurët e tjerë."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-9dd613a929",
+          "title": "Vendosja",
+          "front": "Çfarë përfshin “Vendosja” në temën “vendosja (strehimi) e të sëmurit në repart”?",
+          "back": "Vendosja organizohet sipas gjendjes, sëmundjes dhe gjinisë, siç e përshkruan libri.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ad0b7bb8f2",
+          "title": "Përshtatja",
+          "front": "Çfarë duhet të mbash mend për “Përshtatja” në temën “vendosja (strehimi) e të sëmurit në repart”?",
+          "back": "Mbështetja emocionale ndihmon pacientin të orientohet në mjedisin e ri. Te fëmijët përgatitja përshtatet me moshën.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-578ce616a0",
+          "title": "Dorëzimi në repart",
+          "front": "Çfarë duhet të mbash mend për “Dorëzimi në repart” në temën “vendosja (strehimi) e të sëmurit në repart”?",
+          "back": "Motra e pranimit ia dorëzon pacientin motrës së repartit dhe i jep informatë të shkurtër për sëmundjen. Shtrati përgatitet sipas gjendjes.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-2-1",
+      "title": "4.2.1 PRANIMI I TË SËMURIT NË GJENDJE TË RËNDË",
+      "slug": {
+        "_type": "slug",
+        "current": "4-2-1-pranimi-i-te-semurit-ne-gjendje-te-rende"
+      },
+      "summary": "Përparësia – Kujdesi urgjent vjen i pari. Procedurat rutinore të pranimit plotësohen kur e lejon gjendja.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 8,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-290acd511a",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Përparësia – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Kujdesi urgjent vjen i pari. Procedurat rutinore të pranimit plotësohen kur e lejon gjendja."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-1bbf44762c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembulli i librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Në rastin urgjent kirurgjik, pacienti dërgohet në repartin paraoperativ për përgatitjen e nevojshme. Procedurat higjienike plotësohen kur gjendja e lejon."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-a3288abba2",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Identifikimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Të dhënat e pacientit sigurohen gjatë pranimit. Kur ai nuk mund t’i japë, libri përmend marrjen e tyre nga përcjellësi."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d4ac89387a",
+          "title": "Përparësia",
+          "front": "Cili është prioriteti gjatë pranimit të pacientit?",
+          "back": "Kujdesi urgjent vjen i pari. Procedurat rutinore të pranimit plotësohen kur e lejon gjendja.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.1"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-e67aa4a527",
+          "title": "Shembulli i librit",
+          "front": "Çfarë duhet të mbash mend për “Shembulli i librit” në temën “pranimi i të sëmurit në gjendje të rëndë”?",
+          "back": "Në rastin urgjent kirurgjik, pacienti dërgohet në repartin paraoperativ për përgatitjen e nevojshme. Procedurat higjienike plotësohen kur gjendja e lejon.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.1"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-56a652aa60",
+          "title": "Identifikimi",
+          "front": "Çfarë duhet të mbash mend për “Identifikimi” në temën “pranimi i të sëmurit në gjendje të rëndë”?",
+          "back": "Të dhënat e pacientit sigurohen gjatë pranimit. Kur ai nuk mund t’i japë, libri përmend marrjen e tyre nga përcjellësi.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.1"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-2-2",
+      "title": "4.2.2 PRANIMI I TË SËMURIT NË GJENDJE TË PAVETËDIJSHME (I SËMURI KOMATOZ)",
+      "slug": {
+        "_type": "slug",
+        "current": "4-2-2-pranimi-i-te-semurit-ne-gjendje-te-pavetedijshme-i-semuri-komatoz"
+      },
+      "summary": "Koma sipas librit – “Koma shkakton çrregullime të rënda të vetëdijes, i sëmuri është në gjendje të pavetëdijshme të thellë dhe nuk reagon në kurrfarë ngacmimesh të jashtme.” (f. 72)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 9,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-1e046d094b",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Koma sipas librit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Koma shkakton çrregullime të rënda të vetëdijes, i sëmuri është në gjendje të pavetëdijshme të thellë dhe nuk reagon në kurrfarë ngacmimesh të jashtme.” (f. 72)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-12901aa983",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Në kujdes – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Libri thekson identifikimin, përcjelljen e shenjave jetësore dhe dokumentimin e gjendjes."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-ac972caa70",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë përcillet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Libri përmend vetëdijen, reagimin, reflekset, frymëmarrjen, pulsin dhe shtypjen e gjakut. Figura e faqes 72 ilustron identifikimin me byzylyk."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-6764649e97",
+          "title": "Koma sipas librit",
+          "front": "Si përshkruhet koma në material?",
+          "back": "“Koma shkakton çrregullime të rënda të vetëdijes, i sëmuri është në gjendje të pavetëdijshme të thellë dhe nuk reagon në kurrfarë ngacmimesh të jashtme.” (f. 72)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.2"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-0600e99d4d",
+          "title": "Në kujdes",
+          "front": "Çfarë duhet të mbash mend për “Në kujdes” në temën “pranimi i të sëmurit në gjendje të pavetëdijshme (i sëmuri komatoz)”?",
+          "back": "Libri thekson identifikimin, përcjelljen e shenjave jetësore dhe dokumentimin e gjendjes.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.2"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-5679ae74a1",
+          "title": "Çfarë përcillet",
+          "front": "Çfarë përcillet?",
+          "back": "Libri përmend vetëdijen, reagimin, reflekset, frymëmarrjen, pulsin dhe shtypjen e gjakut. Figura e faqes 72 ilustron identifikimin me byzylyk.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.2"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-2-3",
+      "title": "4.2.3 Rregullat shtëpiake të spitalit",
+      "slug": {
+        "_type": "slug",
+        "current": "4-2-3-rregullat-shtepiake-te-spitalit"
+      },
+      "summary": "Qëllimi – Rregullojnë jetën në repart dhe përcaktojnë të drejtat e përgjegjësitë e pacientëve dhe personelit.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 10,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-d6ea56c4d1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Qëllimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "Rregullojnë jetën në repart dhe përcaktojnë të drejtat e përgjegjësitë e pacientëve dhe personelit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-c57b58f380",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Shembuj – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Orari i vizitave, pushimit dhe ndërhyrjeve."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-5b528f0bc1",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Organizimi në repart – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Rregullat ndihmojnë që kujdesi të zhvillohet pa pengesa. Ato përfshijnë edhe kohën e pushimit, vizitave dhe punës së personelit."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-be627a9ad5",
+          "title": "Qëllimi",
+          "front": "Çfarë përfshin “Qëllimi” në temën “rregullat shtëpiake të spitalit”?",
+          "back": "Rregullojnë jetën në repart dhe përcaktojnë të drejtat e përgjegjësitë e pacientëve dhe personelit.",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.3"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d0e5842164",
+          "title": "Shembuj",
+          "front": "Cilat janë shembuj në temën “rregullat shtëpiake të spitalit”?",
+          "back": "Orari i vizitave, pushimit dhe ndërhyrjeve.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.3"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-5cee2ef22b",
+          "title": "Organizimi në repart",
+          "front": "Çfarë përfshin “Organizimi në repart” në temën “rregullat shtëpiake të spitalit”?",
+          "back": "Rregullat ndihmojnë që kujdesi të zhvillohet pa pengesa. Ato përfshijnë edhe kohën e pushimit, vizitave dhe punës së personelit.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.3"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-2-4",
+      "title": "4.2.4 Dorëzim-pranimi i shërbimit në repartin e të sëmurëve",
+      "slug": {
+        "_type": "slug",
+        "current": "4-2-4-dorezim-pranimi-i-sherbimit-ne-repartin-e-te-semureve"
+      },
+      "summary": "Si bëhet dorëzimi – “Dorëzim - pranimi i shërbimit bëhet në formë gojore dhe me shkrim.” (f. 74)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 11,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-19b9905741",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Si bëhet dorëzimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Dorëzim - pranimi i shërbimit bëhet në formë gojore dhe me shkrim.” (f. 74)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-2527edbad2",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kujdesi gjatë natës – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Vëzhgohen pacientët, shënohen ndryshimet dhe njoftohet personeli përgjegjës kur gjendja përkeqësohet."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-9a7596566f",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë dorëzohet – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Gjendja e përgjithshme e pacientit, terapia e caktuar, analizat që duhen bërë dhe procedurat ose detyrat që presin."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-f33e3e5953",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-0d70c7e3f7",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vlerësimi pranë shtratit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-9fdb081e01",
+              "marks": [],
+              "text": "Libri përshkruan dorëzimin në dhomën e të sëmurit, me vlerësim të gjendjes dhe higjienës personale."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-721dea8d6a",
+          "title": "Si bëhet dorëzimi",
+          "front": "Në çfarë formash bëhet dorëzim-pranimi i shërbimit?",
+          "back": "“Dorëzim - pranimi i shërbimit bëhet në formë gojore dhe me shkrim.” (f. 74)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.4"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-4ed2f0a7ed",
+          "title": "Kujdesi gjatë natës",
+          "front": "Çfarë duhet të mbash mend për “Kujdesi gjatë natës” në temën “dorëzim-pranimi i shërbimit në repartin e të sëmurëve”?",
+          "back": "Vëzhgohen pacientët, shënohen ndryshimet dhe njoftohet personeli përgjegjës kur gjendja përkeqësohet.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.4"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ac16f1168f",
+          "title": "Çfarë dorëzohet",
+          "front": "Çfarë dorëzohet?",
+          "back": "Gjendja e përgjithshme e pacientit, terapia e caktuar, analizat që duhen bërë dhe procedurat ose detyrat që presin.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.2.4"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-3",
+      "title": "4.3 TRANSFERIMI I TË SËMURIT NË REPARTIN TJETËR",
+      "slug": {
+        "_type": "slug",
+        "current": "4-3-transferimi-i-te-semurit-ne-repartin-tjeter"
+      },
+      "summary": "Kur bëhet transferimi – “Nëse gjatë kontrollimit të të sëmurit dhe caktimit të diagnozës së tij vërtetohet që i sëmuri duhet t'i nënshtrohet patjetër mjekimit nga një degë tjetër speciale të medicinës, atëherë ky transferohet në repartin ose spitalin përkatës.” (f. 75)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 12,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-9ad1002709",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Kur bëhet transferimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Nëse gjatë kontrollimit të të sëmurit dhe caktimit të diagnozës së tij vërtetohet që i sëmuri duhet t'i nënshtrohet patjetër mjekimit nga një degë tjetër speciale të medicinës, atëherë ky transferohet në repartin ose spitalin përkatës.” (f. 75)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-99befcac82",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Dokumentet që përmend libri – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Historia e sëmundjes, analizat, lista e temperaturës, imazhet e rëntgenit dhe shënimet operative e pas operacionit, sipas rastit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e7d3010aee",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Bashkërendimi – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Mjeku i repartit bisedon me repartin pritës. Pacientit i shpjegohet arsyeja e transferimit dhe i ofrohet mbështetje gjatë përshtatjes."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-d3bdef72ae",
+          "title": "Kur bëhet transferimi",
+          "front": "Kur bëhet transferimi?",
+          "back": "“Nëse gjatë kontrollimit të të sëmurit dhe caktimit të diagnozës së tij vërtetohet që i sëmuri duhet t'i nënshtrohet patjetër mjekimit nga një degë tjetër speciale të medicinës, atëherë ky transferohet në repartin ose spitalin përkatës.” (f. 75)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.3"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-6e02c89e1b",
+          "title": "Dokumentet që përmend libri",
+          "front": "Cilat janë dokumentet që përmend libri në temën “transferimi i të sëmurit në repartin tjetër”?",
+          "back": "Historia e sëmundjes, analizat, lista e temperaturës, imazhet e rëntgenit dhe shënimet operative e pas operacionit, sipas rastit.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.3"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-ce70a6952a",
+          "title": "Bashkërendimi",
+          "front": "Çfarë duhet të mbash mend për “Bashkërendimi” në temën “transferimi i të sëmurit në repartin tjetër”?",
+          "back": "Mjeku i repartit bisedon me repartin pritës. Pacientit i shpjegohet arsyeja e transferimit dhe i ofrohet mbështetje gjatë përshtatjes.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.3"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-4",
+      "title": "4.4 LËSHIMI I TË SËMURIT NGA SPITALI",
+      "slug": {
+        "_type": "slug",
+        "current": "4-4-leshimi-i-te-semurit-nga-spitali"
+      },
+      "summary": "Lista e lëshimit – “Lista e lëshimit do t'i shërbejë të sëmurit si dokument se është mjekuar në spital dhe për ta vazhduar mjekimin jashtë spitalit.” (f. 76)",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 13,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-f7828c4d81",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-efaee37740",
+              "marks": [
+                "strong"
+              ],
+              "text": "Lista e lëshimit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-3d4cf6a645",
+              "marks": [],
+              "text": "“Lista e lëshimit do t'i shërbejë të sëmurit si dokument se është mjekuar në spital dhe për ta vazhduar mjekimin jashtë spitalit.” (f. 76)"
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-3aba79abca",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Çfarë sqarojnë mjeku dhe infermierja – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Mënyrën e jetesës, ushqimin, aktivitetin, përdorimin e barnave, kontrollet dhe shenjat e përkeqësimit."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e6f26bcc5c",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-797cf10a93",
+              "marks": [
+                "strong"
+              ],
+              "text": "Vazhdimi jashtë spitalit – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-4b800d82e9",
+              "marks": [],
+              "text": "Libri përmend vazhdimin e kujdesit në shërbimet e komunitetit dhe rikthimin gradual në aktivitetet e zakonshme."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-b9d538c77d",
+          "title": "Lista e lëshimit",
+          "front": "Çfarë duhet të mbash mend për “Lista e lëshimit” në temën “lëshimi i të sëmurit nga spitali”?",
+          "back": "“Lista e lëshimit do t'i shërbejë të sëmurit si dokument se është mjekuar në spital dhe për ta vazhduar mjekimin jashtë spitalit.” (f. 76)",
+          "difficulty": "easy",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.4"
+          ],
+          "order": 1,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-a4f61e5d4d",
+          "title": "Çfarë sqarojnë mjeku dhe infermierja",
+          "front": "Çfarë sqarojnë mjeku dhe infermierja?",
+          "back": "Mënyrën e jetesës, ushqimin, aktivitetin, përdorimin e barnave, kontrollet dhe shenjat e përkeqësimit.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.4"
+          ],
+          "order": 2,
+          "isActive": true
+        },
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-5389d08af3",
+          "title": "Vazhdimi jashtë spitalit",
+          "front": "Çfarë duhet të mbash mend për “Vazhdimi jashtë spitalit” në temën “lëshimi i të sëmurit nga spitali”?",
+          "back": "Libri përmend vazhdimin e kujdesit në shërbimet e komunitetit dhe rikthimin gradual në aktivitetet e zakonshme.",
+          "difficulty": "medium",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.4"
+          ],
+          "order": 3,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "_id": "kujdesi-shendetesor-10-les-4-4-1",
+      "title": "4.4.1 Veprimi me rrobat e shtratit dhe ndërresat e të sëmurit",
+      "slug": {
+        "_type": "slug",
+        "current": "4-4-1-veprimi-me-rrobat-e-shtratit-dhe-nderresat-e-te-semurit"
+      },
+      "summary": "Ndërresat dërgohen në larje. Shtrati pastrohet, dezinfektohet dhe përgatitet për pacientin tjetër.",
+      "chapter": {
+        "_type": "reference",
+        "_ref": "kujdesi-shendetesor-10-ch-4"
+      },
+      "order": 14,
+      "isActive": true,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "bl-2a909c8492",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-d4cd1fcfc4",
+              "marks": [],
+              "text": "Ndërresat dërgohen në larje. Shtrati pastrohet, dezinfektohet dhe përgatitet për pacientin tjetër."
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "bl-e76a08d9ea",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 2,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "sp-92b083ca8a",
+              "marks": [
+                "strong"
+              ],
+              "text": "Tekstilet dhe shtrati – "
+            },
+            {
+              "_type": "span",
+              "_key": "sp-d19580fac8",
+              "marks": [],
+              "text": "Rrobat e shtratit dhe pizhamet dërgohen në larje. Libri përmend ajrosjen e dyshekëve dhe batanijeve, si dhe vendosjen e ndërresave të pastra."
+            }
+          ]
+        }
+      ],
+      "flashcards": [
+        {
+          "_type": "lessonFlashcard",
+          "_key": "fc-940da2378b",
+          "title": "Tekstilet dhe shtrati",
+          "front": "Çfarë duhet të mbash mend për “Tekstilet dhe shtrati” në temën “veprimi me rrobat e shtratit dhe ndërresat e të sëmurit”?",
+          "back": "Rrobat e shtratit dhe pizhamet dërgohen në larje. Libri përmend ajrosjen e dyshekëve dhe batanijeve, si dhe vendosjen e ndërresave të pastra.",
+          "difficulty": "hard",
+          "tags": [
+            "kapitulli-4",
+            "tema-4.4.1"
+          ],
+          "order": 1,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}
