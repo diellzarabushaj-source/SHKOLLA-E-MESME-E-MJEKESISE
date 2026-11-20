@@ -61,3 +61,19 @@
 }
 @media (max-width: 359px) { .card { gap: 12px; padding: 13px; } .preview { grid-template-columns: 76px minmax(0,1fr); gap: 12px; } .cover { width: 76px; height: 110px; } .copy h3 { font-size: 16px; } .download { min-width: 48px; } .download span { display: none; } }
 @media (prefers-reduced-motion: reduce) { .card, .actions a { transition: none; } .card:hover { translate: none; } .actions a:active { transform: none; } }
+
+/* Missing covers never leave an empty icon-only card. A generated image from
+   Sanity takes precedence; native first-page PDF preview is a temporary fallback. */
+.pdfDocumentFallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 34px 22px; text-align: center; color: var(--text); background: radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%), var(--panel); }
+.pdfDocumentFallback span { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.pdfDocumentFallback strong { display: -webkit-box; max-width: 28ch; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.pdfDocumentFallback small { color: var(--muted); font-size: 11px; }
+.pdfNativePreview { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; pointer-events: none; }
+.cover .fileType, .cover .index { z-index: 2; }
+@media (max-width: 650px) {
+  .pdfDocumentFallback { gap: 5px; padding: 8px; }
+  .pdfDocumentFallback span { font-size: 7px; letter-spacing: .05em; }
+  .pdfDocumentFallback strong { font-size: 11px; line-height: 1.2; -webkit-line-clamp: 4; }
+  .pdfDocumentFallback small { display: none; }
+  .pdfNativePreview { display: none; }
+}
