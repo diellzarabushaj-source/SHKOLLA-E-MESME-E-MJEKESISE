@@ -95,4 +95,4 @@ export const chapter = defineType({
   ],
 })
 
-// studio-deploy-trigger-2026-07-21
+// studio-deploy-trigger-2026-11-20-pdf-resources
