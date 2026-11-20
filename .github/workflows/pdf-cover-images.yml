@@ -34,5 +34,4 @@ jobs:
       - name: Report missing Sanity token
         if: ${{ env.SANITY_AUTH_TOKEN == '' }}
         run: |
-          echo "SANITY_AUTH_TOKEN secret not configured; automatic cover generation was skipped." >> "$GITHUB_STEP_SUMMARY"
-          exit 1
+          echo "SANITY_AUTH_TOKEN secret is not configured; the optional automatic cover backfill is not active. The portal still renders a PDF preview fallback." >> "$GITHUB_STEP_SUMMARY"
