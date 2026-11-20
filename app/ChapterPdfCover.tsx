@@ -1,14 +1,53 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./chapter-pdfs.module.css";
 
-export default function ChapterPdfCover({ src }: { src?: string }) {
+/**
+ * Always prefer Sanity's optimized cover image. If an older or newly uploaded
+ * PDF has no cover yet, show its first page with the browser's native PDF viewer
+ * until the image backfill has produced a permanent thumbnail.
+ */
+export default function ChapterPdfCover({
+  src,
+  pdfUrl,
+  title,
+}: {
+  src?: string;
+  pdfUrl?: string;
+  title: string;
+}) {
   const [failedSource, setFailedSource] = useState<string>();
+
+  if (src && failedSource !== src) {
+    return <img
+      src={src}
+      alt=""
+      width={260}
+      height={360}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailedSource(src)}
+    />;
+  }
 
   return (
     <>
-      <svg viewBox="0 0 48 56" fill="none"><path d="M9 2h21l13 13v37a2 2 0 0 1-2 2H9a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2"/><path d="M29 2v14h14M15 29h18M15 36h18M15 43h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-      {src && failedSource !== src && <img src={src} alt="" width={260} height={360} loading="lazy" decoding="async" onError={() => setFailedSource(src)} />}
+      <div className={styles.pdfDocumentFallback}>
+        <span>Material mësimor</span>
+        <strong>{title}</strong>
+        <small>PDF · Lexo online</small>
+      </div>
+      {pdfUrl?.startsWith("https://cdn.sanity.io/files/") && (
+        <iframe
+          className={styles.pdfNativePreview}
+          title={`Pamje paraprake e PDF-së: ${title}`}
+          src={`${pdfUrl}#page=1&view=Fit&toolbar=0&navpanes=0&scrollbar=0`}
+          loading="lazy"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+      )}
     </>
   );
 }
