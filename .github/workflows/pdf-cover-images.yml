@@ -1,0 +1,38 @@
+name: Generate missing PDF cover images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/backfill-chapter-pdf-covers.mjs"
+      - ".github/workflows/pdf-cover-images.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: school-chapter-pdf-covers
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PDF renderer
+        if: ${{ env.SANITY_AUTH_TOKEN != '' }}
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Generate previews for all chapters
+        if: ${{ env.SANITY_AUTH_TOKEN != '' }}
+        run: node scripts/backfill-chapter-pdf-covers.mjs
+      - name: Report missing Sanity token
+        if: ${{ env.SANITY_AUTH_TOKEN == '' }}
+        run: |
+          echo "SANITY_AUTH_TOKEN secret not configured; automatic cover generation was skipped." >> "$GITHUB_STEP_SUMMARY"
+          exit 1
