@@ -29,7 +29,7 @@ export default function ChapterPdfSection({ chapterId, resources, isAdmin = fals
             <article className={styles.card} key={pdf.url} aria-label={title}>
               <a className={styles.preview} href={pdf.url} target="_blank" rel="noopener noreferrer" aria-label={`Shiko ${title} (PDF, në skedë të re)`}>
               <div className={styles.cover} aria-hidden="true">
-                <ChapterPdfCover src={cover} />
+                <ChapterPdfCover src={cover} pdfUrl={pdf.url} title={title} />
                 <span className={styles.fileType}>PDF</span>
                 <span className={styles.index}>{String(index + 1).padStart(2, "0")}</span>
               </div>
